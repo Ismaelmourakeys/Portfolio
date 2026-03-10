@@ -1,16 +1,49 @@
-# React + Vite
+# 🌐 Portfólio - Ismael Moura
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este é o meu portfólio pessoal desenvolvido com **React** e **Vite**, criado para apresentar meus projetos, certificados e habilidades como desenvolvedor front-end.
 
-Currently, two official plugins are available:
+O objetivo deste projeto é reunir em um único lugar minhas experiências, estudos e aplicações desenvolvidas durante minha jornada na programação.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Tecnologias utilizadas
 
-## React Compiler
+* **React**
+* **Vite**
+* **JavaScript**
+* **Tailwind CSS**
+* **HTML5**
+* **CSS3**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Funcionalidades
 
-## Expanding the ESLint configuration
+* Apresentação pessoal
+* Seção de projetos com cards dinâmicos
+* Seção de certificados
+* Layout moderno e responsivo
+* Estrutura organizada em componentes React
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📁 Estrutura do projeto
+
+O projeto foi organizado utilizando **componentização**, separando interface, dados e assets para manter o código mais limpo e escalável.
+
+```
+src
+ ├ assets
+ ├ components
+ ├ data
+ ├ App.jsx
+ └ main.jsx
+```
+
+## 🎯 Objetivo
+
+Este projeto foi desenvolvido com foco em:
+
+* Praticar **React**
+* Melhorar a organização de código com **componentes reutilizáveis**
+* Evoluir minhas habilidades em **desenvolvimento front-end**
+
+## 📌 Status do projeto
+
+🚧 Em constante evolução.
+
+Novas melhorias e funcionalidades serão adicionadas conforme avanço nos estudos e projetos.
