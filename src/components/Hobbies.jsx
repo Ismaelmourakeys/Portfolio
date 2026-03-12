@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
 
+// ─────────────────────────────────────────────
+//  DADOS — edite livremente
+//  Cada item em `media` pode ser:
+//    { type: "image", src: "...", caption: "..." }
+//    { type: "video", src: "...", caption: "...", poster: "..." }
+// ─────────────────────────────────────────────
 const HOBBIES = [
   {
     id: "tecnologia",
@@ -8,12 +14,6 @@ const HOBBIES = [
     label: "aprendizado",
     title: "Estudar novas tecnologias",
     description: "Sempre explorando frameworks, linguagens e ferramentas. Cada descoberta abre novas possibilidades.",
-    interval: 3000,
-    slides: [
-      "https://placehold.co/600x280/0f172a/38bdf8?text=React+Study&font=syne",
-      "https://placehold.co/600x280/0f172a/818cf8?text=Tailwind+CSS&font=syne",
-      "https://placehold.co/600x280/0f172a/34d399?text=Node.js&font=syne",
-    ],
     tags: ["React", "Tailwind", "Python", "Node.js"],
     icon: (
       <svg className="w-5 h-5 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -21,76 +21,72 @@ const HOBBIES = [
         <path d="M7 9H4M7 12H4M7 15H4M17 9h3M17 12h3M17 15h3M9 7V4M12 7V4M15 7V4M9 17v3M12 17v3M15 17v3" />
       </svg>
     ),
+    media: [
+      { type: "image", src: "https://placehold.co/800x500/0f172a/38bdf8?text=React+Study&font=syne", caption: "Estudando React" },
+      { type: "image", src: "https://placehold.co/800x500/0f172a/818cf8?text=Tailwind+CSS&font=syne", caption: "Tailwind CSS" },
+      { type: "video", src: "", poster: "https://placehold.co/800x500/0f172a/34d399?text=▶+Demo+Video&font=syne", caption: "Demo de projeto" },
+    ],
   },
   {
     id: "ui",
     color: "violet",
     label: "UI / UX",
     title: "Praticar desenvolvimento de interfaces",
-    description: "Criar interfaces acessiveis, bonitas e funcionais. Design e codigo andam sempre juntos.",
-    interval: 2800,
-    slides: [
-      "https://placehold.co/600x280/0f172a/818cf8?text=Figma+Design&font=syne",
-      "https://placehold.co/600x280/0f172a/a78bfa?text=Tailwind+UI&font=syne",
-      "https://placehold.co/600x280/0f172a/7c3aed?text=Components&font=syne",
-    ],
+    description: "Criar interfaces acessíveis, bonitas e funcionais. Design e código andam sempre juntos.",
     tags: ["Figma", "Tailwind", "React"],
     icon: (
       <svg className="w-5 h-5 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
       </svg>
     ),
+    media: [
+      { type: "image", src: "https://placehold.co/800x500/0f172a/818cf8?text=Figma+Design&font=syne", caption: "Design no Figma" },
+      { type: "image", src: "https://placehold.co/800x500/0f172a/a78bfa?text=Tailwind+UI&font=syne", caption: "Componentes Tailwind" },
+    ],
   },
   {
     id: "projetos",
     color: "emerald",
     label: "projetos",
     title: "Construir projetos reais",
-    description: "Do rascunho ao deploy - transformar ideias em projetos reais e o que mais me ensina.",
-    interval: 2500,
-    slides: [
-      "https://placehold.co/600x280/0f172a/34d399?text=MyGluco+App&font=syne",
-      "https://placehold.co/600x280/0f172a/10b981?text=Landing+Page&font=syne",
-      "https://placehold.co/600x280/0f172a/6ee7b7?text=Portfolio&font=syne",
-      "https://placehold.co/600x280/0f172a/a7f3d0?text=ETEC+Projects&font=syne",
-    ],
+    description: "Do rascunho ao deploy — transformar ideias em projetos reais é o que mais me ensina.",
     tags: ["GitHub", "Vercel", "Firebase"],
     icon: (
       <svg className="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
       </svg>
     ),
+    media: [
+      { type: "image", src: "https://placehold.co/800x500/0f172a/34d399?text=MyGluco+App&font=syne", caption: "MyGluco App" },
+      { type: "video", src: "", poster: "https://placehold.co/800x500/0f172a/10b981?text=▶+App+Demo&font=syne", caption: "Demonstração do app" },
+      { type: "image", src: "https://placehold.co/800x500/0f172a/6ee7b7?text=Portfolio&font=syne", caption: "Portfólio" },
+    ],
   },
   {
     id: "musica",
     color: "yellow",
-    label: "musica",
-    title: "Ouvir e estudar musica",
-    description: "Musico de coracao. Toco em igrejas e eventos - a musica me acompanha em tudo.",
-    interval: 3200,
-    slides: [
-      "https://placehold.co/600x280/0f172a/facc15?text=Teclado&font=syne",
-      "https://placehold.co/600x280/0f172a/fbbf24?text=Igreja+%26+Eventos&font=syne",
-    ],
+    label: "música",
+    title: "Ouvir e estudar música",
+    description: "Músico de coração. Aqui está alguns lugares que já toquei como igrejas, projetos, eventos.",
     tags: ["Teclado", "Teoria musical"],
     icon: (
       <svg className="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
       </svg>
     ),
+    media: [
+      { type: "image", src: "/assets/Hobbies/igreja_advec2.jpg", poster: "https://placehold.co/800x500/0f172a/fbbf24?text=▶+Tocando&font=syne", caption: "Evento de igreja" },
+      { type: "image", src: "/assets/Hobbies/Trabalhos_estudio.jpg", poster: "https://placehold.co/800x500/0f172a/fbbf24?text=▶+Projetos&font=syne", caption: "Projetos em estúdio" },
+      { type: "video", src: "public/assets/Hobbies/Nord.mp4", poster: "https://placehold.co/800x500/0f172a/fbbf24?text=▶+Ensaios&font=syne", caption: "Tocando na igreja" },
+      { type: "video", src: "public/assets/Hobbies/Marketing_pessoal.mp4", poster: "https://placehold.co/800x500/0f172a/fbbf24?text=▶+Tocando&font=syne", caption: "Tocando na igreja" },
+    ],
   },
   {
     id: "ingles",
     color: "pink",
     label: "idiomas",
-    title: "Aprender ingles",
-    description: "Estudando ingles para acessar conteudos tecnicos na fonte e me preparar para o mercado internacional.",
-    interval: 3000,
-    slides: [
-      "https://placehold.co/600x280/0f172a/f472b6?text=FluencyPass&font=syne",
-      "https://placehold.co/600x280/0f172a/ec4899?text=Wizard&font=syne",
-      "https://placehold.co/600x280/0f172a/db2777?text=Duolingo&font=syne",
-    ],
+    title: "Aprender inglês",
+    description: "Estudando inglês para acessar conteúdos técnicos na fonte e me preparar para o mercado internacional.",
     tags: ["FluencyPass", "Wizard", "Duolingo"],
     icon: (
       <svg className="w-5 h-5 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -99,60 +95,311 @@ const HOBBIES = [
         <path d="M18 11V7a4 4 0 0 0-4-4v0" />
       </svg>
     ),
+    media: [
+      { type: "image", src: "https://placehold.co/800x500/0f172a/f472b6?text=FluencyPass&font=syne", caption: "FluencyPass" },
+      { type: "image", src: "https://placehold.co/800x500/0f172a/ec4899?text=Duolingo&font=syne", caption: "Duolingo" },
+    ],
   },
 ];
 
 const COLOR_MAP = {
-  sky:     { text: "text-sky-400",     bg: "bg-sky-400/10",     border: "border-sky-400/20",     bar: "bg-sky-400/40",     dot: "bg-sky-400",     glow: "rgba(56,189,248,0.10)"  },
-  violet:  { text: "text-violet-400",  bg: "bg-violet-400/10",  border: "border-violet-400/20",  bar: "bg-violet-400/40",  dot: "bg-violet-400",  glow: "rgba(139,92,246,0.10)"  },
-  emerald: { text: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", bar: "bg-emerald-400/40", dot: "bg-emerald-400", glow: "rgba(52,211,153,0.10)"  },
-  yellow:  { text: "text-yellow-400",  bg: "bg-yellow-400/10",  border: "border-yellow-400/20",  bar: "bg-yellow-400/40",  dot: "bg-yellow-400",  glow: "rgba(250,204,21,0.10)"  },
-  pink:    { text: "text-pink-400",    bg: "bg-pink-400/10",    border: "border-pink-400/20",    bar: "bg-pink-400/40",    dot: "bg-pink-400",    glow: "rgba(244,114,182,0.10)" },
+  sky: { text: "text-sky-400", bg: "bg-sky-400/10", border: "border-sky-400/20", bar: "bg-sky-400/40", glow: "rgba(56,189,248,0.10)", glowHover: "rgba(56,189,248,0.18)" },
+  violet: { text: "text-violet-400", bg: "bg-violet-400/10", border: "border-violet-400/20", bar: "bg-violet-400/40", glow: "rgba(139,92,246,0.10)", glowHover: "rgba(139,92,246,0.18)" },
+  emerald: { text: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", bar: "bg-emerald-400/40", glow: "rgba(52,211,153,0.10)", glowHover: "rgba(52,211,153,0.18)" },
+  yellow: { text: "text-yellow-400", bg: "bg-yellow-400/10", border: "border-yellow-400/20", bar: "bg-yellow-400/40", glow: "rgba(250,204,21,0.10)", glowHover: "rgba(250,204,21,0.18)" },
+  pink: { text: "text-pink-400", bg: "bg-pink-400/10", border: "border-pink-400/20", bar: "bg-pink-400/40", glow: "rgba(244,114,182,0.10)", glowHover: "rgba(244,114,182,0.18)" },
 };
 
-// ── Slideshow (sem alterações)
-function Slideshow({ slides, interval, isOpen }) {
-  const [current, setCurrent] = useState(0);
-
+// ── Lightbox para imagens
+function Lightbox({ src, caption, onClose }) {
   useEffect(() => {
-    if (!isOpen) return;
-    const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, interval);
-    return () => clearInterval(timer);
-  }, [isOpen, slides.length, interval]);
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
   return (
-    <div className="relative w-full h-44 rounded-xl overflow-hidden bg-slate-950">
-      {slides.map((src, i) => (
-        <div key={src} className={`absolute inset-0 transition-opacity duration-700 ${i === current ? "opacity-100" : "opacity-0"}`}>
-          <img src={src} alt={`slide ${i + 1}`} className="w-full h-full object-cover" />
-        </div>
-      ))}
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-        {slides.map((_, i) => (
-          <button key={i} onClick={() => setCurrent(i)}
-            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === current ? "bg-white scale-125" : "bg-white/40"}`}
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 z-[9998] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      >
+        <motion.div
+          className="relative max-w-4xl w-full"
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.35 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <img src={src} alt={caption} className="w-full rounded-2xl shadow-2xl" />
+          {caption && (
+            <p className="mt-3 text-center font-mono text-xs text-slate-400 tracking-widest">{caption}</p>
+          )}
+          <button
+            onClick={onClose}
+            className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-800 border border-slate-600
+              flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+// ── Player de mídia (foto ou vídeo)
+// ── Player de mídia (foto ou vídeo)
+function MediaItem({ item, color }) {
+  const c = COLOR_MAP[color];
+  const [lightbox, setLightbox] = useState(false);
+  const [videoModal, setVideoModal] = useState(false);
+  const videoRef = useRef(null);
+  const videoModalRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+
+  // ⭐ NOVO: ESC para fechar vídeo ampliado
+  useEffect(() => {
+    if (!videoModal) return;
+    const onKey = (e) => e.key === "Escape" && closeVideoModal();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [videoModal]);
+
+  const togglePlay = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) { v.play(); setPlaying(true); }
+    else { v.pause(); setPlaying(false); }
+  };
+
+  const openVideoModal = () => {
+    if (item.src) {
+      setVideoModal(true);
+      setTimeout(() => {
+        videoModalRef.current?.play();
+      }, 100);
+    }
+  };
+
+  const closeVideoModal = () => {
+    videoModalRef.current?.pause();
+    setVideoModal(false);
+  };
+
+  if (item.type === "image") {
+    return (
+      <>
+        <motion.div
+          className="relative rounded-xl overflow-hidden cursor-zoom-in group/img"
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.2 }}
+          onClick={() => setLightbox(true)}
+        >
+          <img
+            src={item.src}
+            alt={item.caption}
+            className="w-full h-44 object-cover"
           />
-        ))}
+          {/* overlay zoom hint */}
+          <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20
+            transition-all duration-300 flex items-center justify-center">
+            <div className="opacity-0 group-hover/img:opacity-100 transition-opacity duration-300
+              w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20
+              flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35M11 8v6M8 11h6" />
+              </svg>
+            </div>
+          </div>
+          {item.caption && (
+            <div className="absolute bottom-0 left-0 right-0 px-3 py-2
+              bg-gradient-to-t from-slate-950/80 to-transparent">
+              <p className={`font-mono text-[0.6rem] tracking-widest ${c.text}`}>{item.caption}</p>
+            </div>
+          )}
+        </motion.div>
+        {lightbox && <Lightbox src={item.src} caption={item.caption} onClose={() => setLightbox(false)} />}
+      </>
+    );
+  }
+
+  // ── vídeo
+  return (
+    <>
+      <div className="relative rounded-xl overflow-hidden bg-slate-950 group/vid">
+        {item.src ? (
+          <video
+            ref={videoRef}
+            src={item.src}
+            poster={item.poster}
+            className="w-full h-44 object-cover"
+            onEnded={() => setPlaying(false)}
+            playsInline
+          />
+        ) : (
+          // placeholder enquanto não tem o src real
+          <img src={item.poster} alt={item.caption} className="w-full h-44 object-cover opacity-70" />
+        )}
+
+        {/* ⭐ MODIFICADO: botão agora abre modal em vez de dar play direto */}
+        <button
+          onClick={item.src ? openVideoModal : undefined}
+          className="absolute inset-0 flex items-center justify-center cursor-zoom-in"
+        >
+          <motion.div
+            className={`w-12 h-12 rounded-full ${c.bg} border ${c.border} backdrop-blur-sm
+              flex items-center justify-center opacity-100
+              transition-opacity duration-300`}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <svg className={`w-5 h-5 ${c.text} ml-0.5`} viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </motion.div>
+        </button>
+
+        {/* badge VÍDEO */}
+        <div className={`absolute top-2 right-2 ${c.bg} border ${c.border} rounded-full
+          px-2 py-0.5 flex items-center gap-1`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${c.text.replace("text-", "bg-")} animate-pulse`} />
+          <span className={`font-mono text-[0.55rem] tracking-widest ${c.text} uppercase`}>vídeo</span>
+        </div>
+
+        {item.caption && (
+          <div className="absolute bottom-0 left-0 right-0 px-3 py-2
+            bg-gradient-to-t from-slate-950/80 to-transparent">
+            <p className={`font-mono text-[0.6rem] tracking-widest ${c.text}`}>{item.caption}</p>
+          </div>
+        )}
       </div>
+
+      {/* ⭐ NOVO: Modal de vídeo ampliado */}
+      {videoModal && (
+        <AnimatePresence>
+          <motion.div
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeVideoModal}
+          >
+            <motion.div
+              className="relative max-w-5xl w-full"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.35 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <video
+                ref={videoModalRef}
+                src={item.src}
+                controls
+                autoPlay
+                className="w-full rounded-2xl shadow-2xl max-h-[85vh]"
+                playsInline
+              />
+              {item.caption && (
+                <p className="mt-3 text-center font-mono text-xs text-slate-400 tracking-widest">
+                  {item.caption}
+                </p>
+              )}
+              {/* ⭐ Botão X para fechar */}
+              <button
+                onClick={closeVideoModal}
+                className="absolute -top-3 -right-3 w-10 h-10 rounded-full 
+                  bg-slate-800/95 border-2 border-slate-600
+                  flex items-center justify-center 
+                  text-slate-400 hover:text-white hover:bg-slate-700 hover:border-secondary
+                  transition-all duration-200 shadow-2xl z-50"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+      )}
+    </>
+  );
+}
+
+// ── Galeria de mídia com navegação
+function MediaGallery({ media, color, isOpen }) {
+  const [active, setActive] = useState(0);
+  const c = COLOR_MAP[color];
+
+  // reseta ao fechar
+  useEffect(() => { if (!isOpen) setActive(0); }, [isOpen]);
+
+  const item = media[active];
+
+  return (
+    <div className="flex flex-col gap-3">
+      {/* item ativo em destaque */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={active}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.25 }}
+        >
+          <MediaItem item={item} color={color} />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* thumbnails — só aparece se tiver mais de 1 */}
+      {media.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {media.map((m, i) => (
+            <button
+              key={i}
+              onClick={() => setActive(i)}
+              className={`relative flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden
+                border-2 transition-all duration-200
+                ${i === active ? `${c.border.replace("/20", "/70")} scale-105` : "border-slate-700/40 opacity-60 hover:opacity-100"}`}
+            >
+              <img
+                src={m.poster || m.src}
+                alt={m.caption}
+                className="w-full h-full object-cover"
+              />
+              {/* ícone play nas thumbnails de vídeo */}
+              {m.type === "video" && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                  <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-// ── Accordion com tilt 3D + brilho
+// ── Accordion individual
 function HobbyAccordion({ hobby, index, isOpen, onToggle }) {
   const c = COLOR_MAP[hobby.color];
   const cardRef = useRef(null);
 
-  // Tilt 3D
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const springConfig = { stiffness: 150, damping: 20, mass: 0.5 };
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [0, -0]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-0, 0]), springConfig);
-
-  // Brilho com a cor do hobby
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [3, -3]), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-3, 3]), springConfig);
   const glowX = useTransform(mouseX, [-0.5, 0.5], ["0%", "100%"]);
   const glowY = useTransform(mouseY, [-0.5, 0.5], ["0%", "100%"]);
   const glowBackground = useTransform(
@@ -169,74 +416,71 @@ function HobbyAccordion({ hobby, index, isOpen, onToggle }) {
   }, [mouseX, mouseY]);
 
   const handleMouseLeave = useCallback(() => {
-    mouseX.set(0);
-    mouseY.set(0);
+    mouseX.set(0); mouseY.set(0);
   }, [mouseX, mouseY]);
 
   return (
-    // Entrada: fade + slide com stagger por index
     <motion.div
       ref={cardRef}
       initial={{ opacity: 0, x: -30 }}
       whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: false, amount: 0.2 }}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.08,
-        ease: [0.16, 1, 0.3, 1],
-      }}
-      // Scale + bounce ao abrir
-      animate={{ scale: isOpen ? 1.02 : 1 }}
-      // Tilt 3D
+      viewport={{ once: false, amount: 0.15 }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+      animate={{ scale: isOpen ? 1.01 : 1 }}
       style={{ rotateX, rotateY, perspective: 1000 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="group rounded-2xl border border-slate-700/60 bg-slate-900/40
+      whileHover={{ boxShadow: `0 16px 40px ${c.glowHover}, 0 4px 16px rgba(0,0,0,0.4)` }}
+      className="group rounded-2xl border border-slate-700/60 bg-slate-900/50
         overflow-hidden transition-colors duration-300 hover:border-slate-600/80"
-      whileHover={{
-        boxShadow: `0 16px 40px ${c.glow.replace("0.10", "0.15")}, 0 4px 16px rgba(0,0,0,0.4)`,
-      }}
     >
-      {/* brilho seguindo o mouse */}
+      {/* brilho mouse */}
       <motion.div
         className="pointer-events-none absolute inset-0 rounded-2xl z-0
           opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         style={{ background: glowBackground }}
       />
 
-      {/* TRIGGER */}
+      {/* HEADER do accordion */}
       <button
         onClick={onToggle}
-        className="relative z-10 w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 text-left"
+        className="relative z-10 w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 sm:py-4 text-left"
       >
-        {/* ícone — pulsa quando aberto */}
         <motion.div
           animate={isOpen ? { scale: [1, 1.15, 1] } : { scale: 1 }}
-          transition={isOpen ? { duration: 0.4, ease: "easeInOut" } : {}}
-          className={`flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${c.bg} border ${c.border}
-            flex items-center justify-center transition-all duration-300`}
+          transition={isOpen ? { duration: 0.4 } : {}}
+          className={`flex-shrink-0 w-10 h-10 rounded-xl ${c.bg} border ${c.border}
+            flex items-center justify-center`}
         >
           {hobby.icon}
         </motion.div>
 
-        {/* label + título */}
         <div className="flex-1 min-w-0">
-          <p className={`font-mono text-[0.6rem] ${c.text} tracking-widest uppercase mb-0.5`}>
+          <p className={`font-mono text-[0.58rem] ${c.text} tracking-widest uppercase mb-0.5`}>
             {hobby.label}
           </p>
-          <h4 className="font-syne font-bold text-slate-100 text-sm sm:text-base">
+          <h4 className="font-syne font-bold text-slate-100 text-sm sm:text-base leading-snug">
             {hobby.title}
           </h4>
         </div>
 
-        {/* ícone +/- */}
-        <div className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full border border-slate-600
+        {/* contador de mídias */}
+        <span className={`hidden sm:flex flex-shrink-0 items-center gap-1
+          font-mono text-[0.6rem] ${c.text} ${c.bg} border ${c.border}
+          px-2 py-0.5 rounded-full`}>
+          <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 3v18" />
+          </svg>
+          {hobby.media.length}
+        </span>
+
+        <div className="flex-shrink-0 w-7 h-7 rounded-full border border-slate-600
           flex items-center justify-center text-slate-400
-          group-hover:border-slate-500 group-hover:text-slate-300 transition-all duration-200 cursor-pointer">
+          group-hover:border-slate-500 group-hover:text-slate-300 transition-all duration-200">
           <motion.svg
             animate={{ rotate: isOpen ? 45 : 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="w-3 sm:w-3.5 h-3 sm:h-3.5"
+            transition={{ duration: 0.25 }}
+            className="w-3.5 h-3.5"
             viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
           >
             <path d="M12 5v14M5 12h14" />
@@ -246,10 +490,11 @@ function HobbyAccordion({ hobby, index, isOpen, onToggle }) {
 
       {/* linha divisória */}
       <div className="px-4 sm:px-5 relative z-10">
-        <div className={`h-px ${c.bar} rounded-full transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-40"}`} />
+        <div className={`h-px ${c.bar} rounded-full transition-opacity duration-300
+          ${isOpen ? "opacity-100" : "opacity-30"}`} />
       </div>
 
-      {/* CORPO — AnimatePresence para entrada/saída suave */}
+      {/* CORPO */}
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
@@ -257,18 +502,25 @@ function HobbyAccordion({ hobby, index, isOpen, onToggle }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden relative z-10"
           >
-            <div className="px-4 sm:px-5 py-4 flex flex-col gap-4">
+            <div className="px-4 sm:px-5 py-4 flex flex-col gap-5">
+
+              {/* descrição */}
               <p className="text-slate-400 text-sm font-mono leading-relaxed">
                 {hobby.description}
               </p>
-              <Slideshow slides={hobby.slides} interval={hobby.interval} isOpen={isOpen} />
+
+              {/* galeria de mídia */}
+              <MediaGallery media={hobby.media} color={hobby.color} isOpen={isOpen} />
+
+              {/* tags */}
               <div className="flex flex-wrap gap-2">
                 {hobby.tags.map((tag) => (
                   <span key={tag}
-                    className={`font-mono text-[0.65rem] ${c.text} ${c.bg} border ${c.border} px-2.5 py-1 rounded-full`}>
+                    className={`font-mono text-[0.62rem] ${c.text} ${c.bg} border ${c.border}
+                      px-2.5 py-1 rounded-full`}>
                     {tag}
                   </span>
                 ))}
@@ -289,15 +541,14 @@ export default function Hobbies() {
   const progress = openIndex >= 0 ? Math.round(((openIndex + 1) / HOBBIES.length) * 100) : 0;
 
   return (
-    <section id="hobbies" className="relative px-6 sm:px-8 pt-16 sm:pt-20 pb-8 overflow-hidden bg-slate-800">
+    <section id="hobbies" className="relative px-6 sm:px-8 pt-16 sm:pt-20 pb-12 overflow-hidden bg-slate-800">
 
-      <div className="pointer-events-none absolute inset-0" />
       <div className="pointer-events-none absolute -bottom-40 -right-40 w-[500px] h-[500px]
         bg-[radial-gradient(circle,rgba(56,189,248,0.06),transparent_70%)]" />
 
       <div className="relative z-10 max-w-6xl mx-auto">
 
-        {/* cabeçalho — fade + slide vindo da esquerda */}
+        {/* cabeçalho */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -310,20 +561,33 @@ export default function Hobbies() {
               <span className="font-mono text-secondary text-xs font-bold">&lt;/&gt;</span>
             </span>
             <p className="font-mono text-xs tracking-[0.25em] uppercase text-secondary">
-              / Conheca-me melhor
+              / Conheça-me melhor
             </p>
           </div>
           <h3 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-100 leading-tight mb-3">
             Meus <span className="text-secondary">Hobbies</span>
           </h3>
           <p className="font-mono text-sm text-slate-500 mb-10 lg:mb-12">
-            Alem do codigo, algumas coisas que me movem no dia a dia.
+            Além do código, algumas coisas que me movem no dia a dia.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-8 lg:gap-12 items-start">
 
-          {/* barra de progresso — anima ao entrar */}
+          {/* accordions — à esquerda */}
+          <div className="flex flex-col gap-3">
+            {HOBBIES.map((hobby, index) => (
+              <HobbyAccordion
+                key={hobby.id}
+                hobby={hobby}
+                index={index}
+                isOpen={openId === hobby.id}
+                onToggle={() => toggle(hobby.id)}
+              />
+            ))}
+          </div>
+
+          {/* barra de progresso desktop — à direita */}
           <div className="hidden lg:flex flex-col gap-6 lg:sticky lg:top-8">
             <motion.div
               className="flex flex-col gap-3"
@@ -336,7 +600,6 @@ export default function Hobbies() {
                 Clique para explorar
               </p>
               <div className="relative h-1 bg-slate-700/30 rounded-full overflow-hidden">
-                {/* barra anima com motion.div */}
                 <motion.div
                   className="absolute top-0 left-0 h-full bg-gradient-to-r from-sky-400 to-violet-400 rounded-full"
                   animate={{ width: `${progress}%` }}
@@ -344,20 +607,24 @@ export default function Hobbies() {
                 />
               </div>
               <p className="font-mono text-xs text-slate-600">{progress}% explorado</p>
-            </motion.div>
-          </div>
 
-          {/* accordions */}
-          <div className="flex flex-col gap-3 lg:-translate-y-30">
-            {HOBBIES.map((hobby, index) => (
-              <HobbyAccordion
-                key={hobby.id}
-                hobby={hobby}
-                index={index}
-                isOpen={openId === hobby.id}
-                onToggle={() => toggle(hobby.id)}
-              />
-            ))}
+              {/* legenda tipos de mídia */}
+              <div className="mt-4 flex flex-col gap-2">
+                <p className="font-mono text-[0.6rem] text-slate-600 tracking-widest uppercase">Tipos de mídia</p>
+                <div className="flex items-center gap-2">
+                  <svg className="w-3 h-3 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" />
+                  </svg>
+                  <span className="font-mono text-[0.8rem] text-slate-500">foto (clique p/ ampliar e aperte ESC para fechar)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-3 h-3 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                  <span className="font-mono text-[0.8rem] text-slate-500">vídeo (clique p/ reproduzir e aperte ESC para fechar)</span>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
 
