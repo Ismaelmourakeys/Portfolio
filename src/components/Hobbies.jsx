@@ -348,7 +348,7 @@ export default function Hobbies() {
           </div>
 
           {/* accordions */}
-          <div className="flex flex-col gap-3 -translate-y-30">
+          <div className="flex flex-col gap-3 lg:-translate-y-30">
             {HOBBIES.map((hobby, index) => (
               <HobbyAccordion
                 key={hobby.id}
