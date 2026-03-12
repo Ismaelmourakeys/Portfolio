@@ -9,27 +9,18 @@ const STEPS = [
   { pct: 100, msg: "pronto!" },
 ];
 
-const TOTAL_DURATION = 3800; // um pouco mais longo para aproveitar o visual maior
+const TOTAL_DURATION = 3800;
 const STEP_INTERVAL = TOTAL_DURATION / STEPS.length;
-
 const PARTICLE_COLORS = ["#38bdf8", "#818cf8", "#34d399", "#a78bfa", "#f472b6"];
 
-// ── Canvas de estrelas
-function StarCanvas() {
+// ── Canvas: estrelas piscando + cometas (mesma lógica do Hero, tela cheia)
+function SpaceCanvas() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-
-    const stars = Array.from({ length: 220 }, () => ({
-      x: Math.random(),
-      y: Math.random(),
-      r: Math.random() * 1.6 + 0.3,
-      speed: Math.random() * 0.008 + 0.002,
-      phase: Math.random() * Math.PI * 2,
-    }));
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -38,16 +29,103 @@ function StarCanvas() {
     resize();
     window.addEventListener("resize", resize);
 
+    // Estrelas
+    const stars = Array.from({ length: 300 }, () => ({
+      x: Math.random(),
+      y: Math.random(),
+      r: Math.random() * 0.8 + 0.1,
+      speed: Math.random() * 0.006 + 0.001,
+      phase: Math.random() * Math.PI * 2,
+      color:
+        Math.random() > 0.85
+          ? "rgba(56,189,248,"   // sky
+          : Math.random() > 0.7
+          ? "rgba(250,204,21,"   // yellow
+          : Math.random() > 0.6
+          ? "rgba(167,139,250,"  // violet
+          : "rgba(200,210,230,", // branco/cinza
+    }));
+
+    // Cometas
+    class Comet {
+      constructor() { this.reset(true); }
+
+      reset(initial = false) {
+        this.x = Math.random() * window.innerWidth * 1.4 - window.innerWidth * 0.2;
+        this.y = initial ? Math.random() * window.innerHeight * -1 : -80;
+        this.len = 100 + Math.random() * 160;
+        this.speed = 5 + Math.random() * 6;
+        this.angle = Math.PI / 4 + (Math.random() - 0.5) * 0.45;
+        this.width = 0.8 + Math.random() * 1.6;
+        this.opacity = 0.55 + Math.random() * 0.45;
+        // cor aleatória entre branco e azul/violeta
+        this.hue = Math.random() > 0.5 ? "200,230,255" : "210,200,255";
+        this.active = !initial;
+        this.timer = 0;
+        this.delay = initial ? Math.floor(Math.random() * 220) : 0;
+      }
+
+      update() {
+        if (!this.active) {
+          this.timer++;
+          if (this.timer >= this.delay) this.active = true;
+          return;
+        }
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+        if (this.x > canvas.width + 120 || this.y > canvas.height + 120) {
+          this.reset();
+          this.delay = 60 + Math.floor(Math.random() * 280);
+          this.active = false;
+          this.timer = 0;
+        }
+      }
+
+      draw() {
+        if (!this.active) return;
+        const tailX = this.x - Math.cos(this.angle) * this.len;
+        const tailY = this.y - Math.sin(this.angle) * this.len;
+
+        const grad = ctx.createLinearGradient(tailX, tailY, this.x, this.y);
+        grad.addColorStop(0, `rgba(${this.hue},0)`);
+        grad.addColorStop(0.55, `rgba(${this.hue},${(this.opacity * 0.3).toFixed(2)})`);
+        grad.addColorStop(1, `rgba(${this.hue},${this.opacity.toFixed(2)})`);
+
+        ctx.beginPath();
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(this.x, this.y);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = this.width;
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+        // brilho na cabeça
+        const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.width * 4);
+        glow.addColorStop(0, `rgba(${this.hue},${this.opacity.toFixed(2)})`);
+        glow.addColorStop(1, `rgba(${this.hue},0)`);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.width * 4, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.fill();
+      }
+    }
+
+    const comets = Array.from({ length: 14 }, () => new Comet());
+
     let raf;
     const draw = (t) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       stars.forEach((s) => {
-        const alpha = 0.2 + 0.8 * (0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase));
+        const alpha = 0.15 + 0.85 * (0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase));
         ctx.beginPath();
         ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(148,163,184,${alpha * 0.7})`;
+        ctx.fillStyle = `${s.color}${(alpha * 0.85).toFixed(2)})`;
         ctx.fill();
       });
+
+      comets.forEach((c) => { c.update(); c.draw(); });
+
       raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);
@@ -66,8 +144,8 @@ function Particle({ index, total }) {
   const angle = (360 / total) * index;
   const dur = 2.2 + Math.random() * 2.5;
   const color = PARTICLE_COLORS[index % PARTICLE_COLORS.length];
-  const size = 2.5 + Math.random() * 3.5;   // maiores
-  const radius = 140 + Math.random() * 40;   // órbita maior
+  const size = 2.5 + Math.random() * 3.5;
+  const radius = 140 + Math.random() * 40;
 
   return (
     <motion.div
@@ -127,28 +205,29 @@ export default function Loader({ onDone }) {
         <motion.div
           key="loader"
           className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-950 overflow-hidden"
-          exit={{ scale: 1.08, opacity: 0, filter: "blur(24px)" }}
+          exit={{ scale: 1.06, opacity: 0, filter: "blur(24px)" }}
           transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
         >
-          {/* estrelas */}
-          <StarCanvas />
+          {/* espaço sideral: estrelas + cometas */}
+          <SpaceCanvas />
 
-          {/* orbe de brilho central — maior */}
+          {/* orbe de brilho central */}
           <div
             className="absolute rounded-full pointer-events-none"
             style={{
-              width: 480,
-              height: 480,
-              background: "radial-gradient(circle, rgba(56,189,248,0.14) 0%, rgba(139,92,246,0.07) 50%, transparent 70%)",
-              filter: "blur(30px)",
+              width: 500,
+              height: 500,
+              background:
+                "radial-gradient(circle, rgba(56,189,248,0.10) 0%, rgba(139,92,246,0.06) 50%, transparent 70%)",
+              filter: "blur(35px)",
             }}
           />
 
-          {/* anéis orbitais — maiores */}
+          {/* anéis orbitais */}
           {[
-            { size: 260, dur: 5,  color: "rgba(56,189,248,0.28)",  reverse: false },
-            { size: 340, dur: 8,  color: "rgba(139,92,246,0.22)",  reverse: true  },
-            { size: 420, dur: 13, color: "rgba(52,211,153,0.16)",  reverse: false },
+            { size: 260, dur: 5,  color: "rgba(56,189,248,0.22)",  reverse: false },
+            { size: 340, dur: 8,  color: "rgba(139,92,246,0.18)",  reverse: true  },
+            { size: 420, dur: 13, color: "rgba(52,211,153,0.13)",  reverse: false },
           ].map((ring, i) => (
             <motion.div
               key={i}
@@ -166,10 +245,10 @@ export default function Loader({ onDone }) {
             ))}
           </div>
 
-          {/* logo central — maior */}
+          {/* logo central */}
           <motion.div
             className="relative z-10 flex items-center justify-center w-28 h-28 rounded-3xl
-              bg-slate-900 border border-secondary/30"
+              bg-slate-900/80 border border-secondary/30 backdrop-blur-sm"
             animate={{
               boxShadow: [
                 "0 0 40px rgba(56,189,248,0.10), 0 0 80px rgba(56,189,248,0.04)",
@@ -186,7 +265,7 @@ export default function Loader({ onDone }) {
             </span>
           </motion.div>
 
-          {/* nome abaixo do logo */}
+          {/* nome */}
           <motion.p
             className="relative z-10 mt-5 font-syne font-bold text-xl text-slate-200 tracking-wide"
             initial={{ opacity: 0, y: 8 }}
@@ -196,20 +275,19 @@ export default function Loader({ onDone }) {
             Ismael <span className="text-secondary">Moura</span>
           </motion.p>
 
-          {/* barra de progresso + status — mais larga */}
+          {/* barra de progresso + status */}
           <div className="relative z-10 mt-10 flex flex-col items-center gap-3 w-80">
-
-            {/* barra */}
             <div className="w-full h-[3px] bg-slate-800 rounded-full overflow-hidden">
               <motion.div
                 className="h-full rounded-full"
-                style={{ background: "linear-gradient(90deg, #38bdf8, #818cf8, #34d399)" }}
+                style={{
+                  background: "linear-gradient(90deg, #38bdf8, #818cf8, #34d399)",
+                }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.7, ease: "easeOut" }}
               />
             </div>
 
-            {/* status */}
             <div className="flex items-center justify-between w-full">
               <AnimatePresence mode="wait">
                 <motion.p

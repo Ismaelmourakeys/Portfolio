@@ -9,11 +9,12 @@ import Footer from './components/Footer'
 
 import { useState } from "react";
 import Loader from "./components/Loader";
+import { useLenis } from "./hooks/useLenis";
 
 export default function App() {
   
   const [loading, setLoading] = useState(true);
-  
+  useLenis({ duration: 1.0 }); // ajusta o valor de acordo com sensibilidade que quiser
   return (
     <>
     <Loader onDone={() => setLoading(false)}/>
