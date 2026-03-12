@@ -1,8 +1,9 @@
-// Este componente é 100% estático — sem useState, useEffect ou hooks
-// É a migração mais simples: só HTML → JSX (class → className, etc.)
+// AboutMe.jsx com animações Framer Motion
+// Cada bloco entra com fade + slide de baixo pra cima ao entrar na viewport
+// once: false → reanima toda vez que o usuário scrolla até a seção
 
-// Dados separados do JSX — mesma estratégia dos outros componentes
-// Para editar suas skills, só mexe aqui embaixo
+import { motion } from "framer-motion";
+
 const SKILLS = [
   { icon: "devicon-html5-plain", label: "HTML" },
   { icon: "devicon-css3-plain", label: "CSS" },
@@ -22,13 +23,51 @@ const AREAS = [
   { title: "UI / UX", desc: "Experiência focada no usuário" },
 ];
 
+// Variante reutilizável — fade + slide de baixo pra cima
+// Usada em todos os blocos da seção
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+// Variante para stagger dos filhos (skills, áreas, CTAs)
+const staggerContainer = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.07 },
+  },
+};
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+// Atalho para as props comuns do whileInView
+// Evita repetir viewport={{ once: false, amount: 0.2 }} em todo lugar
+const inView = { once: false, amount: 0.2 };
+
 export default function AboutMe() {
   return (
-    <section id="sobre" className="px-6 py-20 bg-slate-800" data-animate="left">
+    <section id="sobre" className="px-6 py-20 bg-slate-800">
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 
-        {/* ── CARD COM FOTO */}
-        <div className="relative group">
+        {/* CARD COM FOTO — entra da esquerda */}
+        <motion.div
+          className="relative group"
+          initial={{ opacity: 0, x: -40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={inView}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
           <div className="relative mx-auto md:mx-0 md:absolute md:-bottom-48 w-72
             sm:w-80 md:w-96 bg-gradient-to-b from-slate-900/50 to-transparent rounded-3xl
             p-6 md:p-10 shadow-2xl ring-1 ring-white/10 backdrop-blur-sm
@@ -47,17 +86,22 @@ export default function AboutMe() {
             </div>
           </div>
 
-          {/* shape decorativo */}
           <div className="hidden md:block absolute -right-6 -bottom-6 w-28 h-28 rounded-lg
             bg-gradient-to-tr from-secondary/30 to-yellow-300/10 blur-xl pointer-events-none" />
-        </div>
+        </motion.div>
 
-        {/* ── TEXTO */}
-        <div className="text-slate-200">
+        {/* BLOCO DE TEXTO — stagger interno */}
+        <motion.div
+          className="text-slate-200"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={inView}
+        >
           <div className="flex flex-col gap-4">
 
             {/* label topo */}
-            <div className="flex items-center sm:justify-start justify-center gap-3">
+            <motion.div variants={fadeUp} className="flex items-center sm:justify-start justify-center gap-3">
               <span className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/30
                 flex items-center justify-center">
                 <span className="font-mono text-secondary text-xs font-bold">&lt;/&gt;</span>
@@ -65,25 +109,23 @@ export default function AboutMe() {
               <p className="font-mono text-xs tracking-[0.25em] uppercase text-secondary mb-2">
                 / quem sou eu
               </p>
-            </div>
+            </motion.div>
 
             {/* título */}
-            <div className="flex items-center sm:justify-start justify-center">
+            <motion.div variants={fadeUp} className="flex items-center sm:justify-start justify-center">
               <h3 className="font-arial text-4xl sm:text-5xl font-extrabold text-slate-100 leading-tight">
                 Sobre <span className="text-secondary">mim</span>
               </h3>
-            </div>
+            </motion.div>
 
-            {/* texto scrollável
-                A classe "sobre-scroll" é a scrollbar customizada
-                definida no index.css (ver nota abaixo do componente) */}
-            <div className="sobre-scroll space-y-6 text-slate-300 leading-relaxed
-              text-center sm:text-start text-sm sm:text-base max-h-72 overflow-y-auto pr-3">
-
+            {/* texto scrollável */}
+            <motion.div
+              variants={fadeUp}
+              className="sobre-scroll space-y-6 text-slate-300 leading-relaxed
+                text-center sm:text-start text-sm sm:text-base max-h-72 overflow-y-auto pr-3"
+            >
               <div>
-                <p className="font-mono text-[0.6rem] text-sky-400 tracking-widest uppercase mb-2">
-                  / origem
-                </p>
+                <p className="font-mono text-[0.6rem] text-sky-400 tracking-widest uppercase mb-2">/ origem</p>
                 <p className="text-slate-400 leading-relaxed">
                   Tenho um perfil dedicado, disciplinado e motivado pelo aprendizado constante.
                   Minha trajetória começou fora da tecnologia — como{" "}
@@ -95,9 +137,7 @@ export default function AboutMe() {
               </div>
 
               <div>
-                <p className="font-mono text-[0.6rem] text-violet-400 tracking-widest uppercase mb-2">
-                  / virada
-                </p>
+                <p className="font-mono text-[0.6rem] text-violet-400 tracking-widest uppercase mb-2">/ virada</p>
                 <p className="text-slate-400 leading-relaxed">
                   Com o incentivo e apoio de uma amiga da área, passei a me interessar por tecnologia
                   e criação de soluções que impactam pessoas. Isso me levou ao{" "}
@@ -107,9 +147,7 @@ export default function AboutMe() {
               </div>
 
               <div>
-                <p className="font-mono text-[0.6rem] text-emerald-400 tracking-widest uppercase mb-2">
-                  / agora
-                </p>
+                <p className="font-mono text-[0.6rem] text-emerald-400 tracking-widest uppercase mb-2">/ agora</p>
                 <p className="text-slate-400 leading-relaxed">
                   Focado em evoluir como dev, praticando{" "}
                   <strong className="text-slate-200">HTML, CSS, JavaScript, React, React Native</strong>{" "}
@@ -119,39 +157,50 @@ export default function AboutMe() {
                   e ingressar no mercado contribuindo com projetos que façam diferença.
                 </p>
               </div>
-            </div>
+            </motion.div>
 
-            {/* SKILLS — map() no array SKILLS lá em cima */}
-            <div className="flex flex-wrap gap-3 mt-4 items-center justify-center sm:justify-start">
+            {/* SKILLS — cada pill aparece em stagger */}
+            <motion.div
+              variants={staggerContainer}
+              className="flex flex-wrap gap-3 mt-4 items-center justify-center sm:justify-start"
+            >
               {SKILLS.map((skill) => (
-                <span
+                <motion.span
                   key={skill.label}
+                  variants={staggerItem}
                   className="inline-flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full
                     text-xs font-medium text-slate-100 border border-white/10
                     hover:border-secondary/50 hover:bg-secondary/10 transition-all cursor-default"
                 >
                   <i className={`${skill.icon} colored`} />
                   {skill.label}
-                </span>
+                </motion.span>
               ))}
-            </div>
+            </motion.div>
 
-            {/* ÁREAS — map() no array AREAS */}
-            <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+            {/* ÁREAS — cada card aparece em stagger */}
+            <motion.div
+              variants={staggerContainer}
+              className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center"
+            >
               {AREAS.map((area) => (
-                <div
+                <motion.div
                   key={area.title}
+                  variants={staggerItem}
                   className="bg-white/5 border border-white/10 rounded-2xl p-4
                     hover:bg-white/10 transition"
                 >
                   <h5 className="text-secondary font-semibold">{area.title}</h5>
                   <p className="text-xs text-slate-400 mt-1">{area.desc}</p>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
             {/* CTAs */}
-            <div className="mt-6 flex flex-wrap gap-3 justify-center">
+            <motion.div
+              variants={fadeUp}
+              className="mt-6 flex flex-wrap gap-3 justify-center"
+            >
               <a
                 href="#contato"
                 className="inline-flex items-center gap-2 bg-secondary text-slate-900
@@ -173,10 +222,10 @@ export default function AboutMe() {
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </a>
-            </div>
+            </motion.div>
 
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import ProjectCard from "./ProjectCard";
+import SectionTitle from "./SectionTitle";
 
 const PROJECTS = [
   {
@@ -87,13 +89,9 @@ export default function Projects() {
   const [videoModalSrc, setVideoModalSrc] = useState(null);
   const modalVideoRef = useRef(null);
   const carouselRef = useRef(null);
-
-  // activeCardIndex rastreia qual CARD está ativo (0 a 3)
-  // Assim os dots são calculados a partir disso, sem lógica separada
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
 
-  // Detecta se é desktop (>= 768px)
   useEffect(() => {
     const update = () => setIsDesktop(window.innerWidth >= 768);
     update();
@@ -101,50 +99,29 @@ export default function Projects() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  // No desktop: 1 dot por par → dots 0 e 1 (cards 0-1 e cards 2-3)
-  // No mobile:  1 dot por card → dots 0, 1, 2, 3
   const cardsPerDot = isDesktop ? 2 : 1;
   const totalDots = Math.ceil(PROJECTS.length / cardsPerDot);
-
-  // Dot ativo = qual grupo o card atual pertence
   const activeDotIndex = Math.floor(activeCardIndex / cardsPerDot);
 
-  // Rola o carrossel até o primeiro card do dot clicado
   const scrollToDot = (dotIndex) => {
     const container = carouselRef.current;
     if (!container) return;
-
     const cards = container.querySelectorAll(".project-card");
-    const targetCardIndex = dotIndex * cardsPerDot;
-    const targetCard = cards[targetCardIndex];
+    const targetCard = cards[dotIndex * cardsPerDot];
     if (!targetCard) return;
-
-    // scrollLeft do card relativo ao container
     container.scrollTo({
       left: targetCard.offsetLeft - container.offsetLeft,
       behavior: "smooth",
     });
-
-    // Atualiza o card ativo imediatamente para feedback visual rápido
-    setActiveCardIndex(targetCardIndex);
+    setActiveCardIndex(dotIndex * cardsPerDot);
   };
 
-  const scrollPrev = () => {
-    const prevDot = Math.max(0, activeDotIndex - 1);
-    scrollToDot(prevDot);
-  };
+  const scrollPrev = () => scrollToDot(Math.max(0, activeDotIndex - 1));
+  const scrollNext = () => scrollToDot(Math.min(totalDots - 1, activeDotIndex + 1));
 
-  const scrollNext = () => {
-    const nextDot = Math.min(totalDots - 1, activeDotIndex + 1);
-    scrollToDot(nextDot);
-  };
-
-  // Atualiza activeCardIndex conforme o usuário arrasta
-  // Usa IntersectionObserver para precisão — mais confiável que calcular por scrollLeft
   useEffect(() => {
     const container = carouselRef.current;
     if (!container) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -155,16 +132,9 @@ export default function Projects() {
           }
         });
       },
-      {
-        root: container,
-        threshold: 0.5, // card precisa estar 50% visível para ser considerado "ativo"
-        rootMargin: "0px -40% 0px 0px", // ← ignora metade direita, só detecta o card mais à esquerda
-      }
+      { root: container, threshold: 0.5, rootMargin: "0px -40% 0px 0px" }
     );
-
-    const cards = container.querySelectorAll(".project-card");
-    cards.forEach((card) => observer.observe(card));
-
+    container.querySelectorAll(".project-card").forEach((card) => observer.observe(card));
     return () => observer.disconnect();
   }, []);
 
@@ -179,30 +149,24 @@ export default function Projects() {
   };
 
   return (
-    <section id="projetos" className="px-8 py-20" data-animate="left">
+    <section id="projetos" className="px-8 py-20">
 
-      {/* cabeçalho */}
-      <div className="flex gap-3">
-        <span className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/30 flex items-center justify-center">
-          <span className="font-mono text-secondary text-xs font-bold">&lt;/&gt;</span>
-        </span>
-        <p className="font-mono text-xs tracking-[0.25em] uppercase text-secondary mb-2">
-          / Trabalhos
-        </p>
-      </div>
+      {/* Cabeçalho com stagger via SectionTitle */}
+      <SectionTitle
+        tag="/ Trabalhos"
+        title="Meus"
+        highlight=" Projetos"
+        subtitle="Confira alguns dos meus projetos de cursos e pessoais."
+      />
 
-      <h3 className="font-arial text-4xl sm:text-5xl font-extrabold text-slate-100 leading-tight m-4">
-        Meus<span className="text-secondary"> Projetos</span>
-      </h3>
-
-      <p className="font-mono text-sm text-slate-500 mb-12" data-animate="up">
-        Confira alguns dos meus projetos de cursos e pessoais.
-      </p>
-
-      {/* CARROSSEL */}
-      <div className="relative group">
-
-        {/* botão anterior */}
+      {/* CARROSSEL — entra com fade + slide de baixo */}
+      <motion.div
+        className="relative group"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false, amount: 0.1 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      >
         <button
           onClick={scrollPrev}
           disabled={activeDotIndex === 0}
@@ -218,7 +182,6 @@ export default function Projects() {
           </svg>
         </button>
 
-        {/* botão próximo */}
         <button
           onClick={scrollNext}
           disabled={activeDotIndex === totalDots - 1}
@@ -234,7 +197,6 @@ export default function Projects() {
           </svg>
         </button>
 
-        {/* carrossel */}
         <div
           ref={carouselRef}
           className="grid grid-flow-col auto-cols-[88%] sm:auto-cols-[65%] md:auto-cols-[420px]
@@ -242,17 +204,24 @@ export default function Projects() {
             [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
             px-1 items-stretch"
         >
-          {PROJECTS.map((project) => (
+          {PROJECTS.map((project, index) => (
             <ProjectCard
               key={project.id}
               project={{ ...project, onOpenVideo: openVideoModal }}
+              index={index}
             />
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      {/* DOTS — pill animado */}
-      <div className="flex items-center justify-center gap-2 mt-6">
+      {/* DOTS */}
+      <motion.div
+        className="flex items-center justify-center gap-2 mt-6"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: false, amount: 0.1 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+      >
         {Array.from({ length: totalDots }).map((_, index) => (
           <button
             key={index}
@@ -265,7 +234,7 @@ export default function Projects() {
               }`}
           />
         ))}
-      </div>
+      </motion.div>
 
       {/* MODAL DE VÍDEO */}
       {videoModalSrc && (

@@ -1,4 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import SectionTitle from "./SectionTitle";
 
 const CERTIFICATES = [
   {
@@ -57,11 +59,104 @@ const CERTIFICATES = [
   },
 ];
 
+// ── Card individual com tilt 3D + brilho — mesmo padrão do ProjectCard
+function CertCard({ cert, index, onClick }) {
+  const cardRef = useRef(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { stiffness: 150, damping: 20, mass: 0.5 };
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [6, -6]), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-6, 6]), springConfig);
+
+  const glowX = useTransform(mouseX, [-0.5, 0.5], ["0%", "100%"]);
+  const glowY = useTransform(mouseY, [-0.5, 0.5], ["0%", "100%"]);
+  const glowBackground = useTransform(
+    [glowX, glowY],
+    ([x, y]) => `radial-gradient(circle at ${x} ${y}, rgba(56,189,248,0.10) 0%, transparent 65%)`
+  );
+
+  const handleMouseMove = useCallback((e) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
+    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+  }, [mouseX, mouseY]);
+
+  const handleMouseLeave = useCallback(() => {
+    mouseX.set(0);
+    mouseY.set(0);
+  }, [mouseX, mouseY]);
+
+  return (
+    <motion.div
+      ref={cardRef}
+      onClick={onClick}
+      className="cert-card group/card relative flex flex-col cursor-pointer
+        bg-gradient-to-br from-slate-800/90 to-slate-900/90
+        border border-slate-700/50 rounded-2xl overflow-hidden
+        shadow-[0_8px_32px_rgba(0,0,0,0.4)]
+        transition-colors duration-300 snap-start"
+      initial={{ opacity: 0, scale: 0.85, y: 30 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      viewport={{ once: false, amount: 0.15 }}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.08,
+        ease: [0.34, 1.56, 0.64, 1],
+      }}
+      style={{ rotateX, rotateY, perspective: 1000 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      whileHover={{
+        boxShadow: "0 20px 50px rgba(56,189,248,0.12), 0 8px 32px rgba(0,0,0,0.5)",
+        borderColor: "rgba(56,189,248,0.35)",
+      }}
+    >
+      {/* brilho seguindo o mouse */}
+      <motion.div
+        className="pointer-events-none absolute inset-0 rounded-2xl z-0
+          opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"
+        style={{ background: glowBackground }}
+      />
+
+      {/* linha decorativa topo */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-sky-400/50 to-transparent
+        opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
+
+      <div className="relative w-full h-56 overflow-hidden">
+        <img
+          src={cert.imageSrc}
+          alt={cert.title}
+          className="w-full h-full object-cover
+            transition-transform duration-500 group-hover/card:scale-105"
+        />
+        <div className="absolute inset-0 bg-black/0 group-hover/card:bg-black/40
+          transition-colors duration-300 flex items-center justify-center">
+          <svg
+            className="w-8 h-8 text-white opacity-0 group-hover/card:opacity-100
+              transition-opacity duration-300"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35M11 8v6M8 11h6" />
+          </svg>
+        </div>
+      </div>
+
+      <div className="p-4 relative z-10">
+        <h4 className="text-base font-bold text-white mb-1">{cert.title}</h4>
+        <p className="font-mono text-xs text-slate-500">{cert.issuer}</p>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function Certificates() {
   const [modalImg, setModalImg] = useState(null);
   const carouselRef = useRef(null);
 
-  // Mesmo padrão do Projects: activeCardIndex + isDesktop → activeDotIndex
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -76,7 +171,6 @@ export default function Certificates() {
   const totalDots = Math.ceil(CERTIFICATES.length / cardsPerDot);
   const activeDotIndex = Math.floor(activeCardIndex / cardsPerDot);
 
-  // IntersectionObserver — detecta qual card está visível
   useEffect(() => {
     const container = carouselRef.current;
     if (!container) return;
@@ -101,16 +195,13 @@ export default function Certificates() {
   const scrollToDot = (dotIndex) => {
     const container = carouselRef.current;
     if (!container) return;
-
     const cards = container.querySelectorAll(".cert-card");
     const targetCard = cards[dotIndex * cardsPerDot];
     if (!targetCard) return;
-
     container.scrollTo({
       left: targetCard.offsetLeft - container.offsetLeft,
       behavior: "smooth",
     });
-
     setActiveCardIndex(dotIndex * cardsPerDot);
   };
 
@@ -121,30 +212,17 @@ export default function Certificates() {
     <section
       id="certificados"
       className="px-8 py-20 bg-gradient-to-b from-slate-800 to-slate-900"
-      data-animate="left"
     >
-      {/* cabeçalho */}
-      <div className="flex gap-3">
-        <span className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/30
-          flex items-center justify-center">
-          <span className="font-mono text-secondary text-xs font-bold">&lt;/&gt;</span>
-        </span>
-        <p className="font-mono text-xs tracking-[0.25em] uppercase text-secondary mb-2">
-          / Conquistas
-        </p>
-      </div>
-
-      <h3 className="font-arial text-4xl sm:text-5xl font-extrabold text-slate-100 leading-tight m-4">
-        Meus<span className="text-secondary"> Certificados</span>
-      </h3>
-
-      <p className="font-mono text-sm text-slate-500 mb-12" data-animate="up">
-        Confira alguns dos meus certificados e conquistas.
-      </p>
+      {/* cabeçalho com stagger animado */}
+      <SectionTitle
+        tag="/ Conquistas"
+        title="Meus"
+        highlight=" Certificados"
+        subtitle="Confira alguns dos meus certificados e conquistas."
+      />
 
       {/* CARROSSEL */}
       <div className="relative group">
-
         <button
           onClick={scrollPrev}
           disabled={activeDotIndex === 0}
@@ -182,50 +260,18 @@ export default function Certificates() {
             [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
             px-1 items-stretch"
         >
-          {CERTIFICATES.map((cert) => (
-            <div
+          {CERTIFICATES.map((cert, index) => (
+            <CertCard
               key={cert.id}
+              cert={cert}
+              index={index}
               onClick={() => setModalImg(cert.imageSrc)}
-              className="cert-card group/card relative flex flex-col cursor-pointer
-                bg-gradient-to-br from-slate-800/90 to-slate-900/90
-                border border-slate-700/50 rounded-2xl overflow-hidden
-                shadow-[0_8px_32px_rgba(0,0,0,0.4)]
-                hover:border-sky-400/30 hover:shadow-[0_16px_48px_rgba(0,0,0,0.5)]
-                transition-all duration-300 snap-start"
-            >
-              <div className="h-px w-full bg-gradient-to-r from-transparent via-sky-400/50 to-transparent
-                opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
-
-              <div className="relative w-full h-56 overflow-hidden">
-                <img
-                  src={cert.imageSrc}
-                  alt={cert.title}
-                  className="w-full h-full object-cover
-                    transition-transform duration-500 group-hover/card:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover/card:bg-black/40
-                  transition-colors duration-300 flex items-center justify-center">
-                  <svg
-                    className="w-8 h-8 text-white opacity-0 group-hover/card:opacity-100
-                      transition-opacity duration-300"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                  >
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="M21 21l-4.35-4.35M11 8v6M8 11h6" />
-                  </svg>
-                </div>
-              </div>
-
-              <div className="p-4">
-                <h4 className="text-base font-bold text-white mb-1">{cert.title}</h4>
-                <p className="font-mono text-xs text-slate-500">{cert.issuer}</p>
-              </div>
-            </div>
+            />
           ))}
         </div>
       </div>
 
-      {/* DOTS — pill animado, mesmo padrão do Projects */}
+      {/* DOTS */}
       <div className="flex items-center justify-center gap-2 mt-6">
         {Array.from({ length: totalDots }).map((_, index) => (
           <button
@@ -241,7 +287,7 @@ export default function Certificates() {
         ))}
       </div>
 
-      {/* MODAL DE IMAGEM */}
+      {/* MODAL */}
       {modalImg && (
         <div
           className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
