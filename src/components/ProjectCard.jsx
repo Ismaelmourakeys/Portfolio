@@ -1,3 +1,7 @@
+// Precisamos importar useState aqui também pois este componente usa estado próprio
+import { useState } from "react";
+import TechIcon from "./TechIcon";
+
 // Componente separado para cada card de projeto
 // Isso é uma das grandes vantagens do React: isolar lógica repetida em componentes reutilizáveis
 // Em vez de copiar o mesmo bloco HTML 3x, você cria 1 componente e passa os dados via "props"
@@ -9,8 +13,6 @@ export default function ProjectCard({ project }) {
   // useState controla se o overlay de detalhes está visível ou não
   // Cada card tem seu próprio estado independente — isso é encapsulamento no React
   const [showDetails, setShowDetails] = useState(false);
-
-
 
   return (
     // relative no card pai para o overlay absolute funcionar corretamente
@@ -48,6 +50,7 @@ export default function ProjectCard({ project }) {
             </a>
           )}
         </div>
+        
 
         {/* título */}
         <h4 className="font-syne text-lg font-bold text-yellow-300 mb-3">
@@ -58,6 +61,8 @@ export default function ProjectCard({ project }) {
         <p className="text-slate-400 text-sm leading-relaxed mb-4 flex-1">
           {project.description}
         </p>
+
+        
 
         {/* mídia: imagem ou vídeo — renderização condicional com ternário
             condicao ? <seTrue /> : <seFalse /> */}
@@ -99,6 +104,8 @@ export default function ProjectCard({ project }) {
         )}
       </div>
 
+      
+
       {/* ── FOOTER DO CARD: ícones de tech + botão detalhes */}
       <div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
         <div className="flex gap-2">
@@ -120,6 +127,7 @@ export default function ProjectCard({ project }) {
           </svg>
         </button>
       </div>
+
 
       {/* ── OVERLAY DE DETALHES
           Renderização condicional: só aparece quando showDetails = true
@@ -178,9 +186,4 @@ export default function ProjectCard({ project }) {
         </div>
       )}
     </div>
-  );
-}
-
-// Precisamos importar useState aqui também pois este componente usa estado próprio
-import { useState } from "react";
-import TechIcon from "./TechIcon";
+  )}

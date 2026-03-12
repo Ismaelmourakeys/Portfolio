@@ -21,8 +21,8 @@ const HOBBIES = [
     tags: ["React", "Tailwind", "Python", "Node.js"],
     icon: (
       <svg className="w-5 h-5 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <rect x="7" y="7" width="10" height="10" rx="1"/>
-        <path d="M7 9H4M7 12H4M7 15H4M17 9h3M17 12h3M17 15h3M9 7V4M12 7V4M15 7V4M9 17v3M12 17v3M15 17v3"/>
+        <rect x="7" y="7" width="10" height="10" rx="1" />
+        <path d="M7 9H4M7 12H4M7 15H4M17 9h3M17 12h3M17 15h3M9 7V4M12 7V4M15 7V4M9 17v3M12 17v3M15 17v3" />
       </svg>
     ),
   },
@@ -41,7 +41,7 @@ const HOBBIES = [
     tags: ["Figma", "Tailwind", "React"],
     icon: (
       <svg className="w-5 h-5 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+        <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
       </svg>
     ),
   },
@@ -61,7 +61,7 @@ const HOBBIES = [
     tags: ["GitHub", "Vercel", "Firebase"],
     icon: (
       <svg className="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
       </svg>
     ),
   },
@@ -79,7 +79,7 @@ const HOBBIES = [
     tags: ["Teclado", "Teoria musical"],
     icon: (
       <svg className="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+        <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
       </svg>
     ),
   },
@@ -98,9 +98,9 @@ const HOBBIES = [
     tags: ["FluencyPass", "Wizard", "Duolingo"],
     icon: (
       <svg className="w-5 h-5 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1"/>
-        <rect x="14" y="11" width="8" height="11" rx="1"/>
-        <path d="M18 11V7a4 4 0 0 0-4-4v0"/>
+        <path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1" />
+        <rect x="14" y="11" width="8" height="11" rx="1" />
+        <path d="M18 11V7a4 4 0 0 0-4-4v0" />
       </svg>
     ),
   },
@@ -109,11 +109,11 @@ const HOBBIES = [
 // Mapa de cores por tema — centraliza as classes Tailwind por cor
 // Assim não precisamos de if/else espalhados pelo JSX
 const COLOR_MAP = {
-  sky:     { text: "text-sky-400",     bg: "bg-sky-400/10",     border: "border-sky-400/20",     bar: "bg-sky-400/40",     dot: "bg-sky-400"     },
-  violet:  { text: "text-violet-400",  bg: "bg-violet-400/10",  border: "border-violet-400/20",  bar: "bg-violet-400/40",  dot: "bg-violet-400"  },
+  sky: { text: "text-sky-400", bg: "bg-sky-400/10", border: "border-sky-400/20", bar: "bg-sky-400/40", dot: "bg-sky-400" },
+  violet: { text: "text-violet-400", bg: "bg-violet-400/10", border: "border-violet-400/20", bar: "bg-violet-400/40", dot: "bg-violet-400" },
   emerald: { text: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", bar: "bg-emerald-400/40", dot: "bg-emerald-400" },
-  yellow:  { text: "text-yellow-400",  bg: "bg-yellow-400/10",  border: "border-yellow-400/20",  bar: "bg-yellow-400/40",  dot: "bg-yellow-400"  },
-  pink:    { text: "text-pink-400",    bg: "bg-pink-400/10",    border: "border-pink-400/20",    bar: "bg-pink-400/40",    dot: "bg-pink-400"    },
+  yellow: { text: "text-yellow-400", bg: "bg-yellow-400/10", border: "border-yellow-400/20", bar: "bg-yellow-400/40", dot: "bg-yellow-400" },
+  pink: { text: "text-pink-400", bg: "bg-pink-400/10", border: "border-pink-400/20", bar: "bg-pink-400/40", dot: "bg-pink-400" },
 };
 
 // ── COMPONENTE SLIDESHOW
@@ -190,66 +190,57 @@ export default function Hobbies() {
     : 0;
 
   return (
-    <section id="hobbies" className="relative px-8 py-20 overflow-hidden bg-slate-800">
+    <section id="hobbies" className="relative px-6 sm:px-8 pt-16 sm:pt-20 pb-8 overflow-hidden bg-slate-800">
 
       {/* BG decorativo */}
-      <div className="pointer-events-none absolute inset-0
-        bg-[linear-gradient(rgba(56,189,248,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(56,189,248,0.03)_1px,transparent_1px)]
-        bg-[size:52px_52px]" />
+      <div className="pointer-events-none absolute inset-0" />
       <div className="pointer-events-none absolute -bottom-40 -right-40 w-[500px] h-[500px]
         bg-[radial-gradient(circle,rgba(56,189,248,0.06),transparent_70%)]" />
 
       <div className="relative z-10 max-w-6xl mx-auto">
 
         {/* cabeçalho */}
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3 mb-3">
           <span className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/30
-            flex items-center justify-center">
+            flex items-center justify-center flex-shrink-0">
             <span className="font-mono text-secondary text-xs font-bold">&lt;/&gt;</span>
           </span>
-          <p className="font-mono text-xs tracking-[0.25em] uppercase text-secondary mb-2">
+          <p className="font-mono text-xs tracking-[0.25em] uppercase text-secondary">
             / Conheca-me melhor
           </p>
         </div>
 
-        <h3 className="font-syne text-4xl sm:text-5xl font-extrabold text-slate-100 leading-tight m-4">
+        <h3 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-100 leading-tight mb-3">
           Meus <span className="text-secondary">Hobbies</span>
         </h3>
 
-        <p className="font-mono text-sm text-slate-500 mb-12">
+        <p className="font-mono text-sm text-slate-500 mb-10 lg:mb-12">
           Alem do codigo, algumas coisas que me movem no dia a dia.
         </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        {/* coluna direita: lista de accordions */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
 
-          {/* coluna esquerda: texto sticky + barra de progresso */}
-          <div className="flex flex-col gap-6 lg:sticky lg:top-24">
-            <p className="text-slate-400 text-sm font-mono leading-relaxed max-w-sm">
-              Algumas das coisas que me movem alem do codigo e que moldaram quem sou como pessoa e profissional.
-            </p>
-
-            <div className="flex items-end gap-2 select-none">
-              <span className="font-syne text-8xl font-extrabold leading-none"
-                style={{ color: "rgba(56,189,248,0.07)" }}>
-                0{HOBBIES.length}
-              </span>
-              <span className="font-mono text-xs text-slate-600 mb-3 tracking-widest">paixões</span>
-            </div>
-
-            {/* barra de progresso — width calculado dinamicamente via estado */}
-            <div className="flex flex-col gap-2">
-              <p className="font-mono text-[0.65rem] text-slate-600 tracking-widest uppercase">
-                clique para explorar
+          {/* coluna esquerda: barra de progresso */}
+          <div className="hidden lg:flex flex-col gap-6 lg:sticky lg:top-8">
+            <div className="flex flex-col gap-3">
+              <p className="font-mono text-[0.65rem] text-slate-500 tracking-widest uppercase">
+                Clique para explorar
               </p>
-              <div
-                className="h-px bg-gradient-to-r from-sky-400 to-violet-400 rounded-full transition-all duration-500"
-                style={{ width: `${progress}%` }}
-              />
+              <div className="relative h-1 bg-slate-700/30 rounded-full overflow-hidden">
+                <div
+                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-sky-400 to-violet-400 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="font-mono text-xs text-slate-600">
+                {progress}% explorado
+              </p>
             </div>
           </div>
 
-          {/* coluna direita: lista de accordions */}
-          <div className="flex flex-col gap-2">
+          {/* coluna direita: accordions SEM translate */}
+          <div className="flex flex-col gap-3 -translate-y-30">
             {HOBBIES.map((hobby) => {
               const c = COLOR_MAP[hobby.color];
               // isOpen: true se este hobby é o que está aberto
@@ -259,15 +250,16 @@ export default function Hobbies() {
                 <div
                   key={hobby.id}
                   className="group rounded-2xl border border-slate-700/60 bg-slate-900/40
-                    overflow-hidden transition-all duration-300"
+                    overflow-hidden transition-all duration-300
+                    hover:border-slate-600/80"
                 >
                   {/* ── TRIGGER do accordion */}
                   <button
                     onClick={() => toggle(hobby.id)}
-                    className="w-full flex items-center gap-4 px-5 py-4 text-left"
+                    className="w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 text-left"
                   >
                     {/* ícone colorido */}
-                    <div className={`flex-shrink-0 w-10 h-10 rounded-xl ${c.bg} border ${c.border}
+                    <div className={`flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${c.bg} border ${c.border}
                       flex items-center justify-center transition-all duration-300`}>
                       {hobby.icon}
                     </div>
@@ -277,27 +269,31 @@ export default function Hobbies() {
                       <p className={`font-mono text-[0.6rem] ${c.text} tracking-widest uppercase mb-0.5`}>
                         {hobby.label}
                       </p>
-                      <h4 className="font-syne font-bold text-slate-100 text-base">
+                      <h4 className="font-syne font-bold text-slate-100 text-sm sm:text-base">
                         {hobby.title}
                       </h4>
                     </div>
 
+
                     {/* ícone +/- — rotaciona quando aberto via classe condicional */}
-                    <div className="flex-shrink-0 w-7 h-7 rounded-full border border-slate-600
-                      flex items-center justify-center text-slate-400">
+                    <div className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full border border-slate-600
+                      flex items-center justify-center text-slate-400
+                      group-hover:border-slate-500 group-hover:text-slate-300 transition-all duration-200 cursor-pointer">
                       <svg
-                        className={`w-3.5 h-3.5 transition-transform duration-300
+                        className={`w-3 sm:w-3.5 h-3 sm:h-3.5 transition-transform duration-300
                           ${isOpen ? "rotate-45" : ""}`}
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
                       >
-                        <path d="M12 5v14M5 12h14"/>
+                        <path d="M12 5v14M5 12h14" />
                       </svg>
                     </div>
+
                   </button>
 
                   {/* linha divisória colorida */}
-                  <div className="px-5">
-                    <div className={`h-px ${c.bar} rounded-full`} />
+                  <div className="px-4 sm:px-5">
+                    <div className={`h-px ${c.bar} rounded-full transition-opacity duration-300
+                      ${isOpen ? "opacity-100" : "opacity-40"}`} />
                   </div>
 
                   {/* ── CORPO do accordion
@@ -305,7 +301,7 @@ export default function Hobbies() {
                       overflow-hidden esconde o conteúdo quando max-h é 0 */}
                   <div className={`overflow-hidden transition-all duration-300
                     ${isOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}`}>
-                    <div className="px-5 py-4 flex flex-col gap-4">
+                    <div className="px-4 sm:px-5 py-4 flex flex-col gap-4">
 
                       <p className="text-slate-400 text-sm font-mono leading-relaxed">
                         {hobby.description}
@@ -338,6 +334,22 @@ export default function Hobbies() {
             })}
           </div>
 
+        </div>
+
+        {/* Barra de progresso mobile — fica no final */}
+        <div className="lg:hidden mt-8 flex flex-col gap-3">
+          <p className="font-mono text-[0.65rem] text-slate-500 tracking-widest uppercase">
+            Progresso da exploração
+          </p>
+          <div className="relative h-1 bg-slate-700/30 rounded-full overflow-hidden">
+            <div
+              className="absolute top-0 left-0 h-full bg-gradient-to-r from-sky-400 to-violet-400 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="font-mono text-xs text-slate-600 text-center">
+            {progress}% explorado
+          </p>
         </div>
       </div>
     </section>

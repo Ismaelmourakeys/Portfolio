@@ -1,14 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
-// ── DADOS DOS CERTIFICADOS
-// Mesma estratégia do Projects: dados separados do JSX
-// Para adicionar um certificado novo, só adiciona um objeto aqui
 const CERTIFICATES = [
   {
     id: "cert-1",
     title: "Bootcamp Nexa + AWS - Fundamentos de IA Generativa com BedRock",
     issuer: "DIO",
-    // Coloque o caminho real das imagens dos seus certificados aqui
     imageSrc: "assets/img/certificados/Bootcamp_AWS-Fundamentos.png",
   },
   {
@@ -59,22 +55,67 @@ const CERTIFICATES = [
     issuer: "Microlins",
     imageSrc: "assets/img/certificados/Microlins_Auxiliar.jpeg",
   },
-  // Adicione mais objetos conforme necessário...
 ];
 
 export default function Certificates() {
-
-  // ── ESTADO: imagem aberta no modal (null = modal fechado)
   const [modalImg, setModalImg] = useState(null);
-
-  // ── useRef no carrossel para scroll programático (mesma lógica do Projects)
   const carouselRef = useRef(null);
 
-  const scrollPrev = () =>
-    carouselRef.current?.scrollBy({ left: -440, behavior: "smooth" });
+  // Mesmo padrão do Projects: activeCardIndex + isDesktop → activeDotIndex
+  const [activeCardIndex, setActiveCardIndex] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
 
-  const scrollNext = () =>
-    carouselRef.current?.scrollBy({ left: 440, behavior: "smooth" });
+  useEffect(() => {
+    const update = () => setIsDesktop(window.innerWidth >= 768);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  const cardsPerDot = isDesktop ? 3 : 1;
+  const totalDots = Math.ceil(CERTIFICATES.length / cardsPerDot);
+  const activeDotIndex = Math.floor(activeCardIndex / cardsPerDot);
+
+  // IntersectionObserver — detecta qual card está visível
+  useEffect(() => {
+    const container = carouselRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            const cards = Array.from(container.querySelectorAll(".cert-card"));
+            const index = cards.indexOf(entry.target);
+            if (index !== -1) setActiveCardIndex(index);
+          }
+        });
+      },
+      { root: container, threshold: 0.5 }
+    );
+
+    container.querySelectorAll(".cert-card").forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToDot = (dotIndex) => {
+    const container = carouselRef.current;
+    if (!container) return;
+
+    const cards = container.querySelectorAll(".cert-card");
+    const targetCard = cards[dotIndex * cardsPerDot];
+    if (!targetCard) return;
+
+    container.scrollTo({
+      left: targetCard.offsetLeft - container.offsetLeft,
+      behavior: "smooth",
+    });
+
+    setActiveCardIndex(dotIndex * cardsPerDot);
+  };
+
+  const scrollPrev = () => scrollToDot(Math.max(0, activeDotIndex - 1));
+  const scrollNext = () => scrollToDot(Math.min(totalDots - 1, activeDotIndex + 1));
 
   return (
     <section
@@ -82,8 +123,7 @@ export default function Certificates() {
       className="px-8 py-20 bg-gradient-to-b from-slate-800 to-slate-900"
       data-animate="left"
     >
-
-      {/* ── cabeçalho */}
+      {/* cabeçalho */}
       <div className="flex gap-3">
         <span className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/30
           flex items-center justify-center">
@@ -102,15 +142,17 @@ export default function Certificates() {
         Confira alguns dos meus certificados e conquistas.
       </p>
 
-      {/* ── CARROSSEL */}
+      {/* CARROSSEL */}
       <div className="relative group">
 
         <button
           onClick={scrollPrev}
+          disabled={activeDotIndex === 0}
           className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-20
             w-11 h-11 items-center justify-center rounded-full
-            bg-slate-800 border border-slate-600
+            bg-slate-800 border border-slate-600 cursor-pointer
             text-slate-300 hover:text-secondary hover:border-secondary/50
+            disabled:opacity-30 disabled:cursor-default disabled:hover:text-slate-300
             opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -120,10 +162,12 @@ export default function Certificates() {
 
         <button
           onClick={scrollNext}
+          disabled={activeDotIndex === totalDots - 1}
           className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-20
             w-11 h-11 items-center justify-center rounded-full
-            bg-slate-800 border border-slate-600
+            bg-slate-800 border border-slate-600 cursor-pointer
             text-slate-300 hover:text-secondary hover:border-secondary/50
+            disabled:opacity-30 disabled:cursor-default disabled:hover:text-slate-300
             opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -131,9 +175,6 @@ export default function Certificates() {
           </svg>
         </button>
 
-        {/* carrossel dinâmico — gerado a partir do array CERTIFICATES
-            No vanilla JS isso era feito via innerHTML no JS
-            No React, o map() dentro do JSX substitui completamente essa abordagem */}
         <div
           ref={carouselRef}
           className="grid grid-flow-col auto-cols-[88%] sm:auto-cols-[65%] md:auto-cols-[420px]
@@ -142,22 +183,19 @@ export default function Certificates() {
             px-1 items-stretch"
         >
           {CERTIFICATES.map((cert) => (
-            // Cada certificado vira um card clicável que abre o modal
             <div
               key={cert.id}
               onClick={() => setModalImg(cert.imageSrc)}
-              className="group/card relative flex flex-col cursor-pointer
+              className="cert-card group/card relative flex flex-col cursor-pointer
                 bg-gradient-to-br from-slate-800/90 to-slate-900/90
                 border border-slate-700/50 rounded-2xl overflow-hidden
                 shadow-[0_8px_32px_rgba(0,0,0,0.4)]
                 hover:border-sky-400/30 hover:shadow-[0_16px_48px_rgba(0,0,0,0.5)]
                 transition-all duration-300 snap-start"
             >
-              {/* linha decorativa topo */}
               <div className="h-px w-full bg-gradient-to-r from-transparent via-sky-400/50 to-transparent
                 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
 
-              {/* imagem do certificado */}
               <div className="relative w-full h-56 overflow-hidden">
                 <img
                   src={cert.imageSrc}
@@ -165,7 +203,6 @@ export default function Certificates() {
                   className="w-full h-full object-cover
                     transition-transform duration-500 group-hover/card:scale-105"
                 />
-                {/* overlay com ícone de zoom ao hover */}
                 <div className="absolute inset-0 bg-black/0 group-hover/card:bg-black/40
                   transition-colors duration-300 flex items-center justify-center">
                   <svg
@@ -179,11 +216,8 @@ export default function Certificates() {
                 </div>
               </div>
 
-              {/* info do certificado */}
               <div className="p-4">
-                <h4 className="text-base font-bold text-white mb-1">
-                  {cert.title}
-                </h4>
+                <h4 className="text-base font-bold text-white mb-1">{cert.title}</h4>
                 <p className="font-mono text-xs text-slate-500">{cert.issuer}</p>
               </div>
             </div>
@@ -191,10 +225,23 @@ export default function Certificates() {
         </div>
       </div>
 
-      {/* ── MODAL DE IMAGEM
-          Mesmo padrão do modal de vídeo em Projects:
-          - clique no backdrop fecha
-          - stopPropagation impede que clique na imagem feche */}
+      {/* DOTS — pill animado, mesmo padrão do Projects */}
+      <div className="flex items-center justify-center gap-2 mt-6">
+        {Array.from({ length: totalDots }).map((_, index) => (
+          <button
+            key={index}
+            onClick={() => scrollToDot(index)}
+            aria-label={`Ir para grupo ${index + 1}`}
+            className={`transition-all duration-300 rounded-full
+              ${index === activeDotIndex
+                ? "w-8 h-2 bg-secondary cursor-default shadow-lg"
+                : "w-2 h-2 bg-slate-600 hover:bg-slate-500 cursor-pointer"
+              }`}
+          />
+        ))}
+      </div>
+
+      {/* MODAL DE IMAGEM */}
       {modalImg && (
         <div
           className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
@@ -204,7 +251,6 @@ export default function Certificates() {
             className="relative max-w-4xl w-full"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* botão fechar */}
             <button
               onClick={() => setModalImg(null)}
               className="absolute -top-12 right-0 flex items-center gap-1.5
