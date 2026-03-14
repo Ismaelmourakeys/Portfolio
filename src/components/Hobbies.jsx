@@ -77,7 +77,7 @@ const HOBBIES = [
       { type: "image", src: "/assets/Hobbies/culto_panoramica.jpg", caption: "Festividades" },
       { type: "image", src: "/assets/Hobbies/Escola_musica.png", caption: "Escola de música Opendoors" },
       { type: "image", src: "/assets/Hobbies/Aulas_Teclado.png", caption: "Aulas de teclado" },
-      { type: "video", src: "/assets/Hobbies/Marketing_instagram.mp4", caption: "Aulas de teclado" },
+      { type: "video", src: "/assets/Hobbies/Marketing_instagram.mp4", caption: "Marketing Pessoal" },
       { type: "video", src: "/assets/Hobbies/Nord.mp4", caption: "Tocando na igreja" },
     ],
   },
