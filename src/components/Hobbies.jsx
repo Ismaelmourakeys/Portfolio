@@ -66,7 +66,7 @@ const HOBBIES = [
     label: "música",
     title: "Compartilhar minha paixão pela música",
     description: "Alguns lugares que já participei como músico, professor de música e marketing pessoal nas redes sociais.",
-    tags: ["Músico", "Teclado", "Eventos", "Projetos", "Aulas", ],
+    tags: ["Músico", "Teclado", "Eventos", "Projetos", "Aulas",],
     icon: (
       <svg className="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
@@ -81,15 +81,17 @@ const HOBBIES = [
       { type: "video", src: "/assets/Hobbies/Nord.mp4", caption: "Tocando na igreja" },
     ],
   },
-  
-  /*
+
+
   {
-    id: "ingles",
+    id: "ETEC",
     color: "pink",
-    label: "idiomas",
-    title: "Aprender inglês",
-    description: "Estudando inglês para acessar conteúdos técnicos na fonte e me preparar para o mercado internacional.",
-    tags: ["FluencyPass", "Wizard", "Duolingo"],
+    label: "Momentos na ETEC",
+    title: "Minha experiências na ETEC",
+    description: "Alguns momentos que marcaram minha jornada na ETEC, desde projetos acadêmicos até atividades extracurriculares.",
+
+    tags: ["Apresentações", "Projetos", "Visitas técnicas", "Eventos", "Conquistas"],
+
     icon: (
       <svg className="w-5 h-5 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1" />
@@ -98,19 +100,24 @@ const HOBBIES = [
       </svg>
     ),
     media: [
-      { type: "image", src: "https://placehold.co/800x500/0f172a/f472b6?text=FluencyPass&font=syne", caption: "FluencyPass" },
-      { type: "image", src: "https://placehold.co/800x500/0f172a/ec4899?text=Duolingo&font=syne", caption: "Duolingo" },
+      { type: "image", src: "public/assets/Hobbies/VisitaAmazon.jfif", caption: "Visita à Amazon" },
+      { type: "image", src: "public/assets/Hobbies/ApresentacaoEtec.jfif", caption: "Apresentação - semana de DS" },
+      { type: "image", src: "public/assets/Hobbies/Fetesp.jfif", caption: "Visita à Fetesp" },
+      { type: "image", src: "public/assets/Hobbies/ApresentacaoTCC.jfif", caption: "Apresentação de TCC" },
+      { type: "image", src: "public/assets/Hobbies/TurmaETEC.jfif", caption: "Turma da ETEC 3°I" },
+      { type: "image", src: "public/assets/Hobbies/Professor_design.jpg", caption: "Professor de Design - Antonio (Lobinho)" },
+      { type: "image", src: "public/assets/Hobbies/ProfessorDom.jfif", caption: "Professor Alexandre Valezzi (Dom)" },
     ],
   },
-  */
- ];
+
+];
 
 const COLOR_MAP = {
-  sky:     { text: "text-sky-400",     bg: "bg-sky-400/10",     border: "border-sky-400/20",     bar: "bg-sky-400/40",     glow: "rgba(56,189,248,0.10)",  glowHover: "rgba(56,189,248,0.18)"  },
-  violet:  { text: "text-violet-400",  bg: "bg-violet-400/10",  border: "border-violet-400/20",  bar: "bg-violet-400/40",  glow: "rgba(139,92,246,0.10)",  glowHover: "rgba(139,92,246,0.18)"  },
-  emerald: { text: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", bar: "bg-emerald-400/40", glow: "rgba(52,211,153,0.10)",  glowHover: "rgba(52,211,153,0.18)"  },
-  yellow:  { text: "text-yellow-400",  bg: "bg-yellow-400/10",  border: "border-yellow-400/20",  bar: "bg-yellow-400/40",  glow: "rgba(250,204,21,0.10)",  glowHover: "rgba(250,204,21,0.18)"  },
-  pink:    { text: "text-pink-400",    bg: "bg-pink-400/10",    border: "border-pink-400/20",    bar: "bg-pink-400/40",    glow: "rgba(244,114,182,0.10)", glowHover: "rgba(244,114,182,0.18)" },
+  sky: { text: "text-sky-400", bg: "bg-sky-400/10", border: "border-sky-400/20", bar: "bg-sky-400/40", glow: "rgba(56,189,248,0.10)", glowHover: "rgba(56,189,248,0.18)" },
+  violet: { text: "text-violet-400", bg: "bg-violet-400/10", border: "border-violet-400/20", bar: "bg-violet-400/40", glow: "rgba(139,92,246,0.10)", glowHover: "rgba(139,92,246,0.18)" },
+  emerald: { text: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", bar: "bg-emerald-400/40", glow: "rgba(52,211,153,0.10)", glowHover: "rgba(52,211,153,0.18)" },
+  yellow: { text: "text-yellow-400", bg: "bg-yellow-400/10", border: "border-yellow-400/20", bar: "bg-yellow-400/40", glow: "rgba(250,204,21,0.10)", glowHover: "rgba(250,204,21,0.18)" },
+  pink: { text: "text-pink-400", bg: "bg-pink-400/10", border: "border-pink-400/20", bar: "bg-pink-400/40", glow: "rgba(244,114,182,0.10)", glowHover: "rgba(244,114,182,0.18)" },
 };
 
 // ── Botão X flutuante — sempre visível, fora do fluxo da mídia
@@ -260,7 +267,7 @@ function VideoThumb({ src, className }) {
     return (
       <div className={`${className} bg-slate-900 flex items-center justify-center`}>
         <svg className="w-4 h-4 text-slate-600" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M8 5v14l11-7z"/>
+          <path d="M8 5v14l11-7z" />
         </svg>
       </div>
     );
@@ -296,7 +303,7 @@ function MediaItem({ item, color }) {
               w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20
               flex items-center justify-center">
               <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/>
+                <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35M11 8v6M8 11h6" />
               </svg>
             </div>
           </div>
@@ -336,7 +343,7 @@ function MediaItem({ item, color }) {
             whileTap={{ scale: 0.95 }}
           >
             <svg className={`w-6 h-6 ${c.text} ml-0.5`} viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z"/>
+              <path d="M8 5v14l11-7z" />
             </svg>
           </motion.div>
         </div>
@@ -344,7 +351,7 @@ function MediaItem({ item, color }) {
         {/* badge VÍDEO */}
         <div className={`absolute top-2 right-2 ${c.bg} border ${c.border} rounded-full
           px-2 py-0.5 flex items-center gap-1`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${c.text.replace("text-", "bg-")} animate-pulse`}/>
+          <span className={`w-1.5 h-1.5 rounded-full ${c.text.replace("text-", "bg-")} animate-pulse`} />
           <span className={`font-mono text-[0.55rem] tracking-widest ${c.text} uppercase`}>vídeo</span>
         </div>
 
@@ -411,7 +418,7 @@ function MediaGallery({ media, color, isOpen }) {
               {m.type === "video" && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                   <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8 5v14l11-7z"/>
+                    <path d="M8 5v14l11-7z" />
                   </svg>
                 </div>
               )}
@@ -499,7 +506,7 @@ function HobbyAccordion({ hobby, index, isOpen, onToggle }) {
           font-mono text-[0.6rem] ${c.text} ${c.bg} border ${c.border}
           px-2 py-0.5 rounded-full`}>
           <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/>
+            <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 3v18" />
           </svg>
           {hobby.media.length}
         </span>
@@ -513,7 +520,7 @@ function HobbyAccordion({ hobby, index, isOpen, onToggle }) {
             className="w-3.5 h-3.5"
             viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
           >
-            <path d="M12 5v14M5 12h14"/>
+            <path d="M12 5v14M5 12h14" />
           </motion.svg>
         </div>
       </button>
@@ -631,13 +638,13 @@ export default function Hobbies() {
                 <p className="font-mono text-[0.6rem] text-slate-600 tracking-widest uppercase">Tipos de mídia</p>
                 <div className="flex items-center gap-2">
                   <svg className="w-3 h-3 text-slate-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+                    <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" />
                   </svg>
                   <span className="font-mono text-[0.65rem] text-slate-500">foto — clique p/ ampliar</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg className="w-3 h-3 text-slate-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polygon points="5 3 19 12 5 21 5 3"/>
+                    <polygon points="5 3 19 12 5 21 5 3" />
                   </svg>
                   <span className="font-mono text-[0.65rem] text-slate-500">vídeo — clique p/ reproduzir</span>
                 </div>
