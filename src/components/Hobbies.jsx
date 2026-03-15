@@ -18,7 +18,7 @@ const HOBBIES = [
     media: [
       { type: "image", src: "/assets/Hobbies/Estudo_React.png", caption: "Portfólio com React" },
       { type: "image", src: "/assets/Hobbies/Imagens_ProjetosSimples/Contador.png", caption: "Contador - Projeto simples para praticar designer e lógica de programação" },
-      { type: "video", src: "/assets/Hobbies/Imagens_ProjetosSimples/Dark_mode.mp4", caption: "Projeto de Dark Mode" },
+      { type: "video", src: "/assets/Hobbies/Imagens_ProjetosSimples/Dark_mode.mp4", caption: "Projeto de Dark Mode - projeto simples para revisar conceitos"},
     ],
   },
   {
