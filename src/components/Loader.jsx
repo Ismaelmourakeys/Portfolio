@@ -15,7 +15,7 @@ const STEP_INTERVAL = TOTAL_DURATION / STEPS.length;
 // ── Som warp via Web Audio API (sem arquivo externo)
 function playWarpSound() {
   try {
-    const audio = new Audio("/assets/audio/effect_sound.wav");
+    const audio = new Audio("/assets/audio/effect_sound1.wav");
     audio.volume = 0.7;
     audio.play();
   } catch (e) {
