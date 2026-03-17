@@ -36,8 +36,8 @@ const HOBBIES = [
     media: [
       { type: "image", src: "/assets/Hobbies/Farmacia2.jpg", caption: "Farmácia" },
       { type: "image", src: "/assets/Hobbies/Farmacia.jpg", caption: "Laboratório" },
-      { type: "image", src: "assets/Hobbies/Farmacia_Laboratorio.jpg", caption: "Farmácia Magistral" },
-      { type: "image", src: "assets/Hobbies/Farmacia_Laboratorio2.jpg", caption: "Farmácia Magistral" },
+      { type: "image", src: "/assets/Hobbies/Farmacia_Laboratorio.jpg", caption: "Farmácia Magistral" },
+      { type: "image", src: "/assets/Hobbies/Farmacia_Laboratorio2.jpg", caption: "Farmácia Magistral" },
     ],
   },
   {
@@ -57,8 +57,8 @@ const HOBBIES = [
       { type: "image", src: "/assets/Hobbies/culto_panoramica.jpg", caption: "Festividades" },
       { type: "image", src: "/assets/Hobbies/Escola_musica.png", caption: "Escola de música Opendoors" },
       { type: "image", src: "/assets/Hobbies/Aulas_Teclado.png", caption: "Aulas de teclado" },
+      { type: "image", src: "/assets/Hobbies/Musica_Portfolio.png", caption: "Gravação da música para potfólio" },
       { type: "video", src: "/assets/Hobbies/Marketing_instagram.mp4", caption: "Marketing Pessoal" },
-      { type: "video", src: "/assets/Hobbies/Nord.mp4", caption: "Tocando na igreja" },
     ],
   },
   {
@@ -88,11 +88,11 @@ const HOBBIES = [
 ];
 
 const COLOR_MAP = {
-  sky:     { text: "text-sky-400",     bg: "bg-sky-400/10",     border: "border-sky-400/20",     bar: "bg-sky-400/40",     glow: "rgba(56,189,248,0.10)",  glowHover: "rgba(56,189,248,0.18)"  },
-  violet:  { text: "text-violet-400",  bg: "bg-violet-400/10",  border: "border-violet-400/20",  bar: "bg-violet-400/40",  glow: "rgba(139,92,246,0.10)",  glowHover: "rgba(139,92,246,0.18)"  },
-  emerald: { text: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", bar: "bg-emerald-400/40", glow: "rgba(52,211,153,0.10)",  glowHover: "rgba(52,211,153,0.18)"  },
-  yellow:  { text: "text-yellow-400",  bg: "bg-yellow-400/10",  border: "border-yellow-400/20",  bar: "bg-yellow-400/40",  glow: "rgba(250,204,21,0.10)",  glowHover: "rgba(250,204,21,0.18)"  },
-  pink:    { text: "text-pink-400",    bg: "bg-pink-400/10",    border: "border-pink-400/20",    bar: "bg-pink-400/40",    glow: "rgba(244,114,182,0.10)", glowHover: "rgba(244,114,182,0.18)" },
+  sky: { text: "text-sky-400", bg: "bg-sky-400/10", border: "border-sky-400/20", bar: "bg-sky-400/40", glow: "rgba(56,189,248,0.10)", glowHover: "rgba(56,189,248,0.18)" },
+  violet: { text: "text-violet-400", bg: "bg-violet-400/10", border: "border-violet-400/20", bar: "bg-violet-400/40", glow: "rgba(139,92,246,0.10)", glowHover: "rgba(139,92,246,0.18)" },
+  emerald: { text: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", bar: "bg-emerald-400/40", glow: "rgba(52,211,153,0.10)", glowHover: "rgba(52,211,153,0.18)" },
+  yellow: { text: "text-yellow-400", bg: "bg-yellow-400/10", border: "border-yellow-400/20", bar: "bg-yellow-400/40", glow: "rgba(250,204,21,0.10)", glowHover: "rgba(250,204,21,0.18)" },
+  pink: { text: "text-pink-400", bg: "bg-pink-400/10", border: "border-pink-400/20", bar: "bg-pink-400/40", glow: "rgba(244,114,182,0.10)", glowHover: "rgba(244,114,182,0.18)" },
 };
 
 // ── Botão X flutuante
