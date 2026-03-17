@@ -12,18 +12,6 @@ const STEPS = [
 const TOTAL_DURATION = 3200;
 const STEP_INTERVAL = TOTAL_DURATION / STEPS.length;
 
-// ── Som warp via Web Audio API (sem arquivo externo)
-function playWarpSound() {
-  try {
-    const audio = new Audio("/assets/audio/effect_sound1.wav");
-    audio.volume = 0.7;
-    audio.play();
-  } catch (e) {
-    console.warn("Erro ao reproduzir áudio:", e);
-  }
-}
-
-
 // ── Canvas: estrelas + cometas (fundo)
 function SpaceCanvas() {
   const canvasRef = useRef(null);
@@ -56,20 +44,16 @@ function SpaceCanvas() {
     }));
 
     class Comet {
-      constructor() {
-        this.reset(true);
-      }
+      constructor() { this.reset(true); }
       reset(initial = false) {
-        this.x =
-          Math.random() * window.innerWidth * 1.4 - window.innerWidth * 0.2;
+        this.x = Math.random() * window.innerWidth * 1.4 - window.innerWidth * 0.2;
         this.y = initial ? Math.random() * window.innerHeight * -1 : -80;
         this.len = 100 + Math.random() * 160;
         this.speed = 5 + Math.random() * 6;
         this.angle = Math.PI / 4 + (Math.random() - 0.5) * 0.45;
         this.width = 0.8 + Math.random() * 1.6;
         this.opacity = 0.55 + Math.random() * 0.45;
-        this.hue =
-          Math.random() > 0.5 ? "200,230,255" : "210,200,255";
+        this.hue = Math.random() > 0.5 ? "200,230,255" : "210,200,255";
         this.active = !initial;
         this.timer = 0;
         this.delay = initial ? Math.floor(Math.random() * 220) : 0;
@@ -95,32 +79,15 @@ function SpaceCanvas() {
         const tailY = this.y - Math.sin(this.angle) * this.len;
         const grad = ctx.createLinearGradient(tailX, tailY, this.x, this.y);
         grad.addColorStop(0, `rgba(${this.hue},0)`);
-        grad.addColorStop(
-          0.55,
-          `rgba(${this.hue},${(this.opacity * 0.3).toFixed(2)})`
-        );
+        grad.addColorStop(0.55, `rgba(${this.hue},${(this.opacity * 0.3).toFixed(2)})`);
         grad.addColorStop(1, `rgba(${this.hue},${this.opacity.toFixed(2)})`);
-        ctx.beginPath();
-        ctx.moveTo(tailX, tailY);
-        ctx.lineTo(this.x, this.y);
-        ctx.strokeStyle = grad;
-        ctx.lineWidth = this.width;
-        ctx.lineCap = "round";
-        ctx.stroke();
-        const glow = ctx.createRadialGradient(
-          this.x,
-          this.y,
-          0,
-          this.x,
-          this.y,
-          this.width * 4
-        );
+        ctx.beginPath(); ctx.moveTo(tailX, tailY); ctx.lineTo(this.x, this.y);
+        ctx.strokeStyle = grad; ctx.lineWidth = this.width; ctx.lineCap = "round"; ctx.stroke();
+        const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.width * 4);
         glow.addColorStop(0, `rgba(${this.hue},${this.opacity.toFixed(2)})`);
         glow.addColorStop(1, `rgba(${this.hue},0)`);
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.width * 4, 0, Math.PI * 2);
-        ctx.fillStyle = glow;
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.width * 4, 0, Math.PI * 2);
+        ctx.fillStyle = glow; ctx.fill();
       }
     }
 
@@ -129,30 +96,17 @@ function SpaceCanvas() {
     const draw = (t) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       stars.forEach((s) => {
-        const alpha =
-          0.15 + 0.85 * (0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase));
+        const alpha = 0.15 + 0.85 * (0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase));
         ctx.beginPath();
-        ctx.arc(
-          s.x * canvas.width,
-          s.y * canvas.height,
-          s.r,
-          0,
-          Math.PI * 2
-        );
+        ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
         ctx.fillStyle = `${s.color}${(alpha * 0.85).toFixed(2)})`;
         ctx.fill();
       });
-      comets.forEach((c) => {
-        c.update();
-        c.draw();
-      });
+      comets.forEach((c) => { c.update(); c.draw(); });
       raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
-    };
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
   }, []);
 
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
@@ -194,8 +148,7 @@ function WarpCanvas({ active }) {
     const draw = (now) => {
       const elapsed = now - start;
       const p = Math.min(elapsed / DURATION, 1);
-      const eased =
-        p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = `rgba(2,6,23,${eased * 0.92})`;
@@ -205,20 +158,10 @@ function WarpCanvas({ active }) {
         line.dist += line.speed * (1 + eased * 10);
         const x1 = cx + Math.cos(line.angle) * line.dist;
         const y1 = cy + Math.sin(line.angle) * line.dist;
-        const x2 =
-          cx +
-          Math.cos(line.angle) *
-            (line.dist + line.len * (0.2 + eased * 0.8));
-        const y2 =
-          cy +
-          Math.sin(line.angle) *
-            (line.dist + line.len * (0.2 + eased * 0.8));
+        const x2 = cx + Math.cos(line.angle) * (line.dist + line.len * (0.2 + eased * 0.8));
+        const y2 = cy + Math.sin(line.angle) * (line.dist + line.len * (0.2 + eased * 0.8));
 
-        const alpha =
-          line.opacity *
-          Math.min(1, eased * 4) *
-          (1 - Math.max(0, (eased - 0.75) * 4));
-
+        const alpha = line.opacity * Math.min(1, eased * 4) * (1 - Math.max(0, (eased - 0.75) * 4));
         const hex = line.color.replace("#", "");
         const r = parseInt(hex.slice(0, 2), 16);
         const g = parseInt(hex.slice(2, 4), 16);
@@ -226,31 +169,18 @@ function WarpCanvas({ active }) {
 
         const grad = ctx.createLinearGradient(x1, y1, x2, y2);
         grad.addColorStop(0, `rgba(${r},${g},${b},0)`);
-        grad.addColorStop(
-          1,
-          `rgba(${r},${g},${b},${Math.max(0, alpha).toFixed(3)})`
-        );
-
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.strokeStyle = grad;
-        ctx.lineWidth = line.width * (1 + eased * 1.5);
-        ctx.lineCap = "round";
-        ctx.stroke();
+        grad.addColorStop(1, `rgba(${r},${g},${b},${Math.max(0, alpha).toFixed(3)})`);
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+        ctx.strokeStyle = grad; ctx.lineWidth = line.width * (1 + eased * 1.5);
+        ctx.lineCap = "round"; ctx.stroke();
       });
 
       if (eased > 0.6 && eased < 0.9) {
         const flashP = (eased - 0.6) / 0.3;
         const intensity = Math.sin(flashP * Math.PI) * 0.55;
-        const gradient = ctx.createRadialGradient(
-          cx, cy, 0, cx, cy, canvas.width * 0.5
-        );
+        const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, canvas.width * 0.5);
         gradient.addColorStop(0, `rgba(180,210,255,${intensity})`);
-        gradient.addColorStop(
-          0.4,
-          `rgba(56,189,248,${intensity * 0.3})`
-        );
+        gradient.addColorStop(0.4, `rgba(56,189,248,${intensity * 0.3})`);
         gradient.addColorStop(1, "rgba(0,0,0,0)");
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -264,12 +194,7 @@ function WarpCanvas({ active }) {
   }, [active]);
 
   if (!active) return null;
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full z-20 pointer-events-none"
-    />
-  );
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-20 pointer-events-none" />;
 }
 
 // ── Poeira cósmica / nebulosa ao redor do avatar
@@ -278,7 +203,7 @@ function CosmicDustCanvas({ active }) {
   const rafRef = useRef(null);
 
   useEffect(() => {
-    if (active) return; // some no warp
+    if (active) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -290,48 +215,36 @@ function CosmicDustCanvas({ active }) {
     const cx = SIZE / 2;
     const cy = SIZE / 2;
 
-    // Paleta cósmica: azuis, violetas, verdes neon, brancos
     const dustColors = [
-      { r: 56,  g: 189, b: 248 }, // sky-400
-      { r: 129, g: 140, b: 248 }, // indigo-400
-      { r: 167, g: 139, b: 250 }, // violet-400
-      { r: 52,  g: 211, b: 153 }, // emerald-400
-      { r: 244, g: 114, b: 182 }, // pink-400
-      { r: 255, g: 255, b: 255 }, // branco puro (estrelinhas)
-      { r: 196, g: 181, b: 253 }, // violet-300
-      { r: 147, g: 197, b: 253 }, // blue-300
+      { r: 56,  g: 189, b: 248 },
+      { r: 129, g: 140, b: 248 },
+      { r: 167, g: 139, b: 250 },
+      { r: 52,  g: 211, b: 153 },
+      { r: 244, g: 114, b: 182 },
+      { r: 255, g: 255, b: 255 },
+      { r: 196, g: 181, b: 253 },
+      { r: 147, g: 197, b: 253 },
     ];
 
-    // Partículas de poeira — órbitas elípticas inclinadas como uma galáxia
     const dust = Array.from({ length: 220 }, () => {
       const c = dustColors[Math.floor(Math.random() * dustColors.length)];
-      const orbit = 60 + Math.random() * 105; // raio orbital
+      const orbit = 60 + Math.random() * 105;
       const angle = Math.random() * Math.PI * 2;
-      const tilt = (Math.random() - 0.5) * 0.7; // inclinação do plano
+      const tilt = (Math.random() - 0.5) * 0.7;
       const speed = (Math.random() * 0.004 + 0.001) * (Math.random() > 0.5 ? 1 : -1);
-      const size = Math.random() < 0.12
-        ? 1.4 + Math.random() * 1.2   // estrelinhas brilhantes (menos frequentes)
-        : 0.3 + Math.random() * 0.9;  // poeira fina
+      const size = Math.random() < 0.12 ? 1.4 + Math.random() * 1.2 : 0.3 + Math.random() * 0.9;
       const brightness = Math.random();
-
       return {
-        angle,
-        orbit,
-        tilt,
-        speed,
-        size,
+        angle, orbit, tilt, speed, size,
         r: c.r, g: c.g, b: c.b,
-        // alpha base varia com órbita — mais perto = mais brilhante
         alphaBase: brightness * (1 - (orbit - 60) / 105) * 0.85 + 0.1,
         phase: Math.random() * Math.PI * 2,
         phaseSpeed: Math.random() * 0.03 + 0.005,
-        // nebula blobs — alguns são maiores e mais suaves
         isBlob: Math.random() < 0.08,
         blobSize: 4 + Math.random() * 12,
       };
     });
 
-    // Nuvens de nebulosa — camadas coloridas fixas
     const nebulae = Array.from({ length: 6 }, () => ({
       angle: Math.random() * Math.PI * 2,
       orbit: 55 + Math.random() * 90,
@@ -342,29 +255,19 @@ function CosmicDustCanvas({ active }) {
       speed: 0.0003 + Math.random() * 0.0008,
     }));
 
-    let t = 0;
-
     const draw = () => {
       ctx.clearRect(0, 0, SIZE, SIZE);
-
-      // Nuvens de nebulosa suaves
       nebulae.forEach((n) => {
         n.angle += n.speed;
-        const ex = Math.cos(n.angle) * n.orbit;
-        const ey = Math.sin(n.angle) * n.orbit * (1 - Math.abs(n.tilt) * 0.5);
-        const x = cx + ex;
-        const y = cy + ey;
-
+        const x = cx + Math.cos(n.angle) * n.orbit;
+        const y = cy + Math.sin(n.angle) * n.orbit * (1 - Math.abs(n.tilt) * 0.5);
         const grd = ctx.createRadialGradient(x, y, 0, x, y, n.size);
         grd.addColorStop(0, `rgba(${n.c.r},${n.c.g},${n.c.b},${n.alpha})`);
         grd.addColorStop(1, `rgba(${n.c.r},${n.c.g},${n.c.b},0)`);
-        ctx.beginPath();
-        ctx.arc(x, y, n.size, 0, Math.PI * 2);
-        ctx.fillStyle = grd;
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, n.size, 0, Math.PI * 2);
+        ctx.fillStyle = grd; ctx.fill();
       });
 
-      // Glow central suave — aura do avatar
       const centerGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 80);
       centerGlow.addColorStop(0, "rgba(56,189,248,0.04)");
       centerGlow.addColorStop(0.5, "rgba(139,92,246,0.03)");
@@ -372,52 +275,36 @@ function CosmicDustCanvas({ active }) {
       ctx.fillStyle = centerGlow;
       ctx.fillRect(0, 0, SIZE, SIZE);
 
-      // Poeira e estrelas
       dust.forEach((p) => {
         p.angle += p.speed;
         p.phase += p.phaseSpeed;
-
-        // Posição elíptica com perspectiva de inclinação
         const ex = Math.cos(p.angle) * p.orbit;
         const ey = Math.sin(p.angle) * p.orbit * (1 - Math.abs(p.tilt) * 0.55);
-
-        // Profundidade simulada: partículas "atrás" ficam mais escuras
         const depth = 0.4 + 0.6 * (Math.sin(p.angle + p.tilt) * 0.5 + 0.5);
         const alpha = p.alphaBase * depth * (0.6 + 0.4 * Math.sin(p.phase));
-
         const x = cx + ex;
         const y = cy + ey;
 
         if (p.isBlob) {
-          // Blob de nebulosa suave
           const grd = ctx.createRadialGradient(x, y, 0, x, y, p.blobSize);
           grd.addColorStop(0, `rgba(${p.r},${p.g},${p.b},${(alpha * 0.4).toFixed(3)})`);
           grd.addColorStop(1, `rgba(${p.r},${p.g},${p.b},0)`);
-          ctx.beginPath();
-          ctx.arc(x, y, p.blobSize, 0, Math.PI * 2);
-          ctx.fillStyle = grd;
-          ctx.fill();
+          ctx.beginPath(); ctx.arc(x, y, p.blobSize, 0, Math.PI * 2);
+          ctx.fillStyle = grd; ctx.fill();
         } else {
-          // Ponto de poeira
-          ctx.beginPath();
-          ctx.arc(x, y, p.size, 0, Math.PI * 2);
+          ctx.beginPath(); ctx.arc(x, y, p.size, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${Math.min(alpha, 0.9).toFixed(3)})`;
           ctx.fill();
-
-          // Glow extra nas estrelinhas maiores
           if (p.size > 1.0) {
             const glow = ctx.createRadialGradient(x, y, 0, x, y, p.size * 3.5);
             glow.addColorStop(0, `rgba(${p.r},${p.g},${p.b},${(alpha * 0.5).toFixed(3)})`);
             glow.addColorStop(1, `rgba(${p.r},${p.g},${p.b},0)`);
-            ctx.beginPath();
-            ctx.arc(x, y, p.size * 3.5, 0, Math.PI * 2);
-            ctx.fillStyle = glow;
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(x, y, p.size * 3.5, 0, Math.PI * 2);
+            ctx.fillStyle = glow; ctx.fill();
           }
         }
       });
 
-      t++;
       rafRef.current = requestAnimationFrame(draw);
     };
 
@@ -426,7 +313,6 @@ function CosmicDustCanvas({ active }) {
   }, [active]);
 
   if (active) return null;
-
   return (
     <canvas
       ref={canvasRef}
@@ -451,6 +337,18 @@ export default function Loader({ onDone, onUserInteracted }) {
   const [ready, setReady] = useState(false);
   const [entering, setEntering] = useState(false);
 
+  // ── Pré-carrega o áudio assim que o componente monta
+  // O browser baixa e decodifica o arquivo antes do clique,
+  // então quando o usuário apertar "Entrar" o som toca instantâneo
+  const audioRef = useRef(null);
+  useEffect(() => {
+    const audio = new Audio("/assets/audio/effect_sound1.wav");
+    audio.preload = "auto"; // força o download imediato
+    audio.volume = 0.5;
+    audio.load();           // dispara o carregamento
+    audioRef.current = audio;
+  }, []);
+
   const currentStep = STEPS[Math.min(stepIndex, STEPS.length - 1)];
   const progress = currentStep.pct;
 
@@ -472,10 +370,18 @@ export default function Loader({ onDone, onUserInteracted }) {
 
     onUserInteracted?.();
 
-    // 🔊 Som warp sintético
-    playWarpSound();
-    setWarp(true);
+    // Toca o áudio já pré-carregado — sem delay
+    try {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.currentTime = 0; // garante que começa do início
+        audio.play();
+      }
+    } catch (e) {
+      console.warn("Erro ao reproduzir áudio:", e);
+    }
 
+    setWarp(true);
     setTimeout(() => setVisible(false), 1050);
   };
 
@@ -491,26 +397,22 @@ export default function Loader({ onDone, onUserInteracted }) {
           <SpaceCanvas />
           <WarpCanvas active={warp} />
 
-          {/* orbe central */}
           <div
             className="absolute rounded-full pointer-events-none"
             style={{
               width: 500,
               height: 500,
-              background:
-                "radial-gradient(circle, rgba(56,189,248,0.10) 0%, rgba(139,92,246,0.06) 50%, transparent 70%)",
+              background: "radial-gradient(circle, rgba(56,189,248,0.10) 0%, rgba(139,92,246,0.06) 50%, transparent 70%)",
               filter: "blur(35px)",
             }}
           />
 
-          {/* ✨ Poeira cósmica — ao redor do avatar */}
           <CosmicDustCanvas active={warp} />
 
-          {/* anéis — somem no warp */}
           {!warp &&
             [
-              { size: 260, dur: 5, color: "rgba(56,189,248,0.22)", reverse: false },
-              { size: 340, dur: 8, color: "rgba(139,92,246,0.18)", reverse: true },
+              { size: 260, dur: 5,  color: "rgba(56,189,248,0.22)", reverse: false },
+              { size: 340, dur: 8,  color: "rgba(139,92,246,0.18)", reverse: true  },
               { size: 420, dur: 13, color: "rgba(52,211,153,0.13)", reverse: false },
             ].map((ring, i) => (
               <motion.div
@@ -522,7 +424,6 @@ export default function Loader({ onDone, onUserInteracted }) {
               />
             ))}
 
-          {/* logo */}
           <motion.div
             className="relative z-10 flex items-center justify-center w-28 h-28 rounded-3xl bg-slate-900/80 border border-secondary/30 backdrop-blur-sm"
             style={{ zIndex: 10 }}
@@ -550,29 +451,22 @@ export default function Loader({ onDone, onUserInteracted }) {
             </span>
           </motion.div>
 
-          {/* nome */}
           <motion.p
             className="relative z-10 mt-5 font-syne font-bold text-xl text-slate-200 tracking-wide"
             initial={{ opacity: 0, y: 8 }}
             animate={warp ? { opacity: 0, y: -20 } : { opacity: 1, y: 0 }}
-            transition={
-              warp ? { duration: 0.25 } : { delay: 0.4, duration: 0.6 }
-            }
+            transition={warp ? { duration: 0.25 } : { delay: 0.4, duration: 0.6 }}
           >
             Ismael <span className="text-secondary">Moura</span>
           </motion.p>
 
-          {/* barra + status + botão */}
           <div className="relative z-10 mt-10 flex flex-col items-center gap-4 w-80">
             {!warp && (
               <>
                 <div className="w-full h-[3px] bg-slate-800 rounded-full overflow-hidden">
                   <motion.div
                     className="h-full rounded-full"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #38bdf8, #818cf8, #34d399)",
-                    }}
+                    style={{ background: "linear-gradient(90deg, #38bdf8, #818cf8, #34d399)" }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.7, ease: "easeOut" }}
                   />
@@ -615,10 +509,7 @@ export default function Loader({ onDone, onUserInteracted }) {
                 >
                   <motion.div
                     className="absolute inset-0 rounded-full blur-md"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #38bdf8, #818cf8, #34d399)",
-                    }}
+                    style={{ background: "linear-gradient(90deg, #38bdf8, #818cf8, #34d399)" }}
                     animate={{ opacity: [0.3, 0.7, 0.3], scale: [1, 1.08, 1] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                   />
@@ -642,21 +533,18 @@ export default function Loader({ onDone, onUserInteracted }) {
                       className="absolute -top-1 -right-1 text-[10px] text-secondary/60"
                       animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.2, 0.8] }}
                       transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                    >
-                      ✦
-                    </motion.span>
+                    >✦</motion.span>
                     <motion.span
                       className="absolute -bottom-1 -left-1 text-[8px] text-violet-400/60"
                       animate={{ opacity: [0.3, 0.9, 0.3], scale: [0.7, 1.1, 0.7] }}
                       transition={{ duration: 2.5, repeat: Infinity }}
-                    >
-                      ✦
-                    </motion.span>
+                    >✦</motion.span>
                   </div>
                 </motion.button>
               )}
             </AnimatePresence>
           </div>
+
         </motion.div>
       )}
     </AnimatePresence>
