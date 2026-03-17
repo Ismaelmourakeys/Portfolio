@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import ProjectCard from "./ProjectCard";
 import SectionTitle from "./SectionTitle";
@@ -92,6 +92,11 @@ export default function Projects() {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
 
+  // ── Refs para controle de touch manual
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
+  const isSwiping = useRef(false);
+
   useEffect(() => {
     const update = () => setIsDesktop(window.innerWidth >= 768);
     update();
@@ -103,22 +108,31 @@ export default function Projects() {
   const totalDots = Math.ceil(PROJECTS.length / cardsPerDot);
   const activeDotIndex = Math.floor(activeCardIndex / cardsPerDot);
 
-  const scrollToDot = (dotIndex) => {
+  // ── Navega para um card específico pelo índice absoluto
+  const scrollToCard = useCallback((cardIndex) => {
     const container = carouselRef.current;
     if (!container) return;
+
+    const clamped = Math.max(0, Math.min(PROJECTS.length - 1, cardIndex));
     const cards = container.querySelectorAll(".project-card");
-    const targetCard = cards[dotIndex * cardsPerDot];
-    if (!targetCard) return;
+    const target = cards[clamped];
+    if (!target) return;
+
     container.scrollTo({
-      left: targetCard.offsetLeft - container.offsetLeft,
+      left: target.offsetLeft - container.offsetLeft,
       behavior: "smooth",
     });
-    setActiveCardIndex(dotIndex * cardsPerDot);
-  };
+    setActiveCardIndex(clamped);
+  }, []);
+
+  const scrollToDot = useCallback((dotIndex) => {
+    scrollToCard(dotIndex * cardsPerDot);
+  }, [scrollToCard, cardsPerDot]);
 
   const scrollPrev = () => scrollToDot(Math.max(0, activeDotIndex - 1));
   const scrollNext = () => scrollToDot(Math.min(totalDots - 1, activeDotIndex + 1));
 
+  // ── IntersectionObserver para atualizar dot ativo no desktop
   useEffect(() => {
     const container = carouselRef.current;
     if (!container) return;
@@ -138,6 +152,57 @@ export default function Projects() {
     return () => observer.disconnect();
   }, []);
 
+  // ── Touch handlers: swipe controlado, 1 card por vez no mobile
+  const handleTouchStart = useCallback((e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    isSwiping.current = false;
+  }, []);
+
+  const handleTouchMove = useCallback((e) => {
+    if (touchStartX.current === null) return;
+
+    const dx = e.touches[0].clientX - touchStartX.current;
+    const dy = e.touches[0].clientY - touchStartY.current;
+
+    // Movimento vertical dominante → scroll de página, não interfere
+    if (!isSwiping.current && Math.abs(dy) > Math.abs(dx)) return;
+
+    // Marca como swipe horizontal e bloqueia o scroll nativo do carrossel
+    isSwiping.current = true;
+    e.preventDefault();
+  }, []);
+
+  const handleTouchEnd = useCallback((e) => {
+    if (touchStartX.current === null || !isSwiping.current) return;
+
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const THRESHOLD = 40; // mínimo de pixels para considerar swipe
+
+    if (Math.abs(dx) >= THRESHOLD) {
+      if (dx < 0) {
+        // swipe esquerda → próximo card
+        scrollToCard(activeCardIndex + 1);
+      } else {
+        // swipe direita → card anterior
+        scrollToCard(activeCardIndex - 1);
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+    isSwiping.current = false;
+  }, [activeCardIndex, scrollToCard]);
+
+  // Anexa touchmove com { passive: false } para poder usar preventDefault
+  useEffect(() => {
+    const container = carouselRef.current;
+    if (!container) return;
+
+    container.addEventListener("touchmove", handleTouchMove, { passive: false });
+    return () => container.removeEventListener("touchmove", handleTouchMove);
+  }, [handleTouchMove]);
+
   const openVideoModal = (src) => {
     setVideoModalSrc(src);
     setTimeout(() => modalVideoRef.current?.play(), 100);
@@ -151,7 +216,6 @@ export default function Projects() {
   return (
     <section id="projetos" className="px-8 py-20">
 
-      {/* Cabeçalho com stagger via SectionTitle */}
       <SectionTitle
         tag="/ Trabalhos"
         title="Meus"
@@ -159,7 +223,6 @@ export default function Projects() {
         subtitle="Confira alguns dos meus projetos de cursos e pessoais."
       />
 
-      {/* CARROSSEL — entra com fade + slide de baixo */}
       <motion.div
         className="relative group"
         initial={{ opacity: 0, y: 40 }}
@@ -199,10 +262,12 @@ export default function Projects() {
 
         <div
           ref={carouselRef}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
           className="grid grid-flow-col auto-cols-[88%] sm:auto-cols-[65%] md:auto-cols-[420px]
             gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4
             [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
-            px-1 items-stretch"
+            px-1 items-stretch touch-pan-y"
         >
           {PROJECTS.map((project, index) => (
             <ProjectCard
