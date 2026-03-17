@@ -59,7 +59,7 @@ const CERTIFICATES = [
   },
 ];
 
-// ── Card individual com tilt 3D + brilho — mesmo padrão do ProjectCard
+// ── Card individual com tilt 3D + brilho
 function CertCard({ cert, index, onClick }) {
   const cardRef = useRef(null);
   const mouseX = useMotionValue(0);
@@ -114,14 +114,12 @@ function CertCard({ cert, index, onClick }) {
         borderColor: "rgba(56,189,248,0.35)",
       }}
     >
-      {/* brilho seguindo o mouse */}
       <motion.div
         className="pointer-events-none absolute inset-0 rounded-2xl z-0
           opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"
         style={{ background: glowBackground }}
       />
 
-      {/* linha decorativa topo */}
       <div className="h-px w-full bg-gradient-to-r from-transparent via-sky-400/50 to-transparent
         opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
 
@@ -160,6 +158,11 @@ export default function Certificates() {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
 
+  // ── Refs para controle de touch manual
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
+  const isSwiping = useRef(false);
+
   useEffect(() => {
     const update = () => setIsDesktop(window.innerWidth >= 768);
     update();
@@ -171,6 +174,31 @@ export default function Certificates() {
   const totalDots = Math.ceil(CERTIFICATES.length / cardsPerDot);
   const activeDotIndex = Math.floor(activeCardIndex / cardsPerDot);
 
+  // ── Navega para um card específico pelo índice absoluto
+  const scrollToCard = useCallback((cardIndex) => {
+    const container = carouselRef.current;
+    if (!container) return;
+
+    const clamped = Math.max(0, Math.min(CERTIFICATES.length - 1, cardIndex));
+    const cards = container.querySelectorAll(".cert-card");
+    const target = cards[clamped];
+    if (!target) return;
+
+    container.scrollTo({
+      left: target.offsetLeft - container.offsetLeft,
+      behavior: "smooth",
+    });
+    setActiveCardIndex(clamped);
+  }, []);
+
+  const scrollToDot = useCallback((dotIndex) => {
+    scrollToCard(dotIndex * cardsPerDot);
+  }, [scrollToCard, cardsPerDot]);
+
+  const scrollPrev = () => scrollToDot(Math.max(0, activeDotIndex - 1));
+  const scrollNext = () => scrollToDot(Math.min(totalDots - 1, activeDotIndex + 1));
+
+  // ── IntersectionObserver para atualizar dot ativo no desktop
   useEffect(() => {
     const container = carouselRef.current;
     if (!container) return;
@@ -192,28 +220,62 @@ export default function Certificates() {
     return () => observer.disconnect();
   }, []);
 
-  const scrollToDot = (dotIndex) => {
+  // ── Touch handlers: swipe controlado, 1 card por vez no mobile
+  const handleTouchStart = useCallback((e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    isSwiping.current = false;
+  }, []);
+
+  const handleTouchMove = useCallback((e) => {
+    if (touchStartX.current === null) return;
+
+    const dx = e.touches[0].clientX - touchStartX.current;
+    const dy = e.touches[0].clientY - touchStartY.current;
+
+    // Se o movimento vertical for maior, é scroll de página — não interfere
+    if (!isSwiping.current && Math.abs(dy) > Math.abs(dx)) return;
+
+    // Marca como swipe horizontal e previne o scroll nativo
+    isSwiping.current = true;
+    e.preventDefault();
+  }, []);
+
+  const handleTouchEnd = useCallback((e) => {
+    if (touchStartX.current === null || !isSwiping.current) return;
+
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const THRESHOLD = 40; // mínimo de pixels para considerar um swipe
+
+    if (Math.abs(dx) >= THRESHOLD) {
+      if (dx < 0) {
+        // swipe para esquerda → próximo card
+        scrollToCard(activeCardIndex + 1);
+      } else {
+        // swipe para direita → card anterior
+        scrollToCard(activeCardIndex - 1);
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+    isSwiping.current = false;
+  }, [activeCardIndex, scrollToCard]);
+
+  // Anexa o touchmove com { passive: false } para poder usar preventDefault
+  useEffect(() => {
     const container = carouselRef.current;
     if (!container) return;
-    const cards = container.querySelectorAll(".cert-card");
-    const targetCard = cards[dotIndex * cardsPerDot];
-    if (!targetCard) return;
-    container.scrollTo({
-      left: targetCard.offsetLeft - container.offsetLeft,
-      behavior: "smooth",
-    });
-    setActiveCardIndex(dotIndex * cardsPerDot);
-  };
 
-  const scrollPrev = () => scrollToDot(Math.max(0, activeDotIndex - 1));
-  const scrollNext = () => scrollToDot(Math.min(totalDots - 1, activeDotIndex + 1));
+    container.addEventListener("touchmove", handleTouchMove, { passive: false });
+    return () => container.removeEventListener("touchmove", handleTouchMove);
+  }, [handleTouchMove]);
 
   return (
     <section
       id="certificados"
       className="px-8 py-20 bg-gradient-to-b from-slate-800 to-slate-900"
     >
-      {/* cabeçalho com stagger animado */}
       <SectionTitle
         tag="/ Conquistas"
         title="Meus"
@@ -255,10 +317,13 @@ export default function Certificates() {
 
         <div
           ref={carouselRef}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
           className="grid grid-flow-col auto-cols-[88%] sm:auto-cols-[65%] md:auto-cols-[420px]
             gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4
             [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
-            px-1 items-stretch"
+            px-1 items-stretch
+            touch-pan-y" /* permite scroll vertical, horizontal é controlado pelo nosso handler */
         >
           {CERTIFICATES.map((cert, index) => (
             <CertCard
