@@ -1,7 +1,4 @@
 // AboutMe.jsx com animações Framer Motion
-// Cada bloco entra com fade + slide de baixo pra cima ao entrar na viewport
-// once: false → reanima toda vez que o usuário scrolla até a seção
-
 import { motion } from "framer-motion";
 
 const SKILLS = [
@@ -23,36 +20,21 @@ const AREAS = [
   { title: "UI / UX", desc: "Experiência focada no usuário" },
 ];
 
-// Variante reutilizável — fade + slide de baixo pra cima
-// Usada em todos os blocos da seção
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
 };
 
-// Variante para stagger dos filhos (skills, áreas, CTAs)
 const staggerContainer = {
   hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.07 },
-  },
+  visible: { transition: { staggerChildren: 0.07 } },
 };
 
 const staggerItem = {
   hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
 };
 
-// Atalho para as props comuns do whileInView
-// Evita repetir viewport={{ once: false, amount: 0.2 }} em todo lugar
 const inView = { once: false, amount: 0.2 };
 
 export default function AboutMe() {
@@ -60,7 +42,7 @@ export default function AboutMe() {
     <section id="sobre" className="px-6 py-20 bg-slate-800">
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 
-        {/* CARD COM FOTO — entra da esquerda */}
+        {/* CARD COM FOTO */}
         <motion.div
           className="relative group"
           initial={{ opacity: 0, x: -40 }}
@@ -72,25 +54,22 @@ export default function AboutMe() {
             sm:w-80 md:w-96 bg-gradient-to-b from-slate-900/50 to-transparent rounded-3xl
             p-6 md:p-10 shadow-2xl ring-1 ring-white/10 backdrop-blur-sm
             transition-transform duration-300 group-hover:-translate-y-2">
-
             <img
               src="/assets/img/FotoPerfil.jpg"
               alt="Foto de Ismael Moura"
               className="w-56 h-full rounded-2xl object-cover mx-auto border-4 border-secondary
                 shadow-xl transition-transform duration-500 group-hover:scale-105"
             />
-
             <div className="mt-6 text-center">
               <h4 className="text-xl font-semibold text-secondary">Ismael Moura</h4>
               <p className="text-sm text-slate-300 mt-1">Desenvolvedor Front-end 💡</p>
             </div>
           </div>
-
           <div className="hidden md:block absolute -right-6 -bottom-6 w-28 h-28 rounded-lg
             bg-gradient-to-tr from-secondary/30 to-yellow-300/10 blur-xl pointer-events-none" />
         </motion.div>
 
-        {/* BLOCO DE TEXTO — stagger interno */}
+        {/* BLOCO DE TEXTO */}
         <motion.div
           className="text-slate-200"
           variants={staggerContainer}
@@ -100,7 +79,6 @@ export default function AboutMe() {
         >
           <div className="flex flex-col gap-4">
 
-            {/* label topo */}
             <motion.div variants={fadeUp} className="flex items-center sm:justify-start justify-center gap-3">
               <span className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/30
                 flex items-center justify-center">
@@ -111,18 +89,32 @@ export default function AboutMe() {
               </p>
             </motion.div>
 
-            {/* título */}
             <motion.div variants={fadeUp} className="flex items-center sm:justify-start justify-center">
               <h3 className="font-arial text-4xl sm:text-5xl font-extrabold text-slate-100 leading-tight">
                 Sobre <span className="text-secondary">mim</span>
               </h3>
             </motion.div>
 
-            {/* texto scrollável */}
+            {/*
+              ── Scroll do texto corrigido:
+              - touchAction: "pan-y"         → browser sabe que é scroll vertical, não intercepta
+              - overscrollBehavior: "contain" → impede o scroll de "vazar" para a página
+              - onPointerDown stopPropagation → evita que o framer-motion capture o toque antes do scroll
+            */}
             <motion.div
               variants={fadeUp}
               className="sobre-scroll space-y-6 text-slate-300 leading-relaxed
                 text-center sm:text-start text-sm sm:text-base max-h-72 overflow-y-auto pr-3"
+              style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
+              onPointerDown={(e) => e.stopPropagation()}
+              onWheel={(e) => {
+                // Scroll do mouse dentro do texto — não deixa vazar para a página
+                const el = e.currentTarget;
+                const atTop = el.scrollTop === 0;
+                const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight;
+                if ((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom)) return;
+                e.stopPropagation();
+              }}
             >
               <div>
                 <p className="font-mono text-[0.6rem] text-sky-400 tracking-widest uppercase mb-2">/ origem</p>
@@ -159,7 +151,7 @@ export default function AboutMe() {
               </div>
             </motion.div>
 
-            {/* SKILLS — cada pill aparece em stagger */}
+            {/* SKILLS */}
             <motion.div
               variants={staggerContainer}
               className="flex flex-wrap gap-3 mt-4 items-center justify-center sm:justify-start"
@@ -178,7 +170,7 @@ export default function AboutMe() {
               ))}
             </motion.div>
 
-            {/* ÁREAS — cada card aparece em stagger */}
+            {/* ÁREAS */}
             <motion.div
               variants={staggerContainer}
               className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center"
@@ -197,10 +189,7 @@ export default function AboutMe() {
             </motion.div>
 
             {/* CTAs */}
-            <motion.div
-              variants={fadeUp}
-              className="mt-6 flex flex-wrap gap-3 justify-center"
-            >
+            <motion.div variants={fadeUp} className="mt-6 flex flex-wrap gap-3 justify-center">
               <a
                 href="#contato"
                 className="inline-flex items-center gap-2 bg-secondary text-slate-900

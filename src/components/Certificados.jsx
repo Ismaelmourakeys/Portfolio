@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import SectionTitle from "./SectionTitle";
 
@@ -352,11 +353,21 @@ export default function Certificates() {
         ))}
       </div>
 
-      {/* MODAL */}
-      {modalImg && (
+      {/* MODAL — portal para escapar de transforms do framer-motion */}
+      {modalImg && createPortal(
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => setModalImg(null)}
+          style={{
+            position: "fixed",
+            top: 0, left: 0, right: 0, bottom: 0,
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+            backgroundColor: "rgba(0,0,0,0.8)",
+            backdropFilter: "blur(6px)",
+          }}
         >
           <div
             className="relative max-w-4xl w-full"
@@ -374,15 +385,14 @@ export default function Certificates() {
               </svg>
               fechar
             </button>
-
             <img
               src={modalImg}
               alt="Certificado"
-              className="w-full max-h-[85vh] object-contain rounded-2xl
-                shadow-2xl border border-white/10"
+              className="w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-white/10"
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );

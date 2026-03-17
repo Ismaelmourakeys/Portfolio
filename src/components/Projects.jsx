@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import ProjectCard from "./ProjectCard";
 import SectionTitle from "./SectionTitle";
@@ -301,15 +302,25 @@ export default function Projects() {
         ))}
       </motion.div>
 
-      {/* MODAL DE VÍDEO */}
-      {videoModalSrc && (
+      {/* MODAL DE VÍDEO — portal para escapar de transforms do framer-motion */}
+      {videoModalSrc && createPortal(
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn"
           onClick={closeVideoModal}
+          style={{
+            position: "fixed",
+            top: 0, left: 0, right: 0, bottom: 0,
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+            backgroundColor: "rgba(0,0,0,0.8)",
+            backdropFilter: "blur(8px)",
+          }}
         >
           <div
-            className="relative bg-slate-900 border border-white/10 rounded-2xl overflow-hidden
-              w-full max-w-2xl shadow-2xl animate-popUp"
+            className="relative bg-slate-900 border border-white/10 rounded-2xl overflow-hidden w-full max-w-2xl shadow-2xl animate-popUp"
+            style={{ maxHeight: "85vh" }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -331,7 +342,8 @@ export default function Projects() {
               src={videoModalSrc}
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );
