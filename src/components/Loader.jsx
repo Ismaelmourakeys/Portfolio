@@ -344,7 +344,7 @@ export default function Loader({ onDone, onUserInteracted }) {
   useEffect(() => {
     const audio = new Audio("/assets/audio/effect_sound1.wav");
     audio.preload = "auto"; // força o download imediato
-    audio.volume = 0.5;
+    audio.volume = 0.3;
     audio.load();           // dispara o carregamento
     audioRef.current = audio;
   }, []);
