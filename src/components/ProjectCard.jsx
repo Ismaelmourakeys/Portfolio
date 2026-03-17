@@ -1,24 +1,113 @@
-import { useState, useRef } from "react";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { useState, useRef, useMemo } from "react";
+import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import TechIcon from "./TechIcon";
+
+// ── Detecta mobile uma vez (sem re-render)
+const isMobile = () =>
+  typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
+
+// ── Estrelas — só no desktop (muito pesado no mobile)
+function CardStars({ count = 18 }) {
+  const stars = useMemo(() =>
+    Array.from({ length: count }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      r: Math.random() * 1.2 + 0.3,
+      dur: 1.8 + Math.random() * 2.5,
+      delay: Math.random() * 3,
+    })), []
+  );
+
+  return (
+    <svg
+      className="pointer-events-none absolute inset-0 w-full h-full z-0 opacity-0
+        group-hover/card:opacity-100 transition-opacity duration-500 hidden md:block"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {stars.map((s) => (
+        <circle key={s.id} cx={`${s.x}%`} cy={`${s.y}%`} r={s.r} fill="white">
+          <animate
+            attributeName="opacity"
+            values="0;0.7;0"
+            dur={`${s.dur}s`}
+            begin={`${s.delay}s`}
+            repeatCount="indefinite"
+          />
+        </circle>
+      ))}
+    </svg>
+  );
+}
+
+// ── Partículas — só no desktop
+function CosmicParticles() {
+  const particles = useMemo(() =>
+    Array.from({ length: 8 }, (_, i) => {
+      const angle = (360 / 8) * i;
+      const colors = ["#38bdf8", "#818cf8", "#34d399", "#a78bfa", "#f472b6"];
+      return {
+        id: i,
+        angle,
+        color: colors[i % colors.length],
+        size: 1.5 + Math.random() * 2,
+        dist: 60 + Math.random() * 30,
+        dur: 2 + Math.random() * 1.5,
+        delay: Math.random() * 1,
+      };
+    }), []
+  );
+
+  return (
+    <div className="pointer-events-none absolute inset-0 z-0 opacity-0
+      group-hover/card:opacity-100 transition-opacity duration-500 overflow-hidden hidden md:block">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{
+            width: p.size,
+            height: p.size,
+            background: p.color,
+            boxShadow: `0 0 ${p.size * 3}px ${p.color}`,
+            top: "50%",
+            left: "50%",
+          }}
+          animate={{
+            x: [0, Math.cos((p.angle * Math.PI) / 180) * p.dist, 0],
+            y: [0, Math.sin((p.angle * Math.PI) / 180) * p.dist, 0],
+            opacity: [0, 0.9, 0],
+          }}
+          transition={{
+            duration: p.dur,
+            delay: p.delay,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function ProjectCard({ project, index = 0 }) {
   const [showDetails, setShowDetails] = useState(false);
+  const mobile = useMemo(() => isMobile(), []);
 
   const cardRef = useRef(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const springConfig = { stiffness: 150, damping: 20, mass: 0.5 };
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [0, -0]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-0, 0]), springConfig);
+  const springConfig = { stiffness: 120, damping: 18, mass: 0.6 };
+  // Tilt só no desktop — no mobile não tem mouse
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], mobile ? [0, 0] : [6, -6]), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], mobile ? [0, 0] : [-6, 6]), springConfig);
 
-  // Brilho que segue o mouse
   const glowX = useTransform(mouseX, [-0.5, 0.5], ["0%", "100%"]);
   const glowY = useTransform(mouseY, [-0.5, 0.5], ["0%", "100%"]);
   const glowBackground = useTransform(
     [glowX, glowY],
-    ([x, y]) => `radial-gradient(circle at ${x} ${y}, rgba(56,189,248,0.10) 0%, transparent 65%)`
+    ([x, y]) => `radial-gradient(circle at ${x} ${y}, rgba(56,189,248,0.13) 0%, rgba(139,92,246,0.06) 50%, transparent 70%)`
   );
 
   const handleMouseMove = (e) => {
@@ -34,51 +123,65 @@ export default function ProjectCard({ project, index = 0 }) {
     mouseY.set(0);
   };
 
+  const entryDelay = index * 0.1;
+
+  // Animação de entrada: mobile = simples (só fade+y), desktop = cósmica (blur+scale+y)
+  const entryInitial = mobile
+    ? { opacity: 0, y: 20 }
+    : { opacity: 0, y: -50, scale: 0.85 };
+
+  const entryAnimate = mobile
+    ? { opacity: 1, y: 0 }
+    : { opacity: 1, y: 0, scale: 1 };
+
+  const entryTransition = mobile
+    ? { duration: 0.45, delay: entryDelay, ease: [0.16, 1, 0.3, 1] }
+    : { duration: 0.9, delay: entryDelay, ease: [0.34, 1.56, 0.64, 1] };
+
   return (
-    // motion.div direto — sem wrapper extra para não quebrar o grid
-    // perspective aplicado via style inline no próprio elemento
     <motion.div
       ref={cardRef}
       className="project-card group/card relative flex flex-col
-        bg-gradient-to-br from-slate-800/90 to-slate-900/90
+        bg-gradient-to-br from-slate-800/90 to-slate-900/95
         border border-slate-700/50 rounded-2xl overflow-hidden
-        shadow-[0_8px_32px_rgba(0,0,0,0.4)]
+        shadow-[0_8px_32px_rgba(0,0,0,0.5)]
         transition-colors duration-300 snap-start"
-      // Entrada: scale + bounce
-      initial={{ opacity: 0, scale: 0.85, y: 30 }}
-      whileInView={{ opacity: 1, scale: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.15 }}
-      transition={{
-        duration: 0.6,
-        delay: index * 0.1,
-        ease: [0.34, 1.56, 0.64, 1],
-      }}
-      // Tilt via style — perspective no próprio elemento não quebra o grid
-      style={{
-        rotateX,
-        rotateY,
-        perspective: 1000,
-      }}
+      initial={entryInitial}
+      whileInView={entryAnimate}
+      // once: true no mobile evita re-animar ao arrastar o carrossel
+      viewport={{ once: mobile ? true : false, amount: 0.15 }}
+      transition={entryTransition}
+      style={{ rotateX, rotateY, perspective: mobile ? "none" : 1000 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      whileHover={{
-        boxShadow: "0 20px 50px rgba(56,189,248,0.12), 0 8px 32px rgba(0,0,0,0.5)",
-        borderColor: "rgba(56,189,248,0.35)",
+      whileHover={mobile ? {} : {
+        boxShadow: "0 0 40px rgba(56,189,248,0.18), 0 0 80px rgba(139,92,246,0.08), 0 20px 50px rgba(0,0,0,0.5)",
+        borderColor: "rgba(56,189,248,0.40)",
       }}
     >
-      {/* brilho seguindo o mouse */}
+      {/* estrelas e partículas só no desktop */}
+      <CardStars count={20} />
+      <CosmicParticles />
+
+      {/* brilho nebular — só desktop */}
       <motion.div
-        className="pointer-events-none absolute inset-0 rounded-2xl z-10
-          opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"
+        className="pointer-events-none absolute inset-0 rounded-2xl z-[1]
+          opacity-0 group-hover/card:opacity-100 transition-opacity duration-400 hidden md:block"
         style={{ background: glowBackground }}
       />
 
-      {/* linha decorativa topo */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-sky-400/50 to-transparent
-        opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
+      {/* linha aurora no topo */}
+      <motion.div
+        className="h-px w-full relative z-[2]"
+        style={{
+          background: "linear-gradient(90deg, transparent, rgba(56,189,248,0.6), rgba(139,92,246,0.4), transparent)",
+        }}
+        animate={{ opacity: [0.3, 0.8, 0.3] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: entryDelay }}
+      />
 
       {/* RESUMO */}
-      <div className="conteudo resumo flex flex-col flex-1 p-6">
+      <div className="conteudo resumo flex flex-col flex-1 p-6 relative z-[2]">
 
         <div className="flex items-start justify-between gap-3 mb-3">
           <span className={`font-mono text-[0.65rem] tracking-widest uppercase
@@ -106,7 +209,7 @@ export default function ProjectCard({ project, index = 0 }) {
           {project.description}
         </p>
 
-        {/* mídia: vídeo ou imagem */}
+        {/* mídia */}
         {project.videoSrc ? (
           <div
             className="relative w-full h-40 rounded-xl overflow-hidden ring-1 ring-white/8 cursor-pointer group/video"
@@ -143,7 +246,7 @@ export default function ProjectCard({ project, index = 0 }) {
       </div>
 
       {/* FOOTER */}
-      <div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
+      <div className="relative z-[2] flex items-center justify-between px-6 py-4 border-t border-white/5">
         <div className="flex gap-2">
           {project.techs.map((tech) => (
             <TechIcon key={tech} icon={tech} className="text-base" size="w-5 h-5" />
@@ -162,57 +265,64 @@ export default function ProjectCard({ project, index = 0 }) {
       </div>
 
       {/* OVERLAY DE DETALHES */}
-      {showDetails && (
-        <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-md rounded-2xl
-          p-6 flex flex-col items-center justify-center text-center gap-4 z-30
-          animate-popUp overflow-y-auto">
-
-          <button
-            onClick={() => setShowDetails(false)}
-            className="absolute top-4 right-4 flex items-center gap-1.5
-              font-mono text-xs text-slate-400 hover:text-slate-100 transition-colors duration-200 cursor-pointer"
+      <AnimatePresence>
+        {showDetails && (
+          <motion.div
+            className="absolute inset-0 bg-slate-900/96 backdrop-blur-md rounded-2xl
+              p-6 flex flex-col items-center justify-center text-center gap-4 z-30
+              overflow-y-auto"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
           >
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-            fechar
-          </button>
+            <button
+              onClick={() => setShowDetails(false)}
+              className="absolute top-4 right-4 flex items-center gap-1.5
+                font-mono text-xs text-slate-400 hover:text-slate-100 transition-colors duration-200 cursor-pointer"
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+              fechar
+            </button>
 
-          <p className="font-mono text-xs tracking-widest uppercase text-secondary">
-            Ferramentas utilizadas
-          </p>
-          <h4 className="font-syne text-xl font-bold text-yellow-300">{project.title}</h4>
+            <p className="font-mono text-xs tracking-widest uppercase text-secondary">
+              Ferramentas utilizadas
+            </p>
+            <h4 className="font-syne text-xl font-bold text-yellow-300">{project.title}</h4>
 
-          <div className="w-full max-w-md grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {project.techDetails.map((tech) => (
-              <div key={tech.label}
-                className="flex flex-col items-center justify-center gap-2 bg-white/5 rounded-lg py-3 px-2">
-                <TechIcon icon={tech.icon} />
-                <span className="text-xs text-slate-200">{tech.label}</span>
-              </div>
-            ))}
-          </div>
+            <div className="w-full max-w-md grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {project.techDetails.map((tech) => (
+                <div key={tech.label}
+                  className="flex flex-col items-center justify-center gap-2 bg-white/5 rounded-lg py-3 px-2">
+                  <TechIcon icon={tech.icon} />
+                  <span className="text-xs text-slate-200">{tech.label}</span>
+                </div>
+              ))}
+            </div>
 
-          <p className="text-slate-400 text-xs leading-relaxed max-w-xs">
-            {project.detailsDescription}
-          </p>
+            <p className="text-slate-400 text-xs leading-relaxed max-w-xs">
+              {project.detailsDescription}
+            </p>
 
-          <a href={project.githubUrl} target="_blank" rel="noreferrer"
-            className="inline-flex items-center gap-2 bg-secondary text-slate-900
-              font-syne font-bold text-sm px-5 py-2.5 rounded-xl
-              hover:brightness-110 hover:scale-105 transition-all duration-300">
-            <i className="devicon-github-original text-xl" /> GitHub do projeto
-          </a>
+            <a href={project.githubUrl} target="_blank" rel="noreferrer"
+              className="inline-flex items-center gap-2 bg-secondary text-slate-900
+                font-syne font-bold text-sm px-5 py-2.5 rounded-xl
+                hover:brightness-110 hover:scale-105 transition-all duration-300">
+              <i className="devicon-github-original text-xl" /> GitHub do projeto
+            </a>
 
-          <button
-            onClick={() => setShowDetails(false)}
-            className="font-mono text-xs text-slate-500 hover:text-secondary transition-colors cursor-pointer"
-          >
-            Fechar ✕
-          </button>
-        </div>
-      )}
+            <button
+              onClick={() => setShowDetails(false)}
+              className="font-mono text-xs text-slate-500 hover:text-secondary transition-colors cursor-pointer"
+            >
+              Fechar ✕
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

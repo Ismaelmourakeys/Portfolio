@@ -18,7 +18,7 @@ const HOBBIES = [
     media: [
       { type: "image", src: "/assets/Hobbies/Estudo_React.png", caption: "Portfólio com React" },
       { type: "image", src: "/assets/Hobbies/Imagens_ProjetosSimples/Contador.png", caption: "Contador - Projeto simples para praticar designer e lógica de programação" },
-      { type: "video", src: "/assets/Hobbies/Imagens_ProjetosSimples/Dark_mode.mp4", caption: "Projeto de Dark Mode - projeto simples para revisar conceitos"},
+      { type: "video", src: "/assets/Hobbies/Imagens_ProjetosSimples/Dark_mode.mp4", caption: "Projeto de Dark Mode - projeto simples para revisar conceitos" },
     ],
   },
   {
@@ -40,33 +40,13 @@ const HOBBIES = [
       { type: "image", src: "assets/Hobbies/Farmacia_Laboratorio2.jpg", caption: "Farmácia Magistral" },
     ],
   },
-  /*
-  {
-    id: "projetos",
-    color: "emerald",
-    label: "projetos",
-    title: "Construir projetos reais",
-    description: "Do rascunho ao deploy — transformar ideias em projetos reais é o que mais me ensina.",
-    tags: ["GitHub", "Vercel", "Firebase"],
-    icon: (
-      <svg className="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-      </svg>
-    ),
-    media: [
-      { type: "image", src: "https://placehold.co/800x500/0f172a/34d399?text=MyGluco+App&font=syne", caption: "MyGluco App" },
-      { type: "video", src: "", poster: "https://placehold.co/800x500/0f172a/10b981?text=▶+App+Demo&font=syne", caption: "Demonstração do app" },
-      { type: "image", src: "https://placehold.co/800x500/0f172a/6ee7b7?text=Portfolio&font=syne", caption: "Portfólio" },
-    ],
-  },
-  */
   {
     id: "musica",
     color: "yellow",
     label: "música",
     title: "Compartilhar minha paixão pela música",
     description: "Alguns lugares que já participei como músico, professor de música e marketing pessoal nas redes sociais.",
-    tags: ["Músico", "Teclado", "Eventos", "Projetos", "Aulas",],
+    tags: ["Músico", "Teclado", "Eventos", "Projetos", "Aulas"],
     icon: (
       <svg className="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
@@ -81,17 +61,13 @@ const HOBBIES = [
       { type: "video", src: "/assets/Hobbies/Nord.mp4", caption: "Tocando na igreja" },
     ],
   },
-
-
   {
     id: "ETEC",
     color: "pink",
     label: "Momentos na ETEC",
     title: "Minha experiências na ETEC",
     description: "Alguns momentos que marcaram minha jornada na ETEC, desde projetos acadêmicos até atividades extracurriculares.",
-
     tags: ["Apresentações", "Projetos", "Visitas técnicas", "Eventos", "Conquistas"],
-
     icon: (
       <svg className="w-5 h-5 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1" />
@@ -100,27 +76,26 @@ const HOBBIES = [
       </svg>
     ),
     media: [
-      { type: "image", src: "public/assets/Hobbies/VisitaAmazon.jfif", caption: "Visita à Amazon" },
-      { type: "image", src: "public/assets/Hobbies/ApresentacaoEtec.jfif", caption: "Apresentação - semana de DS" },
-      { type: "image", src: "public/assets/Hobbies/Fetesp.jfif", caption: "Visita à Fetesp" },
-      { type: "image", src: "public/assets/Hobbies/ApresentacaoTCC.jfif", caption: "Apresentação de TCC" },
-      { type: "image", src: "public/assets/Hobbies/TurmaETEC.jfif", caption: "Turma da ETEC 3°I" },
-      { type: "image", src: "public/assets/Hobbies/Professor_design.jpg", caption: "Professor de Design - Antonio (Lobinho)" },
-      { type: "image", src: "public/assets/Hobbies/ProfessorDom.jfif", caption: "Professor Alexandre Valezzi (Dom)" },
+      { type: "image", src: "/assets/Hobbies/VisitaAmazon.jfif", caption: "Visita à Amazon" },
+      { type: "image", src: "/assets/Hobbies/ApresentacaoEtec.jfif", caption: "Apresentação - semana de DS" },
+      { type: "image", src: "/assets/Hobbies/Fetesp.jfif", caption: "Visita à Fetesp" },
+      { type: "image", src: "/assets/Hobbies/ApresentacaoTCC.jfif", caption: "Apresentação de TCC" },
+      { type: "image", src: "/assets/Hobbies/TurmaETEC.jfif", caption: "Turma da ETEC 3°I" },
+      { type: "image", src: "/assets/Hobbies/Professor_design.jpg", caption: "Professor de Design - Antonio (Lobinho)" },
+      { type: "image", src: "/assets/Hobbies/ProfessorDom.jfif", caption: "Professor Alexandre Valezzi (Dom)" },
     ],
   },
-
 ];
 
 const COLOR_MAP = {
-  sky: { text: "text-sky-400", bg: "bg-sky-400/10", border: "border-sky-400/20", bar: "bg-sky-400/40", glow: "rgba(56,189,248,0.10)", glowHover: "rgba(56,189,248,0.18)" },
-  violet: { text: "text-violet-400", bg: "bg-violet-400/10", border: "border-violet-400/20", bar: "bg-violet-400/40", glow: "rgba(139,92,246,0.10)", glowHover: "rgba(139,92,246,0.18)" },
-  emerald: { text: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", bar: "bg-emerald-400/40", glow: "rgba(52,211,153,0.10)", glowHover: "rgba(52,211,153,0.18)" },
-  yellow: { text: "text-yellow-400", bg: "bg-yellow-400/10", border: "border-yellow-400/20", bar: "bg-yellow-400/40", glow: "rgba(250,204,21,0.10)", glowHover: "rgba(250,204,21,0.18)" },
-  pink: { text: "text-pink-400", bg: "bg-pink-400/10", border: "border-pink-400/20", bar: "bg-pink-400/40", glow: "rgba(244,114,182,0.10)", glowHover: "rgba(244,114,182,0.18)" },
+  sky:     { text: "text-sky-400",     bg: "bg-sky-400/10",     border: "border-sky-400/20",     bar: "bg-sky-400/40",     glow: "rgba(56,189,248,0.10)",  glowHover: "rgba(56,189,248,0.18)"  },
+  violet:  { text: "text-violet-400",  bg: "bg-violet-400/10",  border: "border-violet-400/20",  bar: "bg-violet-400/40",  glow: "rgba(139,92,246,0.10)",  glowHover: "rgba(139,92,246,0.18)"  },
+  emerald: { text: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", bar: "bg-emerald-400/40", glow: "rgba(52,211,153,0.10)",  glowHover: "rgba(52,211,153,0.18)"  },
+  yellow:  { text: "text-yellow-400",  bg: "bg-yellow-400/10",  border: "border-yellow-400/20",  bar: "bg-yellow-400/40",  glow: "rgba(250,204,21,0.10)",  glowHover: "rgba(250,204,21,0.18)"  },
+  pink:    { text: "text-pink-400",    bg: "bg-pink-400/10",    border: "border-pink-400/20",    bar: "bg-pink-400/40",    glow: "rgba(244,114,182,0.10)", glowHover: "rgba(244,114,182,0.18)" },
 };
 
-// ── Botão X flutuante — sempre visível, fora do fluxo da mídia
+// ── Botão X flutuante
 function CloseButton({ onClick }) {
   return (
     <button
@@ -129,7 +104,7 @@ function CloseButton({ onClick }) {
         bg-slate-800/95 border-2 border-slate-600
         flex items-center justify-center
         text-slate-300 hover:text-white hover:bg-slate-700 hover:border-secondary
-        transition-all duration-200 shadow-2xl"
+        transition-all duration-200 shadow-2xl cursor-pointer"
     >
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
         <path d="M18 6L6 18M6 6l12 12" />
@@ -150,31 +125,21 @@ function Lightbox({ src, caption, onClose }) {
     <AnimatePresence>
       <motion.div
         className="fixed inset-0 z-[9998] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
       >
-        {/* X sempre no canto da tela, nunca coberto pela imagem */}
         <CloseButton onClick={onClose} />
-
         <motion.div
           className="flex flex-col items-center gap-3 max-w-5xl w-full"
-          initial={{ scale: 0.92, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
+          initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.92, opacity: 0 }}
           transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.32 }}
           onClick={(e) => e.stopPropagation()}
         >
-          <img
-            src={src}
-            alt={caption}
-            className="max-w-full max-h-[85vh] w-auto rounded-2xl shadow-2xl object-contain"
-          />
+          <img src={src} alt={caption}
+            className="max-w-full max-h-[85vh] w-auto rounded-2xl shadow-2xl object-contain" />
           {caption && (
-            <p className="font-mono text-xs text-slate-400 tracking-widest text-center">
-              {caption}
-            </p>
+            <p className="font-mono text-xs text-slate-400 tracking-widest text-center">{caption}</p>
           )}
         </motion.div>
       </motion.div>
@@ -189,47 +154,31 @@ function VideoModal({ src, caption, onClose }) {
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
-    // autoplay assim que montar
     setTimeout(() => videoRef.current?.play(), 100);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const handleClose = () => {
-    videoRef.current?.pause();
-    onClose();
-  };
+  const handleClose = () => { videoRef.current?.pause(); onClose(); };
 
   return (
     <AnimatePresence>
       <motion.div
         className="fixed inset-0 z-[9999] flex items-center justify-center p-6 bg-black/92 backdrop-blur-sm"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={handleClose}
       >
-        {/* X sempre no canto da tela */}
         <CloseButton onClick={handleClose} />
-
         <motion.div
           className="flex flex-col items-center gap-3 max-w-5xl w-full"
-          initial={{ scale: 0.92, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
+          initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.92, opacity: 0 }}
           transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.32 }}
           onClick={(e) => e.stopPropagation()}
         >
-          <video
-            ref={videoRef}
-            src={src}
-            controls
-            playsInline
-            className="max-w-full max-h-[85vh] w-auto rounded-2xl shadow-2xl"
-          />
+          <video ref={videoRef} src={src} controls playsInline
+            className="max-w-full max-h-[85vh] w-auto rounded-2xl shadow-2xl" />
           {caption && (
-            <p className="font-mono text-xs text-slate-400 tracking-widest text-center">
-              {caption}
-            </p>
+            <p className="font-mono text-xs text-slate-400 tracking-widest text-center">{caption}</p>
           )}
         </motion.div>
       </motion.div>
@@ -240,8 +189,6 @@ function VideoModal({ src, caption, onClose }) {
 // ── Thumbnail automática de vídeo via canvas
 function VideoThumb({ src, className }) {
   const [thumb, setThumb] = useState(null);
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
 
   useEffect(() => {
     if (!src) return;
@@ -250,7 +197,6 @@ function VideoThumb({ src, className }) {
     video.crossOrigin = "anonymous";
     video.muted = true;
     video.playsInline = true;
-    // busca o frame do segundo 0.5
     video.currentTime = 0.5;
     video.addEventListener("seeked", () => {
       const canvas = document.createElement("canvas");
@@ -263,7 +209,6 @@ function VideoThumb({ src, className }) {
   }, [src]);
 
   if (!thumb) {
-    // fallback enquanto carrega
     return (
       <div className={`${className} bg-slate-900 flex items-center justify-center`}>
         <svg className="w-4 h-4 text-slate-600" viewBox="0 0 24 24" fill="currentColor">
@@ -272,11 +217,10 @@ function VideoThumb({ src, className }) {
       </div>
     );
   }
-
   return <img src={thumb} alt="thumbnail" className={className} />;
 }
 
-// ── Player de mídia (foto ou vídeo) — no accordion
+// ── Player de mídia
 function MediaItem({ item, color }) {
   const c = COLOR_MAP[color];
   const [lightbox, setLightbox] = useState(false);
@@ -291,12 +235,8 @@ function MediaItem({ item, color }) {
           transition={{ duration: 0.2 }}
           onClick={() => setLightbox(true)}
         >
-          <img
-            src={item.src}
-            alt={item.caption}
-            className="w-full object-contain max-h-[500px]"
-          />
-          {/* overlay zoom hint */}
+          <img src={item.src} alt={item.caption}
+            className="w-full object-contain max-h-[500px]" />
           <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20
             transition-all duration-300 flex items-center justify-center">
             <div className="opacity-0 group-hover/img:opacity-100 transition-opacity duration-300
@@ -314,55 +254,41 @@ function MediaItem({ item, color }) {
             </div>
           )}
         </motion.div>
-        {lightbox && (
-          <Lightbox src={item.src} caption={item.caption} onClose={() => setLightbox(false)} />
-        )}
+        {lightbox && <Lightbox src={item.src} caption={item.caption} onClose={() => setLightbox(false)} />}
       </>
     );
   }
 
-  // ── vídeo
   return (
     <>
       <div className="relative rounded-xl overflow-hidden bg-slate-950 group/vid cursor-pointer"
         onClick={item.src ? () => setVideoModal(true) : undefined}
       >
-        {/* thumbnail automática do vídeo */}
         {item.src ? (
           <VideoThumb src={item.src} className="w-full object-contain max-h-[500px]" />
         ) : (
           <img src={item.poster} alt={item.caption} className="w-full object-contain max-h-[500px] opacity-70" />
         )}
-
-        {/* botão play centralizado */}
         <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover/vid:bg-black/30 transition-colors duration-200">
           <motion.div
-            className={`w-14 h-14 rounded-full ${c.bg} border-2 ${c.border} backdrop-blur-sm
-              flex items-center justify-center`}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+            className={`w-14 h-14 rounded-full ${c.bg} border-2 ${c.border} backdrop-blur-sm flex items-center justify-center`}
+            whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}
           >
             <svg className={`w-6 h-6 ${c.text} ml-0.5`} viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z" />
             </svg>
           </motion.div>
         </div>
-
-        {/* badge VÍDEO */}
-        <div className={`absolute top-2 right-2 ${c.bg} border ${c.border} rounded-full
-          px-2 py-0.5 flex items-center gap-1`}>
+        <div className={`absolute top-2 right-2 ${c.bg} border ${c.border} rounded-full px-2 py-0.5 flex items-center gap-1`}>
           <span className={`w-1.5 h-1.5 rounded-full ${c.text.replace("text-", "bg-")} animate-pulse`} />
           <span className={`font-mono text-[0.55rem] tracking-widest ${c.text} uppercase`}>vídeo</span>
         </div>
-
         {item.caption && (
-          <div className="absolute bottom-0 left-0 right-0 px-3 py-2
-            bg-gradient-to-t from-slate-950/80 to-transparent">
+          <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-slate-950/80 to-transparent">
             <p className={`font-mono text-[0.6rem] tracking-widest ${c.text}`}>{item.caption}</p>
           </div>
         )}
       </div>
-
       {videoModal && item.src && (
         <VideoModal src={item.src} caption={item.caption} onClose={() => setVideoModal(false)} />
       )}
@@ -370,7 +296,7 @@ function MediaItem({ item, color }) {
   );
 }
 
-// ── Galeria de mídia com thumbnails
+// ── Galeria de mídia
 function MediaGallery({ media, color, isOpen }) {
   const [active, setActive] = useState(0);
   const c = COLOR_MAP[color];
@@ -384,10 +310,10 @@ function MediaGallery({ media, color, isOpen }) {
       <AnimatePresence mode="wait">
         <motion.div
           key={active}
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.25 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
         >
           <MediaItem item={item} color={color} />
         </motion.div>
@@ -405,15 +331,10 @@ function MediaGallery({ media, color, isOpen }) {
                   ? `${c.border.replace("/20", "/70")} scale-105`
                   : "border-slate-700/40 opacity-60 hover:opacity-100"}`}
             >
-              {/* thumbnail automática para vídeos na galeria */}
               {m.type === "video" && m.src ? (
                 <VideoThumb src={m.src} className="w-full h-full object-cover" />
               ) : (
-                <img
-                  src={m.src || m.poster}
-                  alt={m.caption}
-                  className="w-full h-full object-cover"
-                />
+                <img src={m.src || m.poster} alt={m.caption} className="w-full h-full object-cover" />
               )}
               {m.type === "video" && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/30">
@@ -430,16 +351,13 @@ function MediaGallery({ media, color, isOpen }) {
   );
 }
 
-// ── Accordion individual
+// ── Accordion individual — abertura fluída via CSS grid-rows
 function HobbyAccordion({ hobby, index, isOpen, onToggle }) {
   const c = COLOR_MAP[hobby.color];
   const cardRef = useRef(null);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const springConfig = { stiffness: 150, damping: 20, mass: 0.5 };
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [3, -3]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-3, 3]), springConfig);
   const glowX = useTransform(mouseX, [-0.5, 0.5], ["0%", "100%"]);
   const glowY = useTransform(mouseY, [-0.5, 0.5], ["0%", "100%"]);
   const glowBackground = useTransform(
@@ -464,25 +382,25 @@ function HobbyAccordion({ hobby, index, isOpen, onToggle }) {
       ref={cardRef}
       initial={{ opacity: 0, x: -30 }}
       whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: false, amount: 0.15 }}
+      viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-      animate={{ scale: isOpen ? 1.01 : 1 }}
-      style={{ rotateX, rotateY, perspective: 1000 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       whileHover={{ boxShadow: `0 16px 40px ${c.glowHover}, 0 4px 16px rgba(0,0,0,0.4)` }}
       className="group rounded-2xl border border-slate-700/60 bg-slate-900/50
         overflow-hidden transition-colors duration-300 hover:border-slate-600/80"
     >
+      {/* brilho mouse */}
       <motion.div
         className="pointer-events-none absolute inset-0 rounded-2xl z-0
           opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         style={{ background: glowBackground }}
       />
 
+      {/* HEADER */}
       <button
         onClick={onToggle}
-        className="relative z-10 w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 sm:py-4 text-left"
+        className="relative z-10 w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 sm:py-4 text-left cursor-pointer"
       >
         <motion.div
           animate={isOpen ? { scale: [1, 1.15, 1] } : { scale: 1 }}
@@ -516,7 +434,7 @@ function HobbyAccordion({ hobby, index, isOpen, onToggle }) {
           group-hover:border-slate-500 group-hover:text-slate-300 transition-all duration-200">
           <motion.svg
             animate={{ rotate: isOpen ? 45 : 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="w-3.5 h-3.5"
             viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
           >
@@ -525,20 +443,29 @@ function HobbyAccordion({ hobby, index, isOpen, onToggle }) {
         </div>
       </button>
 
+      {/* linha divisória — anima opacidade suavemente */}
       <div className="px-4 sm:px-5 relative z-10">
-        <div className={`h-px ${c.bar} rounded-full transition-opacity duration-300
-          ${isOpen ? "opacity-100" : "opacity-30"}`} />
+        <div
+          className={`h-px ${c.bar} rounded-full transition-opacity duration-500
+            ${isOpen ? "opacity-100" : "opacity-30"}`}
+        />
       </div>
 
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            key="body"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden relative z-10"
+      {/* ── CORPO — grid-rows é a técnica mais fluída para height: 0 → auto
+          grid-rows-[0fr] → grid-rows-[1fr] anima sem travar
+          o inner div precisa de overflow-hidden para funcionar */}
+      <div
+        className="relative z-10 transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        style={{ display: "grid", gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+      >
+        <div className="overflow-hidden">
+          {/* fade-in do conteúdo independente da altura */}
+          <div
+            className="transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            style={{
+              opacity: isOpen ? 1 : 0,
+              transform: isOpen ? "translateY(0)" : "translateY(-8px)",
+            }}
           >
             <div className="px-4 sm:px-5 py-4 flex flex-col gap-5">
               <p className="text-slate-400 text-sm font-mono leading-relaxed">
@@ -555,9 +482,9 @@ function HobbyAccordion({ hobby, index, isOpen, onToggle }) {
                 ))}
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      </div>
     </motion.div>
   );
 }
@@ -580,7 +507,7 @@ export default function Hobbies() {
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: false, amount: 0.3 }}
+          viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="flex items-center gap-3 mb-3">
@@ -619,7 +546,7 @@ export default function Hobbies() {
               className="flex flex-col gap-3"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
+              viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <p className="font-mono text-[0.65rem] text-slate-500 tracking-widest uppercase">

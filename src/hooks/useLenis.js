@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 
-export function useLenis({ duration = 1.6 } = {}) {
+export function useLenis({ duration = 1.6, enabled = true } = {}) {
   useEffect(() => {
+    if (!enabled) return;
+
     const lenis = new Lenis({
       duration,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -16,5 +18,5 @@ export function useLenis({ duration = 1.6 } = {}) {
     requestAnimationFrame(raf);
 
     return () => lenis.destroy();
-  }, [duration]);
+  }, [duration, enabled]);
 }
