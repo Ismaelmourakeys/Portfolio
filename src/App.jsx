@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Analytics } from "@vercel/analytics/react";
 import Loader from "./components/Loader";
 import WelcomeScreen from "./components/WelcomeScreen";
 import MusicPlayer from "./components/MusicPlayer";
@@ -26,7 +25,6 @@ export default function App() {
 
   return (
     <>
-      <Analytics />
       {/* 1. Loader */}
       {phase === "loader" && (
         <Loader
