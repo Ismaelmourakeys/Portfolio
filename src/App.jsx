@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import Loader from "./components/Loader";
 import WelcomeScreen from "./components/WelcomeScreen";
 import MusicPlayer from "./components/MusicPlayer";
@@ -72,6 +73,7 @@ export default function App() {
               </motion.div>
             </div>
           </AnimatePresence>
+          <SpeedInsights />
         </>
       )}
     </>
