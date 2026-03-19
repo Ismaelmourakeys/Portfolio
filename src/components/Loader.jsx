@@ -37,10 +37,10 @@ function SpaceCanvas() {
         Math.random() > 0.85
           ? "rgba(56,189,248,"
           : Math.random() > 0.7
-          ? "rgba(250,204,21,"
-          : Math.random() > 0.6
-          ? "rgba(167,139,250,"
-          : "rgba(200,210,230,",
+            ? "rgba(250,204,21,"
+            : Math.random() > 0.6
+              ? "rgba(167,139,250,"
+              : "rgba(200,210,230,",
     }));
 
     class Comet {
@@ -216,10 +216,10 @@ function CosmicDustCanvas({ active }) {
     const cy = SIZE / 2;
 
     const dustColors = [
-      { r: 56,  g: 189, b: 248 },
+      { r: 56, g: 189, b: 248 },
       { r: 129, g: 140, b: 248 },
       { r: 167, g: 139, b: 250 },
-      { r: 52,  g: 211, b: 153 },
+      { r: 52, g: 211, b: 153 },
       { r: 244, g: 114, b: 182 },
       { r: 255, g: 255, b: 255 },
       { r: 196, g: 181, b: 253 },
@@ -255,8 +255,32 @@ function CosmicDustCanvas({ active }) {
       speed: 0.0003 + Math.random() * 0.0008,
     }));
 
+    // Glow central pré-renderizado — não recria gradiente a cada frame
+    const glowOffscreen = document.createElement("canvas");
+    glowOffscreen.width = SIZE; glowOffscreen.height = SIZE;
+    const glowCtx = glowOffscreen.getContext("2d");
+    const centerGlow = glowCtx.createRadialGradient(cx, cy, 0, cx, cy, 80);
+    centerGlow.addColorStop(0, "rgba(56,189,248,0.04)");
+    centerGlow.addColorStop(0.5, "rgba(139,92,246,0.03)");
+    centerGlow.addColorStop(1, "rgba(0,0,0,0)");
+    glowCtx.fillStyle = centerGlow;
+    glowCtx.fillRect(0, 0, SIZE, SIZE);
+
+    let frameCount = 0;
+
     const draw = () => {
+      rafRef.current = requestAnimationFrame(draw);
+
+      // ── CONTROLE DE FPS ──────────────────────────────────────────
+      // % 1 = 60fps  → sem throttle, máximo de fluidez
+      // % 2 = 30fps  → pula 1 frame em cada 2, metade do custo
+      // % 3 = 20fps  → pula 2 frames em cada 3, bem mais leve
+      // Se travar, troque % 1 por % 2 ou % 3
+      frameCount++;
+      if (frameCount % 1 !== 0) return; // ← altere aqui
+
       ctx.clearRect(0, 0, SIZE, SIZE);
+
       nebulae.forEach((n) => {
         n.angle += n.speed;
         const x = cx + Math.cos(n.angle) * n.orbit;
@@ -268,12 +292,8 @@ function CosmicDustCanvas({ active }) {
         ctx.fillStyle = grd; ctx.fill();
       });
 
-      const centerGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 80);
-      centerGlow.addColorStop(0, "rgba(56,189,248,0.04)");
-      centerGlow.addColorStop(0.5, "rgba(139,92,246,0.03)");
-      centerGlow.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = centerGlow;
-      ctx.fillRect(0, 0, SIZE, SIZE);
+      // Glow central do offscreen (sem recriar gradiente a cada frame)
+      ctx.drawImage(glowOffscreen, 0, 0);
 
       dust.forEach((p) => {
         p.angle += p.speed;
@@ -304,8 +324,6 @@ function CosmicDustCanvas({ active }) {
           }
         }
       });
-
-      rafRef.current = requestAnimationFrame(draw);
     };
 
     rafRef.current = requestAnimationFrame(draw);
@@ -342,9 +360,9 @@ export default function Loader({ onDone, onUserInteracted }) {
   // então quando o usuário apertar "Entrar" o som toca instantâneo
   const audioRef = useRef(null);
   useEffect(() => {
-    const audio = new Audio("/assets/audio/effect_sound1.wav");
+    const audio = new Audio("/assets/audio/sound_loader1.wav");
     audio.preload = "auto"; // força o download imediato
-    audio.volume = 0.3;
+    audio.volume = 0.5;
     audio.load();           // dispara o carregamento
     audioRef.current = audio;
   }, []);
@@ -364,21 +382,23 @@ export default function Loader({ onDone, onUserInteracted }) {
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  const handleEnter = () => {
+  const handleEnter = async () => {
     if (entering) return;
     setEntering(true);
 
+    // Desbloqueia contexto de áudio do site (MusicPlayer etc.)
     onUserInteracted?.();
 
-    // Toca o áudio já pré-carregado — sem delay
-    try {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.currentTime = 0; // garante que começa do início
-        audio.play();
+    // Toca o som do loader — async/await para capturar erros corretamente
+    const audio = audioRef.current;
+    if (audio) {
+      try {
+        audio.currentTime = 0;
+        await audio.play();
+      } catch (e) {
+        // Autoplay bloqueado ou outro erro — ignora silenciosamente
+        console.warn("Som do loader não reproduzido:", e.message);
       }
-    } catch (e) {
-      console.warn("Erro ao reproduzir áudio:", e);
     }
 
     setWarp(true);
@@ -411,8 +431,8 @@ export default function Loader({ onDone, onUserInteracted }) {
 
           {!warp &&
             [
-              { size: 260, dur: 5,  color: "rgba(56,189,248,0.22)", reverse: false },
-              { size: 340, dur: 8,  color: "rgba(139,92,246,0.18)", reverse: true  },
+              { size: 260, dur: 5, color: "rgba(56,189,248,0.22)", reverse: false },
+              { size: 340, dur: 8, color: "rgba(139,92,246,0.18)", reverse: true },
               { size: 420, dur: 13, color: "rgba(52,211,153,0.13)", reverse: false },
             ].map((ring, i) => (
               <motion.div
@@ -431,12 +451,12 @@ export default function Loader({ onDone, onUserInteracted }) {
               warp
                 ? { scale: 0, opacity: 0 }
                 : {
-                    boxShadow: [
-                      "0 0 40px rgba(56,189,248,0.10), 0 0 80px rgba(56,189,248,0.04)",
-                      "0 0 70px rgba(56,189,248,0.28), 0 0 140px rgba(56,189,248,0.12)",
-                      "0 0 40px rgba(56,189,248,0.10), 0 0 80px rgba(56,189,248,0.04)",
-                    ],
-                  }
+                  boxShadow: [
+                    "0 0 40px rgba(56,189,248,0.10), 0 0 80px rgba(56,189,248,0.04)",
+                    "0 0 70px rgba(56,189,248,0.28), 0 0 140px rgba(56,189,248,0.12)",
+                    "0 0 40px rgba(56,189,248,0.10), 0 0 80px rgba(56,189,248,0.04)",
+                  ],
+                }
             }
             transition={
               warp

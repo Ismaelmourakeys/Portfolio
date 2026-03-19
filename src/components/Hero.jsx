@@ -15,7 +15,7 @@ function SpaceCanvas() {
     resize();
     window.addEventListener("resize", resize);
 
-    const stars = Array.from({ length: 100 }, () => {
+    const stars = Array.from({ length: 80 }, () => {
       const depth = Math.random();
       return {
         x: Math.random(), y: Math.random(),
@@ -28,38 +28,76 @@ function SpaceCanvas() {
       };
     });
 
+    // ── Cometas com 3 tamanhos variados e glow realista
     class Comet {
       constructor(initial = false) { this.reset(initial); }
+
       reset(initial = false) {
-        this.x = Math.random() * canvas.width * 1.4 - canvas.width * 0.2;
-        this.y = initial ? Math.random() * canvas.height * -0.8 : -40;
-        this.len = 50 + Math.random() * 80;
-        this.speed = 2 + Math.random() * 2.5;
-        this.angle = Math.PI / 4 + (Math.random() - 0.5) * 0.3;
-        this.width = 0.5 + Math.random() * 0.8;
-        this.opacity = 0.25 + Math.random() * 0.3;
+        // Para alterar as variações de tamanos dos cometas, 
+        // Tipo: 0 = micro (50%), 1 = médio (32%), 2 = grande (18%)
+        const roll = Math.random();
+        this.type = roll < 0.18 ? 0 : roll < 0.68 ? 1 : 2;
+        //                  ^^^^             ^^^^
+        //          micro até 18%      médio até 68%    grande resto (32%)
+
+
+        const rng = (a, b) => a + Math.random() * (b - a);
+        const sizes = [
+          { len: [25, 55], speed: [1.2, 2.5], width: [0.3, 0.55], op: [0.12, 0.25] },
+          { len: [80, 150], speed: [2.5, 4.0], width: [0.6, 1.1], op: [0.28, 0.45] },
+          { len: [170, 280], speed: [3.5, 5.5], width: [1.1, 2.0], op: [0.45, 0.72] },
+        ];
+        const s = sizes[this.type];
+        this.x = Math.random() * canvas.width * 1.5 - canvas.width * 0.25;
+        this.y = initial ? Math.random() * canvas.height * -1 : -60;
+        this.len = rng(...s.len);
+        this.speed = rng(...s.speed);
+        this.angle = Math.PI / 4 + (Math.random() - 0.5) * 0.45;
+        this.width = rng(...s.width);
+        this.opacity = rng(...s.op);
+        const hues = ["220,235,255", "230,240,255", "210,228,248", "238,235,215"];
+        this.hue = hues[Math.floor(Math.random() * hues.length)];
         this.active = !initial; this.timer = 0;
-        this.delay = initial ? Math.floor(Math.random() * 300) : 300 + Math.floor(Math.random() * 700);
+        this.delay = initial
+          ? Math.floor(Math.random() * 400)
+          : 200 + Math.floor(Math.random() * (this.type === 2 ? 1400 : 800));
       }
       update() {
         if (!this.active) { this.timer++; if (this.timer >= this.delay) this.active = true; return; }
         this.x += Math.cos(this.angle) * this.speed;
         this.y += Math.sin(this.angle) * this.speed;
-        if (this.x > canvas.width + 80 || this.y > canvas.height + 80) this.reset(false);
+        if (this.x > canvas.width + 130 || this.y > canvas.height + 130) this.reset(false);
       }
       draw() {
         if (!this.active) return;
         const tailX = this.x - Math.cos(this.angle) * this.len;
         const tailY = this.y - Math.sin(this.angle) * this.len;
+        // Cauda com 3 paradas — aparece mais gradualmente
         const grad = ctx.createLinearGradient(tailX, tailY, this.x, this.y);
-        grad.addColorStop(0, "rgba(220,235,255,0)");
-        grad.addColorStop(1, `rgba(240,248,255,${this.opacity.toFixed(2)})`);
+        grad.addColorStop(0, `rgba(${this.hue},0)`);
+        grad.addColorStop(0.55, `rgba(${this.hue},${(this.opacity * 0.3).toFixed(3)})`);
+        grad.addColorStop(1, `rgba(${this.hue},${this.opacity.toFixed(3)})`);
         ctx.beginPath(); ctx.moveTo(tailX, tailY); ctx.lineTo(this.x, this.y);
         ctx.strokeStyle = grad; ctx.lineWidth = this.width; ctx.lineCap = "round"; ctx.stroke();
+        // Glow na cabeça — médios e grandes
+        if (this.type > 0) {
+          const glowR = this.width * (this.type === 2 ? 5.5 : 3.5);
+          const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, glowR);
+          glow.addColorStop(0, `rgba(${this.hue},${(this.opacity * 0.9).toFixed(3)})`);
+          glow.addColorStop(1, `rgba(${this.hue},0)`);
+          ctx.beginPath(); ctx.arc(this.x, this.y, glowR, 0, Math.PI * 2);
+          ctx.fillStyle = glow; ctx.fill();
+        }
+        // Núcleo brilhante — só grandes
+        if (this.type === 2) {
+          ctx.beginPath(); ctx.arc(this.x, this.y, this.width * 0.9, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${(this.opacity * 0.85).toFixed(3)})`;
+          ctx.fill();
+        }
       }
     }
 
-    // Aqui no length 2 para não sobrecarregar o dispositivo, mas pode ser aumentado para mais cometas se necessário
+
     const comets = Array.from({ length: 4 }, () => new Comet(true));
     let raf; let frameCount = 0; let paused = false;
 
@@ -70,7 +108,12 @@ function SpaceCanvas() {
       raf = requestAnimationFrame(draw);
       if (paused) return;
       frameCount++;
-      if (frameCount % 2 !== 0) return;
+      // ── CONTROLE DE FPS ──────────────────────────────────────────
+      // % 1 = 60fps  → sem throttle, máximo de fluidez
+      // % 2 = 30fps  → pula 1 frame em cada 2, metade do custo
+      // % 3 = 20fps  → pula 2 frames em cada 3, bem mais leve
+      // Se travar, troque % 1 por % 2 ou % 3
+      if (frameCount % 1 !== 0) return; // ← altere aqui
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       stars.forEach((s) => {
         const pulse = 0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase);
@@ -167,7 +210,12 @@ function GalaxyBorder({ size = 420 }) {
       raf = requestAnimationFrame(draw);
       if (paused) return;
       frameCount++;
-      if (frameCount % 2 !== 0) return;
+      // ── CONTROLE DE FPS ──────────────────────────────────────────
+      // % 1 = 60fps  → sem throttle, máximo de fluidez
+      // % 2 = 30fps  → pula 1 frame em cada 2, metade do custo
+      // % 3 = 20fps  → pula 2 frames em cada 3, bem mais leve
+      // Se travar, troque % 1 por % 2 ou % 3
+      if (frameCount % 1 !== 0) return; // ← alterar aqui
 
       ctx.clearRect(0, 0, S, S);
       ctx.drawImage(offscreen, 0, 0);
