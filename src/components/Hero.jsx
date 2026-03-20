@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import Typed from "typed.js";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-// ── SpaceCanvas leve: 80 estrelas, 2 cometas, throttle 30fps, pausa fora da tela
+// ── SpaceCanvas leve: 100 estrelas, 4 cometas, throttle 30fps, pausa fora da tela
 function SpaceCanvas() {
   const canvasRef = useRef(null);
 
@@ -15,7 +15,10 @@ function SpaceCanvas() {
     resize();
     window.addEventListener("resize", resize);
 
-    const stars = Array.from({ length: 80 }, () => {
+    // AQUI ALTERO A QUANTIDADE DE ESTRELAS
+    const stars = Array.from({ length: 100 }, () => {
+      //                               ^^^
+      //                     altere esse número para mais ou menos estrelas  
       const depth = Math.random();
       return {
         x: Math.random(), y: Math.random(),
@@ -31,16 +34,10 @@ function SpaceCanvas() {
     // ── Cometas com 3 tamanhos variados e glow realista
     class Comet {
       constructor(initial = false) { this.reset(initial); }
-
       reset(initial = false) {
-        // Para alterar as variações de tamanos dos cometas, 
         // Tipo: 0 = micro (50%), 1 = médio (32%), 2 = grande (18%)
         const roll = Math.random();
-        this.type = roll < 0.18 ? 0 : roll < 0.68 ? 1 : 2;
-        //                  ^^^^             ^^^^
-        //          micro até 18%      médio até 68%    grande resto (32%)
-
-
+        this.type = roll < 0.5 ? 0 : roll < 0.82 ? 1 : 2;
         const rng = (a, b) => a + Math.random() * (b - a);
         const sizes = [
           { len: [25, 55], speed: [1.2, 2.5], width: [0.3, 0.55], op: [0.12, 0.25] },
@@ -97,8 +94,10 @@ function SpaceCanvas() {
       }
     }
 
-
+    // AQUI ALTERO A QUANTIDADE DE COMETAS 
     const comets = Array.from({ length: 4 }, () => new Comet(true));
+    //                                 ^^^
+    //                         altere esse número para mais ou menos cometas
     let raf; let frameCount = 0; let paused = false;
 
     const observer = new IntersectionObserver(([entry]) => { paused = !entry.isIntersecting; }, { threshold: 0 });
@@ -118,8 +117,51 @@ function SpaceCanvas() {
       stars.forEach((s) => {
         const pulse = 0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase);
         const alpha = s.minAlpha + (s.maxAlpha - s.minAlpha) * pulse;
-        ctx.beginPath(); ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
+        const sx = s.x * canvas.width;
+        const sy = s.y * canvas.height;
+
+        // ── Camada 1: glow difuso externo (halo atmosférico)
+        if (s.r > 0.5) {
+          const haloR = s.r * (s.r > 1.5 ? 7 : 4.5);
+          const halo = ctx.createRadialGradient(sx, sy, 0, sx, sy, haloR);
+          halo.addColorStop(0, `${s.color}${(alpha * 0.35).toFixed(3)})`);
+          halo.addColorStop(0.4, `${s.color}${(alpha * 0.12).toFixed(3)})`);
+          halo.addColorStop(1, `${s.color}0)`);
+          ctx.beginPath(); ctx.arc(sx, sy, haloR, 0, Math.PI * 2);
+          ctx.fillStyle = halo; ctx.fill();
+        }
+
+        // ── Camada 2: núcleo da estrela
+        ctx.beginPath(); ctx.arc(sx, sy, s.r, 0, Math.PI * 2);
         ctx.fillStyle = `${s.color}${alpha.toFixed(3)})`; ctx.fill();
+
+        // ── Camada 3: ponto central branco brilhante (nas médias e grandes)
+        if (s.r > 0.9) {
+          ctx.beginPath(); ctx.arc(sx, sy, s.r * 0.45, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${(alpha * 0.8).toFixed(3)})`;
+          ctx.fill();
+        }
+
+        // ── Camada 4: diffraction spikes — raios de luz em cruz (só nas grandes)
+        if (s.r > 1.8) {
+          const spikeLen = s.r * 5.5 * pulse;
+          const spikeAlpha = alpha * 0.45;
+          // Raio horizontal e vertical
+          [[1, 0], [0, 1]].forEach(([dx, dy]) => {
+            // lado positivo
+            const g1 = ctx.createLinearGradient(sx, sy, sx + dx * spikeLen, sy + dy * spikeLen);
+            g1.addColorStop(0, `${s.color}${spikeAlpha.toFixed(3)})`);
+            g1.addColorStop(1, `${s.color}0)`);
+            ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + dx * spikeLen, sy + dy * spikeLen);
+            ctx.strokeStyle = g1; ctx.lineWidth = s.r * 0.22; ctx.lineCap = "round"; ctx.stroke();
+            // lado negativo
+            const g2 = ctx.createLinearGradient(sx, sy, sx - dx * spikeLen, sy - dy * spikeLen);
+            g2.addColorStop(0, `${s.color}${spikeAlpha.toFixed(3)})`);
+            g2.addColorStop(1, `${s.color}0)`);
+            ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - dx * spikeLen, sy - dy * spikeLen);
+            ctx.strokeStyle = g2; ctx.lineWidth = s.r * 0.22; ctx.lineCap = "round"; ctx.stroke();
+          });
+        }
       });
       comets.forEach((c) => { c.update(); c.draw(); });
     };
@@ -215,7 +257,7 @@ function GalaxyBorder({ size = 420 }) {
       // % 2 = 30fps  → pula 1 frame em cada 2, metade do custo
       // % 3 = 20fps  → pula 2 frames em cada 3, bem mais leve
       // Se travar, troque % 1 por % 2 ou % 3
-      if (frameCount % 1 !== 0) return; // ← alterar aqui
+      if (frameCount % 1 !== 0) return; // ← altere aqui
 
       ctx.clearRect(0, 0, S, S);
       ctx.drawImage(offscreen, 0, 0);

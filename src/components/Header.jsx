@@ -2,10 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 
 const NAV_LINKS = [
-  { href: "#sobre",        label: "Sobre"         },
-  { href: "#projetos",     label: "Projetos"      },
+  { href: "#sobre", label: "Sobre" },
+  { href: "#projetos", label: "Projetos" },
   { href: "#certificados", label: "Certificações" },
-  { href: "#hobbies",      label: "Hobbies"       },
+  { href: "#hobbies", label: "Experiências" },
 ];
 
 // Estrelinhas decorativas para o painel mobile
@@ -20,9 +20,9 @@ const PANEL_STARS = Array.from({ length: 30 }, (_, i) => ({
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled]  = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef(null);
-  const btnRef  = useRef(null);
+  const btnRef = useRef(null);
 
   // glassmorphism ao rolar
   useEffect(() => {

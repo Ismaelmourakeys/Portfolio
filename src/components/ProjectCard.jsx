@@ -99,7 +99,6 @@ export default function ProjectCard({ project, index = 0 }) {
   const mouseY = useMotionValue(0);
 
   const springConfig = { stiffness: 120, damping: 18, mass: 0.6 };
-  // Tilt só no desktop — no mobile não tem mouse
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], mobile ? [0, 0] : [6, -6]), springConfig);
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], mobile ? [0, 0] : [-6, 6]), springConfig);
 
@@ -110,7 +109,8 @@ export default function ProjectCard({ project, index = 0 }) {
     ([x, y]) => `radial-gradient(circle at ${x} ${y}, rgba(56,189,248,0.13) 0%, rgba(139,92,246,0.06) 50%, transparent 70%)`
   );
 
-  const handleMouseMove = (e) => {
+  // ── No mobile não registra handlers de mouse — evita enroscar o scroll vertical
+  const handleMouseMove = mobile ? undefined : (e) => {
     const card = cardRef.current;
     if (!card) return;
     const rect = card.getBoundingClientRect();
@@ -118,14 +118,13 @@ export default function ProjectCard({ project, index = 0 }) {
     mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = mobile ? undefined : () => {
     mouseX.set(0);
     mouseY.set(0);
   };
 
   const entryDelay = index * 0.1;
 
-  // Animação de entrada: mobile = simples (só fade+y), desktop = cósmica (blur+scale+y)
   const entryInitial = mobile
     ? { opacity: 0, y: 20 }
     : { opacity: 0, y: -50, scale: 0.85 };
@@ -148,10 +147,15 @@ export default function ProjectCard({ project, index = 0 }) {
         transition-colors duration-300 snap-start"
       initial={entryInitial}
       whileInView={entryAnimate}
-      // once: true no mobile evita re-animar ao arrastar o carrossel
       viewport={{ once: mobile ? true : false, amount: 0.15 }}
       transition={entryTransition}
-      style={{ rotateX, rotateY, perspective: mobile ? "none" : 1000 }}
+      style={{
+        rotateX,
+        rotateY,
+        perspective: mobile ? "none" : 1000,
+        // No mobile: garante que o touch-action não interfere no scroll vertical
+        touchAction: mobile ? "pan-y" : "auto",
+      }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       whileHover={mobile ? {} : {
@@ -159,18 +163,15 @@ export default function ProjectCard({ project, index = 0 }) {
         borderColor: "rgba(56,189,248,0.40)",
       }}
     >
-      {/* estrelas e partículas só no desktop */}
       <CardStars count={20} />
       <CosmicParticles />
 
-      {/* brilho nebular — só desktop */}
       <motion.div
         className="pointer-events-none absolute inset-0 rounded-2xl z-[1]
           opacity-0 group-hover/card:opacity-100 transition-opacity duration-400 hidden md:block"
         style={{ background: glowBackground }}
       />
 
-      {/* linha aurora no topo */}
       <motion.div
         className="h-px w-full relative z-[2]"
         style={{
@@ -180,7 +181,6 @@ export default function ProjectCard({ project, index = 0 }) {
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: entryDelay }}
       />
 
-      {/* RESUMO */}
       <div className="conteudo resumo flex flex-col flex-1 p-6 relative z-[2]">
 
         <div className="flex items-start justify-between gap-3 mb-3">
@@ -209,7 +209,6 @@ export default function ProjectCard({ project, index = 0 }) {
           {project.description}
         </p>
 
-        {/* mídia */}
         {project.videoSrc ? (
           <div
             className="relative w-full h-40 rounded-xl overflow-hidden ring-1 ring-white/8 cursor-pointer group/video"
@@ -245,7 +244,6 @@ export default function ProjectCard({ project, index = 0 }) {
         )}
       </div>
 
-      {/* FOOTER */}
       <div className="relative z-[2] flex items-center justify-between px-6 py-4 border-t border-white/5">
         <div className="flex gap-2">
           {project.techs.map((tech) => (
@@ -264,7 +262,6 @@ export default function ProjectCard({ project, index = 0 }) {
         </button>
       </div>
 
-      {/* OVERLAY DE DETALHES */}
       <AnimatePresence>
         {showDetails && (
           <motion.div
