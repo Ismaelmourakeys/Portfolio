@@ -11,7 +11,7 @@ const SKILLS = [
   { icon: "devicon-javascript-plain",   label: "JavaScript"   },
   { icon: "devicon-python-plain",       label: "Python"       },
   { icon: "devicon-firebase-plain",     label: "Firebase"     },
-  { icon: "devicon-react-original",     label: "React Native" },
+  { icon: "devicon-react-original",     label: "React / React Native" },
   { icon: "devicon-nodejs-plain",       label: "Node.js"      },
   { icon: "devicon-tailwindcss-plain",  label: "Tailwind"     },
   { icon: "devicon-git-plain",          label: "Git"          },
@@ -133,7 +133,7 @@ export default function AboutMe() {
                 </div>
                 <div>
                   <p className="font-mono text-[0.58rem] text-violet-400 tracking-widest uppercase mb-1.5">/ virada</p>
-                  <p>Com o incentivo e apoio de uma amiga da área, passei a me interessar por tecnologia e criação de soluções que impactam pessoas. Isso me levou ao <strong className="text-slate-200">ensino técnico pela ETEC</strong>, com contato estruturado em lógica de programação, desenvolvimento web e criação de interfaces.</p>
+                  <p>Com o incentivo e apoio de uma amiga da área, passei a me interessar a estudar programação e entender como funciona as interfaces através dos códigos. Isso me levou ao <strong className="text-slate-200">ensino técnico pela ETEC</strong>, com contato estruturado em lógica de programação, desenvolvimento web e criação de interfaces.</p>
                 </div>
                 <div>
                   <p className="font-mono text-[0.58rem] text-emerald-400 tracking-widest uppercase mb-1.5">/ agora</p>
