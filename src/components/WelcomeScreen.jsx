@@ -12,7 +12,7 @@ const LINES_CONFIG = [
   { delay: 0,    type: 400, glitch: 350, color: "text-slate-500",   size: "text-xs",            mono: true  },
   { delay: 700,  type: 500, glitch: 400, color: "text-sky-400",     size: "text-sm",             mono: true  },
   { delay: 1500, type: 500, glitch: 400, color: "text-emerald-400", size: "text-sm",             mono: true  },
-  { delay: 2300, type: 950, glitch: 650, color: "text-white",       size: "text-2xl sm:text-3xl", mono: false },
+  { delay: 2300, type: 950, glitch: 650, color: "text-white",       size: "text-x-l sm:text-2xl", mono: false },
   { delay: 3500, type: 550, glitch: 400, color: "text-violet-400",  size: "text-xs",             mono: true  },
 ];
 
@@ -205,7 +205,7 @@ export default function WelcomeScreen({ onDone }) {
           {/* Coordenadas e ONLINE — termos técnicos/fixos, não traduzem */}
           <motion.div className="absolute bottom-5 left-8 font-mono text-[10px] text-slate-700 tracking-widest"
             initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1.2}}>
-            23°32'S 46°38'W · SETOR: FRONT-END
+            22°11'S 19°97'W · SETOR: FRONT-END
           </motion.div>
 
           <motion.div className="absolute top-5 right-10 flex items-center gap-1.5 font-mono text-[10px] text-slate-600 tracking-widest"
