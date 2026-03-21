@@ -4,27 +4,22 @@
 
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next"; // ← importa o hook de tradução
 
+// ── Skills não precisam de tradução — são nomes técnicos universais
 const SKILLS = [
-  { icon: "devicon-html5-plain",       label: "HTML"         },
-  { icon: "devicon-css3-plain",         label: "CSS"          },
-  { icon: "devicon-javascript-plain",   label: "JavaScript"   },
-  { icon: "devicon-python-plain",       label: "Python"       },
-  { icon: "devicon-firebase-plain",     label: "Firebase"     },
-  { icon: "devicon-react-original",     label: "React / React Native" },
-  { icon: "devicon-nodejs-plain",       label: "Node.js"      },
-  { icon: "devicon-tailwindcss-plain",  label: "Tailwind"     },
-  { icon: "devicon-git-plain",          label: "Git"          },
-  { icon: "devicon-github-original",    label: "GitHub"       },
+  { icon: "devicon-html5-plain",       label: "HTML"               },
+  { icon: "devicon-css3-plain",         label: "CSS"                },
+  { icon: "devicon-javascript-plain",   label: "JavaScript"         },
+  { icon: "devicon-python-plain",       label: "Python"             },
+  { icon: "devicon-firebase-plain",     label: "Firebase"           },
+  { icon: "devicon-react-original",     label: "React / React Native"},
+  { icon: "devicon-nodejs-plain",       label: "Node.js"            },
+  { icon: "devicon-tailwindcss-plain",  label: "Tailwind"           },
+  { icon: "devicon-git-plain",          label: "Git"                },
+  { icon: "devicon-github-original",    label: "GitHub"             },
+
 ];
-
-const AREAS = [
-  { title: "Front-end", desc: "Interfaces modernas e acessíveis", icon: "⬡" },
-  { title: "Mobile",    desc: "Apps com React Native",            icon: "◈" },
-  { title: "UI / UX",   desc: "Experiência focada no usuário",    icon: "✦" },
-];
-
-
 
 // ─────────────────────────────────────────────────────────────
 // Spring configs e variantes de animação
@@ -55,13 +50,25 @@ const inView = { once: false, amount: 0.15 };
 
 // ─────────────────────────────────────────────────────────────
 export default function AboutMe() {
+  // ── Hook de tradução
+  // t()   → busca o texto traduzido pela chave no JSON
+  // i18n  → instância do i18next (não usada aqui diretamente,
+  //         mas útil se precisar de lógica baseada no idioma atual)
+  const { t } = useTranslation();
+
+  // ── AREAS usa t() para traduzir título e descrição de cada área
+  // As chaves batem com o JSON: about.area_fe, about.area_fe_desc, etc.
+  const AREAS = [
+    { title: t("about.area_fe"),  desc: t("about.area_fe_desc"),  icon: "⬡" },
+    { title: t("about.area_mob"), desc: t("about.area_mob_desc"), icon: "◈" },
+    { title: t("about.area_ui"),  desc: t("about.area_ui_desc"),  icon: "✦" },
+  ];
+
   return (
     <>
       <section
         id="sobre"
-        className="relative px-5 sm:px-8 py-20 sm:py-28 overflow-hidden"
-      >
-
+        className="relative px-5 sm:px-8 py-20 sm:py-28 overflow-hidden"      >
 
         <div className="relative z-10 max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-start gap-10 md:gap-14">
@@ -85,8 +92,10 @@ export default function AboutMe() {
                     style={{ objectPosition: "center 20%" }}
                   />
                   <div className="mt-4 text-center">
+                    {/* Nome próprio — não traduz */}
                     <h4 className="text-sm sm:text-base font-semibold text-secondary">Ismael Moura</h4>
-                    <p className="text-xs text-slate-400 mt-0.5">Desenvolvedor Front-end 💡</p>
+                    {/* t("about.job") → "Desenvolvedor Front-end 💡" / "Front-end Developer 💡" / "Desarrollador Front-end 💡" */}
+                    <p className="text-xs text-slate-400 mt-0.5">{t("about.job")}</p>
                   </div>
                 </div>
               </div>
@@ -102,6 +111,7 @@ export default function AboutMe() {
                   >
                     <span className="text-secondary text-base">{area.icon}</span>
                     <div>
+                      {/* area.title e area.desc já vêm traduzidos do array AREAS acima */}
                       <p className="text-xs font-semibold text-slate-200">{area.title}</p>
                       <p className="text-[10px] text-slate-500">{area.desc}</p>
                     </div>
@@ -115,36 +125,71 @@ export default function AboutMe() {
               className="flex flex-col gap-5 text-slate-200 flex-1"
               variants={staggerContainer} initial="hidden" whileInView="visible" viewport={inView}
             >
+              {/* t("about.tag") → "/ quem sou eu" / "/ who I am" / "/ quién soy" */}
               <motion.div variants={dropIn(0, SPRING_BOUNCE)} className="flex items-center gap-2.5">
                 <span className="w-7 h-7 rounded-lg bg-secondary/10 border border-secondary/30 flex items-center justify-center flex-shrink-0">
                   <span className="font-mono text-secondary text-[10px] font-bold">&lt;/&gt;</span>
                 </span>
-                <p className="font-mono text-[0.65rem] tracking-[0.28em] uppercase text-secondary">/ quem sou eu</p>
+                <p className="font-mono text-[0.65rem] tracking-[0.28em] uppercase text-secondary">
+                  {t("about.tag")}
+                </p>
               </motion.div>
 
-              <motion.h3 variants={dropIn(0.08, SPRING_BOUNCE)} className="font-syne text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-100 leading-tight">
-                Sobre <span className="text-secondary">mim</span>
+              {/*
+                t("about.title")     → "Sobre" / "About" / "Sobre"
+                t("about.highlight") → "mim"   / "me"    / "mí"
+              */}
+              <motion.h3
+                variants={dropIn(0.08, SPRING_BOUNCE)}
+                className="font-syne text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-100 leading-tight"
+              >
+                {t("about.title")} <span className="text-secondary">{t("about.highlight")}</span>
               </motion.h3>
 
-              <motion.div variants={dropIn(0.16, SPRING_SOFT)} className="flex flex-col gap-5 text-slate-400 text-sm sm:text-[0.95rem] leading-relaxed">
+              {/*
+                Blocos de texto com dangerouslySetInnerHTML — necessário porque os JSONs
+                contêm tags <strong> / <b> para destacar palavras.
+                A classe i18n-text aplica o estilo dos destaques via index.css.
+
+                t("about.origin_tag") → "/ origem" / "/ origin" / "/ origen"
+                t("about.origin")     → parágrafo completo traduzido com <strong> interno
+                (mesmo padrão para turn_tag/turn e now_tag/now)
+              */}
+              <motion.div
+                variants={dropIn(0.16, SPRING_SOFT)}
+                className="flex flex-col gap-5 text-slate-400 text-sm sm:text-[0.95rem] leading-relaxed"
+              >
                 <div>
-                  <p className="font-mono text-[0.58rem] text-sky-400 tracking-widest uppercase mb-1.5">/ origem</p>
-                  <p>Tenho um perfil dedicado, disciplinado e motivado pelo aprendizado constante. Minha trajetória começou fora da tecnologia — como <strong className="text-slate-200">músico</strong>, professor e educador musical, tocando em igrejas e casamentos, e também com <strong className="text-slate-200">atendimento ao público</strong>, onde desenvolvi comunicação, organização e trabalho em equipe.</p>
+                  <p className="font-mono text-[0.58rem] text-sky-400 tracking-widest uppercase mb-1.5">
+                    {t("about.origin_tag")}
+                  </p>
+                  {/* dangerouslySetInnerHTML renderiza o HTML do JSON corretamente */}
+                  <p className="i18n-text" dangerouslySetInnerHTML={{ __html: t("about.origin") }} />
                 </div>
+
                 <div>
-                  <p className="font-mono text-[0.58rem] text-violet-400 tracking-widest uppercase mb-1.5">/ virada</p>
-                  <p>Com o incentivo e apoio de uma amiga da área, passei a me interessar a estudar programação e entender como funciona as interfaces através dos códigos. Isso me levou ao <strong className="text-slate-200">ensino técnico pela ETEC</strong>, com contato estruturado em lógica de programação, desenvolvimento web e criação de interfaces.</p>
+                  <p className="font-mono text-[0.58rem] text-violet-400 tracking-widest uppercase mb-1.5">
+                    {t("about.turn_tag")}
+                  </p>
+                  <p className="i18n-text" dangerouslySetInnerHTML={{ __html: t("about.turn") }} />
                 </div>
+
                 <div>
-                  <p className="font-mono text-[0.58rem] text-emerald-400 tracking-widest uppercase mb-1.5">/ agora</p>
-                  <p>Focado em evoluir como dev, praticando <strong className="text-slate-200">HTML, CSS, JavaScript, React, React Native</strong> e frameworks modernos, com versionamento em <strong className="text-slate-200">Git/GitHub</strong>. Objetivo: iniciar a graduação em <strong className="text-slate-200">Análise e Desenvolvimento de Sistemas</strong> e ingressar no mercado contribuindo com projetos que façam diferença.</p>
+                  <p className="font-mono text-[0.58rem] text-emerald-400 tracking-widest uppercase mb-1.5">
+                    {t("about.now_tag")}
+                  </p>
+                  <p className="i18n-text" dangerouslySetInnerHTML={{ __html: t("about.now") }} />
                 </div>
               </motion.div>
 
-              {/* Áreas mobile */}
+              {/* Áreas mobile — mesma lógica do desktop, AREAS já traduzido */}
               <motion.div variants={staggerContainer} className="grid grid-cols-3 gap-2 md:hidden">
                 {AREAS.map((area) => (
-                  <motion.div key={area.title} variants={springItem} className="flex flex-col items-center text-center gap-1 bg-white/[0.04] border border-white/8 rounded-xl p-3 hover:bg-white/[0.07] transition-colors">
+                  <motion.div
+                    key={area.title}
+                    variants={springItem}
+                    className="flex flex-col items-center text-center gap-1 bg-white/[0.04] border border-white/8 rounded-xl p-3 hover:bg-white/[0.07] transition-colors"
+                  >
                     <span className="text-secondary text-lg">{area.icon}</span>
                     <p className="text-[11px] font-semibold text-slate-200">{area.title}</p>
                     <p className="text-[9px] text-slate-500 leading-tight">{area.desc}</p>
@@ -152,7 +197,7 @@ export default function AboutMe() {
                 ))}
               </motion.div>
 
-              {/* Skills */}
+              {/* Skills — nomes técnicos universais, não precisam de tradução */}
               <motion.div variants={staggerContainer} className="flex flex-wrap gap-2">
                 {SKILLS.map((skill) => (
                   <motion.span key={skill.label} variants={springItem}
@@ -163,21 +208,31 @@ export default function AboutMe() {
                 ))}
               </motion.div>
 
-              {/* CTAs */}
+              {/* CTAs
+                t("about.cta_contact")  → "Entrar em contato" / "Get in touch"    / "Ponerse en contacto"
+                t("about.cta_projects") → "Ver projetos"      / "View projects"   / "Ver proyectos"
+              */}
               <motion.div variants={dropIn(0.1, SPRING_BOUNCE)} className="flex flex-wrap gap-3 pt-1">
-                <a href="#contato" className="inline-flex items-center gap-2 bg-secondary text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:scale-105 hover:brightness-110 transition-all duration-300 shadow-[0_0_20px_rgba(56,189,248,0.18)]">
-                  Entrar em contato
+                <a
+                  href="#contato"
+                  className="inline-flex items-center gap-2 bg-secondary text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:scale-105 hover:brightness-110 transition-all duration-300 shadow-[0_0_20px_rgba(56,189,248,0.18)]"
+                >
+                  {t("about.cta_contact")}
                 </a>
-                <a href="#projetos" className="inline-flex items-center gap-2 border border-slate-600/60 text-slate-400 font-mono text-[11px] tracking-widest uppercase px-5 py-2.5 rounded-xl hover:border-secondary/50 hover:text-secondary hover:bg-secondary/5 transition-all duration-300">
-                  Ver projetos
-                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                <a
+                  href="#projetos"
+                  className="inline-flex items-center gap-2 border border-slate-600/60 text-slate-400 font-mono text-[11px] tracking-widest uppercase px-5 py-2.5 rounded-xl hover:border-secondary/50 hover:text-secondary hover:bg-secondary/5 transition-all duration-300"
+                >
+                  {t("about.cta_projects")}
+                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </a>
               </motion.div>
             </motion.div>
           </div>
         </div>
       </section>
-
     </>
   );
 }

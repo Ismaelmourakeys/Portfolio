@@ -1,14 +1,21 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const NAV_LINKS = [
-  { href: "#sobre", label: "Sobre" },
-  { href: "#projetos", label: "Projetos" },
-  { href: "#certificados", label: "Certificações" },
-  { href: "#hobbies", label: "Experiências" },
+  // ✅ Correto — chaves que existem no translation.json
+{ href: "#sobre",        key: "nav.about"    },
+{ href: "#projetos",     key: "nav.projects" },
+{ href: "#certificados", key: "nav.certs"    },
+{ href: "#hobbies",      key: "nav.hobbies"  },
+]
+
+const LANGUAGES = [
+  { code: "pt", label: "Português", flag: "🇧🇷" },
+  { code: "en", label: "English", flag: "🇺🇸" },
+  { code: "es", label: "Español", flag: "🇪🇸" },
 ];
 
-// Estrelinhas decorativas para o painel mobile
 const PANEL_STARS = Array.from({ length: 30 }, (_, i) => ({
   id: i,
   x: Math.random() * 100,
@@ -18,31 +25,118 @@ const PANEL_STARS = Array.from({ length: 30 }, (_, i) => ({
   delay: Math.random() * 4,
 }));
 
+// ── Dropdown de idiomas
+function LangDropdown() {
+  const { i18n } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  const current = LANGUAGES.find((l) => l.code === i18n.language) || LANGUAGES[0];
+
+  // Fecha ao clicar fora
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  const changeLanguage = (code) => {
+    i18n.changeLanguage(code);
+    setOpen(false);
+  };
+
+  return (
+    <div ref={ref} className="relative">
+      {/* Botão atual */}
+      <motion.button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 font-mono text-xs tracking-widest
+          border border-slate-700/50 text-slate-400
+          px-3 py-1.5 rounded-full transition-all duration-300 cursor-pointer"
+        whileHover={{
+          borderColor: "rgba(56,189,248,0.4)",
+          color: "#38bdf8",
+          backgroundColor: "rgba(56,189,248,0.05)",
+        }}
+      >
+        <span className="text-sm leading-none">{current.flag}</span>
+        <span className="uppercase">{current.code}</span>
+        <motion.svg
+          className="w-2.5 h-2.5"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          <path d="M6 9l6 6 6-6" />
+        </motion.svg>
+      </motion.button>
+
+      {/* Dropdown */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="absolute right-0 top-full mt-2 w-40 rounded-xl overflow-hidden
+              border border-slate-700/60 shadow-xl z-50"
+            style={{ background: "rgba(8,15,40,0.97)", backdropFilter: "blur(20px)" }}
+            initial={{ opacity: 0, y: -8, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {LANGUAGES.map((lang, i) => (
+              <motion.button
+                key={lang.code}
+                onClick={() => changeLanguage(lang.code)}
+                className={`w-full flex items-center gap-2.5 px-4 py-2.5
+                  font-mono text-xs tracking-wide transition-colors duration-200 cursor-pointer
+                  ${lang.code === i18n.language
+                    ? "text-secondary bg-secondary/8"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                  }`}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05, duration: 0.2 }}
+              >
+                <span className="text-base leading-none">{lang.flag}</span>
+                <span>{lang.label}</span>
+                {lang.code === i18n.language && (
+                  <svg className="w-3 h-3 ml-auto text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                )}
+              </motion.button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function Header() {
+  const { t, i18n } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef(null);
   const btnRef = useRef(null);
 
-  // glassmorphism ao rolar
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // fecha ao clicar fora
   useEffect(() => {
     if (!menuOpen) return;
     const onClickOutside = (e) => {
       if (menuRef.current?.contains(e.target) || btnRef.current?.contains(e.target)) return;
       setMenuOpen(false);
     };
-    const t = setTimeout(() => document.addEventListener("mousedown", onClickOutside), 10);
-    return () => { clearTimeout(t); document.removeEventListener("mousedown", onClickOutside); };
+    const timeout = setTimeout(() => document.addEventListener("mousedown", onClickOutside), 10);
+    return () => { clearTimeout(timeout); document.removeEventListener("mousedown", onClickOutside); };
   }, [menuOpen]);
 
-  // bloqueia scroll quando menu aberto
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -64,15 +158,13 @@ export default function Header() {
         {/* LOGO */}
         <a href="#" className="group flex items-center gap-2">
           <motion.span
-            className="flex items-center justify-center w-8 h-8 rounded-lg
-              bg-secondary/8 border border-secondary/25"
+            className="flex items-center justify-center w-8 h-8 rounded-lg bg-secondary/8 border border-secondary/25"
             whileHover={{ boxShadow: "0 0 16px rgba(56,189,248,0.2)", borderColor: "rgba(56,189,248,0.5)" }}
             transition={{ duration: 0.4 }}
           >
             <span className="font-mono text-secondary text-xs font-bold">&lt;/&gt;</span>
           </motion.span>
-          <h1 className="font-syne text-xl font-bold text-slate-100
-            group-hover:text-secondary transition-colors duration-500">
+          <h1 className="font-syne text-xl font-bold text-slate-100 group-hover:text-secondary transition-colors duration-500">
             Ismael <span className="text-secondary">Moura</span>
           </h1>
         </a>
@@ -90,15 +182,17 @@ export default function Header() {
                 after:transition-all after:duration-400
                 hover:after:w-full hover:after:left-0"
             >
-              {link.label}
+              {t(link.key)}
             </a>
           ))}
+
+          {/* Dropdown de idiomas — desktop */}
+          <LangDropdown />
+
           <motion.a
             href="#contato"
-            className="inline-flex items-center gap-1.5
-              font-mono text-xs tracking-widest uppercase
-              border border-secondary/30 text-secondary/80
-              px-4 py-2 rounded-full transition-all duration-500"
+            className="inline-flex items-center gap-1.5 font-mono text-xs tracking-widest uppercase
+              border border-secondary/30 text-secondary/80 px-4 py-2 rounded-full transition-all duration-500"
             whileHover={{
               borderColor: "rgba(56,189,248,0.6)",
               color: "#38bdf8",
@@ -109,7 +203,7 @@ export default function Header() {
             <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
-            Contato
+            {t("nav.contact")}
           </motion.a>
         </nav>
 
@@ -122,21 +216,16 @@ export default function Header() {
             rounded-xl border border-slate-700/50 hover:border-secondary/40
             transition-colors duration-400 cursor-pointer"
         >
-          <motion.span
-            animate={menuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
+          <motion.span animate={menuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="block w-5 h-px bg-secondary/80 origin-center"
-          />
-          <motion.span
-            animate={menuOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
+            className="block w-5 h-px bg-secondary/80 origin-center" />
+          <motion.span animate={menuOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
             transition={{ duration: 0.25 }}
-            className="block w-5 h-px bg-secondary/80 origin-center"
-          />
+            className="block w-5 h-px bg-secondary/80 origin-center" />
           <motion.span
             animate={menuOpen ? { rotate: -45, y: -6, width: "20px" } : { rotate: 0, y: 0, width: "12px" }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="block h-px bg-secondary/80 origin-center self-start ml-1"
-          />
+            className="block h-px bg-secondary/80 origin-center self-start ml-1" />
         </button>
       </div>
 
@@ -144,70 +233,43 @@ export default function Header() {
       <AnimatePresence>
         {menuOpen && (
           <>
-            {/* overlay — escurece suavemente como noite chegando */}
             <motion.div
               key="overlay"
               className="md:hidden fixed inset-0 z-40"
               style={{ background: "radial-gradient(ellipse at 100% 0%, rgba(2,8,30,0.85) 0%, rgba(2,6,20,0.92) 100%)" }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
               onClick={() => setMenuOpen(false)}
             />
 
-            {/* painel lateral — desliza suavemente */}
             <motion.div
               key="panel"
               ref={menuRef}
-              className="md:hidden fixed top-0 right-0 z-50 h-full w-72
-                flex flex-col pt-24 pb-8 px-6 overflow-hidden"
+              className="md:hidden fixed top-0 right-0 z-50 h-full w-72 flex flex-col pt-24 pb-8 px-6 overflow-hidden"
               style={{ background: "linear-gradient(135deg, rgba(2,8,30,0.97) 0%, rgba(8,15,40,0.98) 100%)" }}
-              initial={{ x: "100%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: "100%", opacity: 0 }}
+              initial={{ x: "100%", opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: "100%", opacity: 0 }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
-              {/* estrelinhas decorativas no painel */}
-              <svg className="pointer-events-none absolute inset-0 w-full h-full opacity-40"
-                xmlns="http://www.w3.org/2000/svg">
+              {/* estrelinhas decorativas */}
+              <svg className="pointer-events-none absolute inset-0 w-full h-full opacity-40" xmlns="http://www.w3.org/2000/svg">
                 {PANEL_STARS.map((s) => (
                   <circle key={s.id} cx={`${s.x}%`} cy={`${s.y}%`} r={s.r} fill="white">
-                    <animate
-                      attributeName="opacity"
-                      values="0;0.6;0"
-                      dur={`${s.dur}s`}
-                      begin={`${s.delay}s`}
-                      repeatCount="indefinite"
-                    />
+                    <animate attributeName="opacity" values="0;0.6;0" dur={`${s.dur}s`} begin={`${s.delay}s`} repeatCount="indefinite" />
                   </circle>
                 ))}
               </svg>
 
-              {/* aurora sutil no canto superior */}
               <div className="pointer-events-none absolute top-0 right-0 w-48 h-48 opacity-15"
-                style={{
-                  background: "radial-gradient(circle at top right, rgba(56,189,248,1), rgba(99,102,241,0.5) 50%, transparent 70%)",
-                  filter: "blur(30px)",
-                }}
-              />
-
-              {/* borda esquerda com gradiente */}
+                style={{ background: "radial-gradient(circle at top right, rgba(56,189,248,1), rgba(99,102,241,0.5) 50%, transparent 70%)", filter: "blur(30px)" }} />
               <div className="absolute top-0 left-0 bottom-0 w-px"
-                style={{ background: "linear-gradient(to bottom, transparent, rgba(56,189,248,0.2) 30%, rgba(99,102,241,0.15) 70%, transparent)" }}
-              />
+                style={{ background: "linear-gradient(to bottom, transparent, rgba(56,189,248,0.2) 30%, rgba(99,102,241,0.15) 70%, transparent)" }} />
 
-              {/* label */}
-              <motion.p
-                className="font-mono text-[0.58rem] tracking-[0.35em] uppercase text-slate-500/70 mb-6 relative z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-              >
-                / navegação
+              <motion.p className="font-mono text-[0.58rem] tracking-[0.35em] uppercase text-slate-500/70 mb-6 relative z-10"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.6 }}>
+                {t("nav.nav_label")}
               </motion.p>
 
-              {/* links — entram um a um com float suave */}
+              {/* links */}
               <div className="flex flex-col gap-1 relative z-10">
                 {NAV_LINKS.map((link, i) => (
                   <motion.a
@@ -220,43 +282,49 @@ export default function Header() {
                     className="group flex items-center gap-3 py-3 px-4 rounded-xl
                       text-slate-300/80 border border-transparent
                       transition-all duration-400 font-syne font-medium text-base"
-                    whileHover={{
-                      x: 4,
-                      color: "#38bdf8",
-                      borderColor: "rgba(56,189,248,0.12)",
-                      backgroundColor: "rgba(56,189,248,0.04)",
-                    }}
+                    whileHover={{ x: 4, color: "#38bdf8", borderColor: "rgba(56,189,248,0.12)", backgroundColor: "rgba(56,189,248,0.04)" }}
                   >
-                    {/* número estelar */}
-                    <span className="font-mono text-[0.55rem] text-slate-600/80
-                      group-hover:text-secondary/50 transition-colors duration-400 w-4 flex-shrink-0">
+                    <span className="font-mono text-[0.55rem] text-slate-600/80 group-hover:text-secondary/50 transition-colors duration-400 w-4 flex-shrink-0">
                       0{i + 1}
                     </span>
-                    {link.label}
-                    {/* seta suave */}
-                    <motion.svg
-                      className="w-3 h-3 ml-auto text-secondary/0 group-hover:text-secondary/60"
+                    {t(link.key)}
+                    <motion.svg className="w-3 h-3 ml-auto text-secondary/0 group-hover:text-secondary/60"
                       viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
-                      initial={{ x: -4, opacity: 0 }}
-                      whileHover={{ x: 0, opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                    >
+                      initial={{ x: -4, opacity: 0 }} whileHover={{ x: 0, opacity: 1 }} transition={{ duration: 0.3 }}>
                       <path d="M5 12h14M12 5l7 7-7 7" />
                     </motion.svg>
                   </motion.a>
                 ))}
               </div>
 
-              {/* divisor estelar */}
+              {/* Seletor de idioma mobile */}
               <motion.div
-                className="my-5 h-px relative z-10"
-                style={{ background: "linear-gradient(to right, transparent, rgba(56,189,248,0.15), transparent)" }}
-                initial={{ scaleX: 0, opacity: 0 }}
-                animate={{ scaleX: 1, opacity: 1 }}
-                transition={{ delay: 0.55, duration: 0.8, ease: "easeOut" }}
-              />
+                className="relative z-10 mt-4 flex gap-2"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                transition={{ delay: 0.55, duration: 0.6 }}
+              >
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => i18n.changeLanguage(lang.code)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-mono text-[0.65rem]
+                      border transition-all duration-200 cursor-pointer
+                      ${i18n.language === lang.code
+                        ? "border-secondary/50 bg-secondary/10 text-secondary"
+                        : "border-slate-700/50 text-slate-500 hover:border-slate-600 hover:text-slate-400"
+                      }`}
+                  >
+                    <span>{lang.flag}</span>
+                    <span className="uppercase">{lang.code}</span>
+                  </button>
+                ))}
+              </motion.div>
 
-              {/* botão contato */}
+              <motion.div className="my-5 h-px relative z-10"
+                style={{ background: "linear-gradient(to right, transparent, rgba(56,189,248,0.15), transparent)" }}
+                initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }}
+                transition={{ delay: 0.55, duration: 0.8, ease: "easeOut" }} />
+
               <motion.a
                 href="#contato"
                 onClick={() => setMenuOpen(false)}
@@ -264,28 +332,18 @@ export default function Header() {
                   font-mono text-xs tracking-widest uppercase
                   border border-secondary/20 text-secondary/70
                   py-3.5 rounded-xl transition-all duration-500"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.6 }}
-                whileHover={{
-                  borderColor: "rgba(56,189,248,0.45)",
-                  color: "#38bdf8",
-                  boxShadow: "0 0 24px rgba(56,189,248,0.10), inset 0 0 24px rgba(56,189,248,0.04)",
-                }}
+                whileHover={{ borderColor: "rgba(56,189,248,0.45)", color: "#38bdf8", boxShadow: "0 0 24px rgba(56,189,248,0.10), inset 0 0 24px rgba(56,189,248,0.04)" }}
               >
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                 </svg>
-                Contato
+                {t("nav.contact")}
               </motion.a>
 
-              {/* rodapé — coordenadas no espaço */}
-              <motion.div
-                className="mt-auto pt-6 border-t border-white/4 relative z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7, duration: 0.8 }}
-              >
+              <motion.div className="mt-auto pt-6 border-t border-white/4 relative z-10"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7, duration: 0.8 }}>
                 <p className="font-mono text-[0.55rem] text-slate-700 text-center tracking-widest">
                   ismael<span className="text-secondary/60">.</span>dev
                 </p>

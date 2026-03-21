@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next"; // ← hook de tradução
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
 
 // ── Spring configs (mesmo padrão do AboutMe)
@@ -18,14 +19,24 @@ const dropIn = (delay = 0, spring = SPRING_BOUNCE) => ({
   },
 });
 
-const HOBBIES = [
+// ── getHobbies(t) — retorna o array de hobbies com textos traduzidos
+// Chamada dentro do componente para reagir à mudança de idioma
+// Os campos "color", "icon" e "media.src/type" não mudam entre idiomas
+// Os textos (label, title, description, tags, captions) vêm do JSON via t()
+function getHobbies(t) {
+  // Helper para buscar caption de uma mídia pelo índice
+  // t("hobbies.items.tecnologia.captions.0") → "Portfólio com React" / "Portfolio with React"
+  const c = (id, i) => t(`hobbies.items.${id}.captions.${i}`, { defaultValue: "" });
+
+  return [
   {
     id: "tecnologia",
     color: "sky",
-    label: "aprendizado",
-    title: "O que venho estudando atualmente?",
-    description: "Sigo aprimorando minhas habilidades no desenvolvimento web com HTML, CSS (Tailwind), JavaScript e React, criando projetos para fortalecer minha lógica de programação.",
-    tags: ["HTML", "CSS", "JavaScript", "React", "Vitejs", "Tailwind", "Node.js"],
+    // t("hobbies.items.tecnologia.label") → "aprendizado" / "learning" / "aprendizaje"
+    label: t("hobbies.items.tecnologia.label"),
+    title: t("hobbies.items.tecnologia.title"),
+    description: t("hobbies.items.tecnologia.description"),
+    tags: t("hobbies.items.tecnologia.tags", { returnObjects: true }),
     icon: (
       <svg className="w-5 h-5 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <rect x="7" y="7" width="10" height="10" rx="1" />
@@ -33,58 +44,58 @@ const HOBBIES = [
       </svg>
     ),
     media: [
-      { type: "image", src: "/assets/Hobbies/Estudo_React.png", caption: "Portfólio com React" },
-      { type: "image", src: "/assets/Hobbies/Imagens_ProjetosSimples/Contador.png", caption: "Contador - Projeto simples para praticar designer e lógica de programação" },
-      { type: "video", src: "/assets/Hobbies/Imagens_ProjetosSimples/Dark_mode.mp4", caption: "Projeto de Dark Mode - projeto simples para revisar conceitos" },
+      { type: "image", src: "/assets/Hobbies/Estudo_React.png",                              caption: c("tecnologia", 0) },
+      { type: "image", src: "/assets/Hobbies/Imagens_ProjetosSimples/Contador.png",          caption: c("tecnologia", 1) },
+      { type: "video", src: "/assets/Hobbies/Imagens_ProjetosSimples/Dark_mode.mp4",         caption: c("tecnologia", 2) },
     ],
   },
   {
     id: "Farmácia",
     color: "violet",
-    label: "experiência profissional",
-    title: "Minha Jornada antes do código",
-    description: "Após atuar como professor e músico, também tive uma experiência profissional na área da farmácia antes de iniciar minha jornada na programação.",
-    tags: ["Farmácia", "Faculdade", "Laboratório", "Trabalho"],
+    label:       t("hobbies.items.Farmácia.label"),
+    title:       t("hobbies.items.Farmácia.title"),
+    description: t("hobbies.items.Farmácia.description"),
+    tags:        t("hobbies.items.Farmácia.tags", { returnObjects: true }),
     icon: (
       <svg className="w-5 h-5 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
       </svg>
     ),
     media: [
-      { type: "image", src: "/assets/Hobbies/Farmacia2.jpg", caption: "Farmácia" },
-      { type: "image", src: "/assets/Hobbies/Farmacia.jpg", caption: "Laboratório" },
-      { type: "image", src: "/assets/Hobbies/Farmacia_Laboratorio.jpg", caption: "Farmácia Magistral" },
-      { type: "image", src: "/assets/Hobbies/Farmacia_Laboratorio2.jpg", caption: "Farmácia Magistral" },
+      { type: "image", src: "/assets/Hobbies/Farmacia2.jpg",             caption: c("Farmácia", 0) },
+      { type: "image", src: "/assets/Hobbies/Farmacia.jpg",              caption: c("Farmácia", 1) },
+      { type: "image", src: "/assets/Hobbies/Farmacia_Laboratorio.jpg",  caption: c("Farmácia", 2) },
+      { type: "image", src: "/assets/Hobbies/Farmacia_Laboratorio2.jpg", caption: c("Farmácia", 3) },
     ],
   },
   {
     id: "musica",
     color: "yellow",
-    label: "música",
-    title: "Compartilhar minha paixão pela música",
-    description: "Alguns lugares que já participei como músico, professor de música e marketing pessoal nas redes sociais.",
-    tags: ["Músico", "Teclado", "Eventos", "Projetos", "Aulas"],
+    label:       t("hobbies.items.musica.label"),
+    title:       t("hobbies.items.musica.title"),
+    description: t("hobbies.items.musica.description"),
+    tags:        t("hobbies.items.musica.tags", { returnObjects: true }),
     icon: (
       <svg className="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
       </svg>
     ),
     media: [
-      { type: "image", src: "/assets/Hobbies/igreja_advec2.jpg", caption: "Evento de igreja" },
-      { type: "image", src: "/assets/Hobbies/culto_panoramica.jpg", caption: "Festividades" },
-      { type: "image", src: "/assets/Hobbies/Escola_musica.png", caption: "Escola de música Opendoors" },
-      { type: "image", src: "/assets/Hobbies/Aulas_Teclado.png", caption: "Aulas de teclado" },
-      { type: "image", src: "/assets/Hobbies/Musica_Portfolio.png", caption: "Gravação da música para portfólio" },
-      { type: "video", src: "/assets/Hobbies/Marketing_instagram.mp4", caption: "Marketing Pessoal com vídeos" },
+      { type: "image", src: "/assets/Hobbies/igreja_advec2.jpg",        caption: c("musica", 0) },
+      { type: "image", src: "/assets/Hobbies/culto_panoramica.jpg",     caption: c("musica", 1) },
+      { type: "image", src: "/assets/Hobbies/Escola_musica.png",        caption: c("musica", 2) },
+      { type: "image", src: "/assets/Hobbies/Aulas_Teclado.png",        caption: c("musica", 3) },
+      { type: "image", src: "/assets/Hobbies/Musica_Portfolio.png",     caption: c("musica", 4) },
+      { type: "video", src: "/assets/Hobbies/Marketing_instagram.mp4",  caption: c("musica", 5) },
     ],
   },
   {
     id: "ETEC",
     color: "pink",
-    label: "Momentos na ETEC",
-    title: "Minha experiências na ETEC",
-    description: "Alguns momentos que marcaram minha jornada na ETEC, desde projetos acadêmicos até atividades extracurriculares.",
-    tags: ["Apresentações", "Projetos", "Visitas técnicas", "Eventos", "Conquistas"],
+    label:       t("hobbies.items.ETEC.label"),
+    title:       t("hobbies.items.ETEC.title"),
+    description: t("hobbies.items.ETEC.description"),
+    tags:        t("hobbies.items.ETEC.tags", { returnObjects: true }),
     icon: (
       <svg className="w-5 h-5 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1" />
@@ -93,16 +104,17 @@ const HOBBIES = [
       </svg>
     ),
     media: [
-      { type: "image", src: "/assets/Hobbies/VisitaAmazon.jfif", caption: "Visita à Amazon" },
-      { type: "image", src: "/assets/Hobbies/ApresentacaoEtec.jfif", caption: "Apresentação - semana de DS" },
-      { type: "image", src: "/assets/Hobbies/Fetesp.jfif", caption: "Visita à Fetesp" },
-      { type: "image", src: "/assets/Hobbies/ApresentacaoTCC.jfif", caption: "Apresentação de TCC" },
-      { type: "image", src: "/assets/Hobbies/TurmaETEC.jfif", caption: "Turma da ETEC 3°I" },
-      { type: "image", src: "/assets/Hobbies/Professor_design.jpg", caption: "Professor de Design - Antonio (Lobinho)" },
-      { type: "image", src: "/assets/Hobbies/ProfessorDom.jfif", caption: "Professor Alexandre Valezzi (Dom)" },
+      { type: "image", src: "/assets/Hobbies/VisitaAmazon.jfif",       caption: c("ETEC", 0) },
+      { type: "image", src: "/assets/Hobbies/ApresentacaoEtec.jfif",   caption: c("ETEC", 1) },
+      { type: "image", src: "/assets/Hobbies/Fetesp.jfif",             caption: c("ETEC", 2) },
+      { type: "image", src: "/assets/Hobbies/ApresentacaoTCC.jfif",    caption: c("ETEC", 3) },
+      { type: "image", src: "/assets/Hobbies/TurmaETEC.jfif",          caption: c("ETEC", 4) },
+      { type: "image", src: "/assets/Hobbies/Professor_design.jpg",    caption: c("ETEC", 5) },
+      { type: "image", src: "/assets/Hobbies/ProfessorDom.jfif",       caption: c("ETEC", 6) },
     ],
   },
-];
+  ]; // ← fecha o array retornado por getHobbies()
+} // ← fecha a função getHobbies()
 
 const COLOR_MAP = {
   sky:     { text: "text-sky-400",     bg: "bg-sky-400/10",     border: "border-sky-400/20",     bar: "bg-sky-400/40",     glow: "rgba(56,189,248,0.10)",  glowHover: "rgba(56,189,248,0.18)"  },
@@ -207,6 +219,8 @@ function VideoThumb({ src, className }) {
 }
 
 function MediaItem({ item, color }) {
+  // ── Hook para o badge "vídeo" traduzido
+  const { t } = useTranslation();
   const c = COLOR_MAP[color];
   const [lightbox, setLightbox] = useState(false);
   const [videoModal, setVideoModal] = useState(false);
@@ -247,7 +261,8 @@ function MediaItem({ item, color }) {
         </div>
         <div className={`absolute top-2 right-2 ${c.bg} border ${c.border} rounded-full px-2 py-0.5 flex items-center gap-1`}>
           <span className={`w-1.5 h-1.5 rounded-full ${c.text.replace("text-","bg-")} animate-pulse`} />
-          <span className={`font-mono text-[0.55rem] tracking-widest ${c.text} uppercase`}>vídeo</span>
+          {/* t("hobbies.video_label") → "vídeo" / "video" / "video" */}
+          <span className={`font-mono text-[0.55rem] tracking-widest ${c.text} uppercase`}>{t("hobbies.video_label")}</span>
         </div>
         {item.caption && (
           <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-slate-950/80 to-transparent">
@@ -388,6 +403,15 @@ function HobbyAccordion({ hobby, index, isOpen, onToggle }) {
 }
 
 export default function Hobbies() {
+  // ── Hook de tradução
+  // t()      → textos fixos da UI e textos dos hobbies via JSON
+  // i18n     → para recriar HOBBIES quando o idioma mudar
+  const { t, i18n } = useTranslation();
+
+  // ── HOBBIES é recalculado quando o idioma muda
+  // getHobbies(t) lê tudo do JSON — ao trocar idioma, os textos atualizam automaticamente
+  const HOBBIES = getHobbies(t);
+
   const [openId, setOpenId] = useState("tecnologia");
   const toggle = (id) => setOpenId((prev) => (prev === id ? null : id));
   const openIndex = HOBBIES.findIndex((h) => h.id === openId);
@@ -412,14 +436,18 @@ export default function Hobbies() {
             <span className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/30 flex items-center justify-center flex-shrink-0">
               <span className="font-mono text-secondary text-xs font-bold">&lt;/&gt;</span>
             </span>
-            <p className="font-mono text-xs tracking-[0.25em] uppercase text-secondary">/ Conheça-me melhor</p>
+            {/* t("hobbies.tag") → "/ Conheça-me melhor" / "/ Get to know me" / "/ Conóceme mejor" */}
+            <p className="font-mono text-xs tracking-[0.25em] uppercase text-secondary">{t("hobbies.tag")}</p>
           </div>
+          {/*
+            t("hobbies.title")     → "Minhas"      / "My"          / "Mis"
+            t("hobbies.highlight") → "Experiências" / "Experiences" / "Experiencias"
+          */}
           <h3 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-100 leading-tight mb-3">
-            Minhas <span className="text-secondary">Experiências</span>
+            {t("hobbies.title")} <span className="text-secondary">{t("hobbies.highlight")}</span>
           </h3>
-          <p className="font-mono text-sm text-slate-500 mb-10 lg:mb-12">
-            Além do código, algumas coisas que movem meu dia a dia.
-          </p>
+          {/* t("hobbies.subtitle") → subtítulo traduzido */}
+          <p className="font-mono text-sm text-slate-500 mb-10 lg:mb-12">{t("hobbies.subtitle")}</p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-8 lg:gap-12 items-start">
@@ -447,27 +475,33 @@ export default function Hobbies() {
               exit="exit"
               viewport={{ once: false, amount: 0.2 }}
             >
-              <p className="font-mono text-[0.65rem] text-slate-500 tracking-widest uppercase">Clique para explorar</p>
+              {/* t("hobbies.explore") → "Clique para explorar" / "Click to explore" / "Haz clic para explorar" */}
+              <p className="font-mono text-[0.65rem] text-slate-500 tracking-widest uppercase">{t("hobbies.explore")}</p>
               <div className="relative h-1 bg-slate-700/30 rounded-full overflow-hidden">
                 <motion.div className="absolute top-0 left-0 h-full bg-gradient-to-r from-sky-400 to-violet-400 rounded-full"
                   animate={{ width: `${progress}%` }} transition={{ duration: 0.5, ease: "easeOut" }} />
               </div>
-              <p className="font-mono text-xs text-slate-600">{progress}% explorado</p>
+              {/* t("hobbies.explored") → "% explorado" / "% explored" / "% explorado" */}
+              <p className="font-mono text-xs text-slate-600">{progress}{t("hobbies.explored")}</p>
               <div className="mt-4 flex flex-col gap-2">
-                <p className="font-mono text-[0.6rem] text-slate-600 tracking-widest uppercase">Tipos de mídia</p>
+                {/* t("hobbies.media_types") → "Tipos de mídia" / "Media types" / "Tipos de medios" */}
+                <p className="font-mono text-[0.6rem] text-slate-600 tracking-widest uppercase">{t("hobbies.media_types")}</p>
                 <div className="flex items-center gap-2">
                   <svg className="w-3 h-3 text-slate-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" />
                   </svg>
-                  <span className="font-mono text-[0.65rem] text-slate-500">foto — clique p/ ampliar</span>
+                  {/* t("hobbies.photo_tip") → "foto — clique p/ ampliar" / "photo — click to enlarge" */}
+                  <span className="font-mono text-[0.65rem] text-slate-500">{t("hobbies.photo_tip")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg className="w-3 h-3 text-slate-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polygon points="5 3 19 12 5 21 5 3" />
                   </svg>
-                  <span className="font-mono text-[0.65rem] text-slate-500">vídeo — clique p/ reproduzir</span>
+                  {/* t("hobbies.video_tip") → "vídeo — clique p/ reproduzir" / "video — click to play" */}
+                  <span className="font-mono text-[0.65rem] text-slate-500">{t("hobbies.video_tip")}</span>
                 </div>
-                <p className="font-mono text-[0.6rem] text-slate-600 mt-1">ESC para fechar</p>
+                {/* t("hobbies.esc_tip") → "ESC para fechar" / "ESC to close" / "ESC para cerrar" */}
+                <p className="font-mono text-[0.6rem] text-slate-600 mt-1">{t("hobbies.esc_tip")}</p>
               </div>
             </motion.div>
           </div>
@@ -475,12 +509,13 @@ export default function Hobbies() {
 
         {/* ── Progresso mobile */}
         <div className="lg:hidden mt-8 flex flex-col gap-3">
-          <p className="font-mono text-[0.65rem] text-slate-500 tracking-widest uppercase">Progresso da exploração</p>
+          {/* t("hobbies.mob_progress") → "Progresso da exploração" / "Exploration progress" */}
+          <p className="font-mono text-[0.65rem] text-slate-500 tracking-widest uppercase">{t("hobbies.mob_progress")}</p>
           <div className="relative h-1 bg-slate-700/30 rounded-full overflow-hidden">
             <motion.div className="absolute top-0 left-0 h-full bg-gradient-to-r from-sky-400 to-violet-400 rounded-full"
               animate={{ width: `${progress}%` }} transition={{ duration: 0.5, ease: "easeOut" }} />
           </div>
-          <p className="font-mono text-xs text-slate-600 text-center">{progress}% explorado</p>
+          <p className="font-mono text-xs text-slate-600 text-center">{progress}{t("hobbies.explored")}</p>
         </div>
       </div>
     </section>

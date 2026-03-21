@@ -1,16 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next"; // ← hook de tradução
+import i18n from "../data/i18n"; // ← instância global para trocar idioma
 import { motion, AnimatePresence } from "framer-motion";
 
-const STEPS = [
-  { pct: 15, msg: "carregando componentes..." },
-  { pct: 40, msg: "compilando estilos..." },
-  { pct: 65, msg: "inicializando módulos..." },
-  { pct: 85, msg: "renderizando interface..." },
-  { pct: 100, msg: "pronto!" },
-];
+// ── STEPS_PCT — percentuais fixos, mensagens vêm do JSON via t()
+const STEPS_PCT = [15, 40, 65, 85, 100];
 
 const TOTAL_DURATION = 3200;
-const STEP_INTERVAL = TOTAL_DURATION / STEPS.length;
+// STEP_INTERVAL usa STEPS_PCT.length — STEPS é criado dentro do componente
+const STEP_INTERVAL = TOTAL_DURATION / STEPS_PCT.length;
 
 // ── Canvas: estrelas + cometas (fundo)
 function SpaceCanvas() {
@@ -37,10 +35,10 @@ function SpaceCanvas() {
         Math.random() > 0.85
           ? "rgba(56,189,248,"
           : Math.random() > 0.7
-            ? "rgba(250,204,21,"
-            : Math.random() > 0.6
-              ? "rgba(167,139,250,"
-              : "rgba(200,210,230,",
+          ? "rgba(250,204,21,"
+          : Math.random() > 0.6
+          ? "rgba(167,139,250,"
+          : "rgba(200,210,230,",
     }));
 
     class Comet {
@@ -216,10 +214,10 @@ function CosmicDustCanvas({ active }) {
     const cy = SIZE / 2;
 
     const dustColors = [
-      { r: 56, g: 189, b: 248 },
+      { r: 56,  g: 189, b: 248 },
       { r: 129, g: 140, b: 248 },
       { r: 167, g: 139, b: 250 },
-      { r: 52, g: 211, b: 153 },
+      { r: 52,  g: 211, b: 153 },
       { r: 244, g: 114, b: 182 },
       { r: 255, g: 255, b: 255 },
       { r: 196, g: 181, b: 253 },
@@ -348,7 +346,100 @@ function CosmicDustCanvas({ active }) {
   );
 }
 
+// ── Dropdown de seleção de idioma exibido no Loader
+// Ao escolher, chama i18n.changeLanguage() que atualiza toda a app
+const LANGUAGES = [
+  { code: "pt", label: "Português", flag: "🇧🇷" },
+  { code: "en", label: "English",   flag: "🇺🇸" },
+  { code: "es", label: "Español",   flag: "🇪🇸" },
+];
+
+function LangSelector() {
+  const { i18n: i18nHook } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const current = LANGUAGES.find((l) => l.code === i18nHook.language) || LANGUAGES[0];
+
+  const change = (code) => {
+    i18n.changeLanguage(code); // ← troca idioma globalmente
+    setOpen(false);
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-2 px-3 py-1.5 rounded-full
+          font-mono text-xs tracking-widest border border-secondary/30
+          text-secondary/80 bg-slate-900/60 backdrop-blur-sm
+          hover:border-secondary/60 hover:bg-slate-800/60
+          transition-all duration-200 cursor-pointer"
+      >
+        <span className="text-sm leading-none">{current.flag}</span>
+        <span className="uppercase">{current.code}</span>
+        <motion.svg
+          className="w-2.5 h-2.5"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <path d="M6 9l6 6 6-6" />
+        </motion.svg>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="absolute bottom-full mb-2 right-0 w-40 rounded-xl overflow-hidden
+              border border-slate-700/60 shadow-2xl z-50"
+            style={{ background: "rgba(2,8,30,0.97)", backdropFilter: "blur(20px)" }}
+            initial={{ opacity: 0, y: 6, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{   opacity: 0, y: 6, scale: 0.95 }}
+            transition={{ duration: 0.18, ease: [0.16,1,0.3,1] }}
+          >
+            {LANGUAGES.map((lang, i) => (
+              <motion.button
+                key={lang.code}
+                onClick={() => change(lang.code)}
+                className={`w-full flex items-center gap-2.5 px-4 py-2.5
+                  font-mono text-xs tracking-wide transition-colors duration-150 cursor-pointer
+                  ${lang.code === i18nHook.language
+                    ? "text-secondary bg-secondary/10"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"}`}
+                initial={{ opacity: 0, x: -6 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.04 }}
+              >
+                <span className="text-base leading-none">{lang.flag}</span>
+                <span>{lang.label}</span>
+                {lang.code === i18nHook.language && (
+                  <svg className="w-3 h-3 ml-auto text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                )}
+              </motion.button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function Loader({ onDone, onUserInteracted }) {
+  // ── Hook de tradução — busca mensagens de loading nos JSONs
+  // Como o i18next detecta o idioma do browser automaticamente,
+  // as mensagens de step já aparecem no idioma correto.
+  // O botão "Entrar" rotaciona entre os 3 idiomas para dar boas-vindas a todos.
+  const { t } = useTranslation();
+
+  // ── STEPS dinâmico — percentuais fixos + mensagens do JSON
+  // t("loader.steps.0") → "carregando componentes..." / "loading components..." / "cargando componentes..."
+  const STEPS = STEPS_PCT.map((pct, i) => ({
+    pct,
+    msg: t(`loader.steps.${i}`),
+  }));
+
   const [stepIndex, setStepIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const [warp, setWarp] = useState(false);
@@ -360,7 +451,7 @@ export default function Loader({ onDone, onUserInteracted }) {
   // então quando o usuário apertar "Entrar" o som toca instantâneo
   const audioRef = useRef(null);
   useEffect(() => {
-    const audio = new Audio("/assets/audio/sound_loader1.wav");
+    const audio = new Audio("/assets/audio/effect_sound1.wav");
     audio.preload = "auto"; // força o download imediato
     audio.volume = 0.5;
     audio.load();           // dispara o carregamento
@@ -431,8 +522,8 @@ export default function Loader({ onDone, onUserInteracted }) {
 
           {!warp &&
             [
-              { size: 260, dur: 5, color: "rgba(56,189,248,0.22)", reverse: false },
-              { size: 340, dur: 8, color: "rgba(139,92,246,0.18)", reverse: true },
+              { size: 260, dur: 5,  color: "rgba(56,189,248,0.22)", reverse: false },
+              { size: 340, dur: 8,  color: "rgba(139,92,246,0.18)", reverse: true  },
               { size: 420, dur: 13, color: "rgba(52,211,153,0.13)", reverse: false },
             ].map((ring, i) => (
               <motion.div
@@ -451,12 +542,12 @@ export default function Loader({ onDone, onUserInteracted }) {
               warp
                 ? { scale: 0, opacity: 0 }
                 : {
-                  boxShadow: [
-                    "0 0 40px rgba(56,189,248,0.10), 0 0 80px rgba(56,189,248,0.04)",
-                    "0 0 70px rgba(56,189,248,0.28), 0 0 140px rgba(56,189,248,0.12)",
-                    "0 0 40px rgba(56,189,248,0.10), 0 0 80px rgba(56,189,248,0.04)",
-                  ],
-                }
+                    boxShadow: [
+                      "0 0 40px rgba(56,189,248,0.10), 0 0 80px rgba(56,189,248,0.04)",
+                      "0 0 70px rgba(56,189,248,0.28), 0 0 140px rgba(56,189,248,0.12)",
+                      "0 0 40px rgba(56,189,248,0.10), 0 0 80px rgba(56,189,248,0.04)",
+                    ],
+                  }
             }
             transition={
               warp
@@ -480,6 +571,18 @@ export default function Loader({ onDone, onUserInteracted }) {
             Ismael <span className="text-secondary">Moura</span>
           </motion.p>
 
+          {/* ── Dropdown de idioma — escolha antes de entrar, traduz toda a página */}
+          {!warp && (
+            <motion.div
+              className="relative z-10 mt-4"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
+              <LangSelector />
+            </motion.div>
+          )}
+
           <div className="relative z-10 mt-10 flex flex-col items-center gap-4 w-80">
             {!warp && (
               <>
@@ -501,6 +604,7 @@ export default function Loader({ onDone, onUserInteracted }) {
                       exit={{ opacity: 0, y: -5 }}
                       transition={{ duration: 0.25 }}
                     >
+                      {/* currentStep.msg já vem traduzido do JSON via t() */}
                       {currentStep.msg}
                     </motion.p>
                   </AnimatePresence>
@@ -548,7 +652,8 @@ export default function Loader({ onDone, onUserInteracted }) {
                     >
                       <path d="M8 5v14l11-7z" />
                     </motion.svg>
-                    Entrar
+                    {/* t("loader.enter") → "Entrar" / "Enter" / "Ingresar" — idioma já escolhido no dropdown */}
+                    {t("loader.enter")}
                     <motion.span
                       className="absolute -top-1 -right-1 text-[10px] text-secondary/60"
                       animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.2, 0.8] }}

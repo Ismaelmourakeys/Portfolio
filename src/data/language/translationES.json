@@ -1,0 +1,228 @@
+{
+  "nav": {
+    "about": "Sobre mí",
+    "projects": "Proyectos",
+    "certs": "Certificaciones",
+    "hobbies": "Experiencias",
+    "contact": "Contacto",
+    "nav_label": "/ navegación"
+  },
+  "hero": {
+    "tag": "/ portafolio personal",
+    "greeting": "¡Hola Mundo!!",
+    "my_name": "Mi nombre es",
+    "and": "y",
+    "iam": "Soy",
+    "roles": [
+      "Programador",
+      "UI Designer",
+      "Estudiante"
+    ],
+    "desc": "Apasionado por transformar ideas en interfaces <b>accesibles</b>, <b>funcionales</b> y <b>modernas</b>, enfocado en la experiencia del usuario.",
+    "cv": "Descargar Currículum (PDF)",
+    "socials": "Redes Sociales",
+    "available": "Disponible"
+  },
+  "about": {
+    "tag": "/ quién soy",
+    "title": "Sobre",
+    "highlight": "mí",
+    "job": "Programador Front-end 💡",
+    "origin_tag": "/ origen",
+    "origin": "Tengo un perfil dedicado, disciplinado y motivado por el aprendizaje constante. Mi trayectoria comenzó fuera de la tecnología — como <b>músico</b>, profesor y educador musical, tocando en iglesias y bodas, y también en <b>atención al cliente</b>, donde desarrollé comunicación, organización y trabajo en equipo.",
+    "turn_tag": "/ punto de inflexión",
+    "turn": "Con el apoyo de una amiga del área, comencé a interesarme por la tecnología y la creación de soluciones que impactan a las personas. Esto me llevó a la <b>educación técnica en ETEC</b>, con exposición estructurada a lógica de programación, desarrollo web y diseño de interfaces.",
+    "now_tag": "/ ahora",
+    "now": "Enfocado en crecer como dev, practicando <b>HTML, CSS, JavaScript, React, React Native</b> y frameworks modernos, con control de versiones en <b>Git/GitHub</b>. Objetivo: iniciar la carrera de <b>Análisis y Desarrollo de Sistemas</b> e ingresar al mercado contribuyendo con proyectos que marquen la diferencia.",
+    "cta_contact": "Ponerse en contacto",
+    "cta_projects": "Ver proyectos",
+    "area_fe": "Front-end",
+    "area_fe_desc": "Interfaces modernas y accesibles",
+    "area_mob": "Mobile",
+    "area_mob_desc": "Apps con React Native",
+    "area_ui": "UI / UX",
+    "area_ui_desc": "Experiencia centrada en el usuario"
+  },
+  "projects": {
+    "tag": "/ Trabajos",
+    "title": "Mis",
+    "highlight": "Proyectos",
+    "subtitle": "Echa un vistazo a algunos de mis proyectos.",
+    "details": "Detalles",
+    "tools": "Herramientas utilizadas",
+    "github": "Proyecto en GitHub",
+    "close": "Cerrar",
+    "items": {
+      "mygluco-site": {
+        "tag": "Site Page",
+        "title": "Sitio Web – MyGluco",
+        "description": "Landing page para el sistema MyGluco, enfocada en usabilidad y experiencia del usuario. Presenta funcionalidades, beneficios y concienciación sobre diabetes.",
+        "detailsDescription": "Estructura HTML, estilos con Tailwind vía CDN, comportamiento con JavaScript y backend/servicios con Firebase."
+      },
+      "mygluco-app": {
+        "tag": "App Mobile",
+        "title": "App Mobile – MyGluco",
+        "description": "App móvil para gestión de diabetes: monitorea glucosa, comidas, actividades y medicamentos con gráficos, informes y notificaciones personalizadas.",
+        "detailsDescription": "React Native + Firebase para auth y datos. Node.js/NPM para dependencias, Expo Go para pruebas y Figma para los primeros diseños."
+      },
+      "etec": {
+        "tag": "Académico",
+        "title": "Proyectos en Clase – ETEC",
+        "description": "Mix de proyectos enfocados en lógica de programación usando HTML, CSS y JS. Desarrollados en ETEC: listas de ejercicios, sistemas de login y registro.",
+        "detailsDescription": "Estructura HTML, estilos CSS y comportamiento JavaScript. Enfoque en lógica de programación, navegación entre páginas, login y almacenamiento local."
+      },
+      "kivy-app": {
+        "tag": "Proyecto",
+        "title": "App Mobile con Python (Kivy)",
+        "description": "Sistema creado en Python con el framework Kivy. Incluye funcionalidades de login y consulta de datos. Proyecto introductorio sobre estructura de apps móviles.",
+        "detailsDescription": "Python con framework Kivy para interfaces móviles multiplataforma. Enfoque en lógica, navegación entre pantallas y widgets."
+      }
+    }
+  },
+  "hobbies": {
+    "tag": "/ Conóceme mejor",
+    "title": "Mis",
+    "highlight": "Experiencias",
+    "subtitle": "Más allá del código, algunas cosas que mueven mi día.",
+    "explore": "Haz clic para explorar",
+    "explored": "% explorado",
+    "media_types": "Tipos de medios",
+    "photo_tip": "foto — clic para ampliar",
+    "video_tip": "video — clic para reproducir",
+    "esc_tip": "ESC para cerrar",
+    "mob_progress": "Progreso de exploración",
+    "video_label": "video",
+    "items": {
+      "tecnologia": {
+        "label": "aprendizaje",
+        "title": "¿Qué estoy estudiando actualmente?",
+        "description": "Sigo mejorando mis habilidades en desarrollo web con HTML, CSS (Tailwind), JavaScript y React, creando proyectos para fortalecer mi lógica de programación.",
+        "tags": [
+          "HTML",
+          "CSS",
+          "JavaScript",
+          "React",
+          "Vitejs",
+          "Tailwind",
+          "Node.js"
+        ],
+        "captions": {
+          "0": "Portafolio con React",
+          "1": "Contador - Proyecto simple para practicar diseño y lógica de programación",
+          "2": "Proyecto de Modo Oscuro - proyecto simple para revisar conceptos"
+        }
+      },
+      "Farmácia": {
+        "label": "experiencia profesional",
+        "title": "Mi camino antes del código",
+        "description": "Después de trabajar como profesor y músico, también tuve experiencia profesional en el área de farmacia antes de iniciar mi camino en la programación.",
+        "tags": [
+          "Farmacia",
+          "Universidad",
+          "Laboratorio",
+          "Trabajo"
+        ],
+        "captions": {
+          "0": "Farmacia",
+          "1": "Laboratorio",
+          "2": "Farmacia Magistral",
+          "3": "Farmacia Magistral"
+        }
+      },
+      "musica": {
+        "label": "música",
+        "title": "Compartir mi pasión por la música",
+        "description": "Algunos lugares donde he participado como músico, profesor de música y marketing personal en redes sociales.",
+        "tags": [
+          "Músico",
+          "Teclado",
+          "Eventos",
+          "Proyectos",
+          "Clases"
+        ],
+        "captions": {
+          "0": "Evento de iglesia",
+          "1": "Festividades",
+          "2": "Escuela de música Opendoors",
+          "3": "Clases de teclado",
+          "4": "Grabación de música para portafolio",
+          "5": "Marketing Personal con videos"
+        }
+      },
+      "ETEC": {
+        "label": "Momentos en ETEC",
+        "title": "Mis experiencias en ETEC",
+        "description": "Algunos momentos que marcaron mi camino en ETEC, desde proyectos académicos hasta actividades extracurriculares.",
+        "tags": [
+          "Presentaciones",
+          "Proyectos",
+          "Visitas técnicas",
+          "Eventos",
+          "Logros"
+        ],
+        "captions": {
+          "0": "Visita a Amazon",
+          "1": "Presentación - semana de DS",
+          "2": "Visita a Fetesp",
+          "3": "Presentación de TCC",
+          "4": "Clase ETEC 3°I",
+          "5": "Profesor de Diseño - Antonio (Lobinho)",
+          "6": "Profesor Alexandre Valezzi (Dom)"
+        }
+      }
+    }
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados."
+  },
+  "certs": {
+    "tag": "/ Logros",
+    "title": "Mis",
+    "highlight": "Certificados",
+    "subtitle": "Echa un vistazo a algunos de mis certificados y logros.",
+    "close": "cerrar",
+    "alt": "Certificado",
+    "titles": {
+      "cert-1": "Bootcamp Nexa + AWS - Fundamentos de IA Generativa con BedRock",
+      "cert-2": "Curso de Inglés - Beginner 1-2",
+      "cert-3": "Creando un sitio simple (HTML, CSS y JavaScript)",
+      "cert-4": "Inmersión Front-end 2° Edición",
+      "cert-5": "Curso de Python",
+      "cert-6": "Curso de HTML",
+      "cert-7": "Curso Complementario de Inglés",
+      "cert-8": "Informática Esencial",
+      "cert-9": "Auxiliar de Farmacia"
+    }
+  },
+  "contact": {
+    "tag": "/ Contacto",
+    "title": "¿Hablamos?",
+    "highlight": "",
+    "subtitle": "Estoy disponible para proyectos, freelance y oportunidades. ¡Contáctame por cualquier canal!",
+    "available": "Disponible para proyectos",
+    "cv": "Descargar Currículum",
+    "email_subject": "Hola Ismael"
+  },
+  "music": {
+    "subtitle": "composición personal"
+  },
+  "loader": {
+    "steps": [
+      "cargando componentes...",
+      "compilando estilos...",
+      "inicializando módulos...",
+      "renderizando interfaz...",
+      "¡listo!"
+    ],
+    "enter": "Ingresar"
+  },
+  "welcome": {
+    "lines": [
+      "// SISTEMA INICIALIZADO",
+      "> IDENTIFICANDO VISITANTE...",
+      "ACCESO AUTORIZADO ✓",
+      "BIENVENIDO A MI PORTAFOLIO",
+      "[ REDIRIGIENDO ... ]"
+    ]
+  }
+}

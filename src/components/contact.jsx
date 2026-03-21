@@ -1,11 +1,15 @@
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next"; // ← importa o hook de tradução
 import SectionTitle from "./SectionTitle";
 
+// ── Labels (Email, GitHub, etc.) são nomes próprios — não traduzem
+// O único campo dinâmico é o subject do email, que muda por idioma
 const LINKS = [
   {
     label: "Email",
     value: "ismael_moura@outlook.com",
-    href: "mailto:ismael_moura@outlook.com?subject=Olá Ismael", 
+    // href dinâmico — montado dentro do componente com t()
+    hrefBase: "mailto:ismael_moura@outlook.com?subject=",
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -13,11 +17,8 @@ const LINKS = [
       </svg>
     ),
     colorClasses: {
-      text: "text-sky-400",
-      bg: "bg-sky-400/10",
-      border: "border-sky-400/20",
-      hoverBorder: "hover:border-sky-400/50",
-      glow: "rgba(56,189,248,0.12)",
+      text: "text-sky-400", bg: "bg-sky-400/10", border: "border-sky-400/20",
+      hoverBorder: "hover:border-sky-400/50", glow: "rgba(56,189,248,0.12)",
     },
   },
   {
@@ -30,11 +31,8 @@ const LINKS = [
       </svg>
     ),
     colorClasses: {
-      text: "text-slate-300",
-      bg: "bg-slate-400/10",
-      border: "border-slate-600/40",
-      hoverBorder: "hover:border-slate-400/50",
-      glow: "rgba(148,163,184,0.10)",
+      text: "text-slate-300", bg: "bg-slate-400/10", border: "border-slate-600/40",
+      hoverBorder: "hover:border-slate-400/50", glow: "rgba(148,163,184,0.10)",
     },
   },
   {
@@ -47,11 +45,8 @@ const LINKS = [
       </svg>
     ),
     colorClasses: {
-      text: "text-blue-400",
-      bg: "bg-blue-400/10",
-      border: "border-blue-400/20",
-      hoverBorder: "hover:border-blue-400/50",
-      glow: "rgba(96,165,250,0.12)",
+      text: "text-blue-400", bg: "bg-blue-400/10", border: "border-blue-400/20",
+      hoverBorder: "hover:border-blue-400/50", glow: "rgba(96,165,250,0.12)",
     },
   },
   {
@@ -64,31 +59,28 @@ const LINKS = [
       </svg>
     ),
     colorClasses: {
-      text: "text-pink-400",
-      bg: "bg-pink-400/10",
-      border: "border-pink-400/20",
-      hoverBorder: "hover:border-pink-400/50",
-      glow: "rgba(244,114,182,0.12)",
+      text: "text-pink-400", bg: "bg-pink-400/10", border: "border-pink-400/20",
+      hoverBorder: "hover:border-pink-400/50", glow: "rgba(244,114,182,0.12)",
     },
   },
 ];
 
-function ContactCard({ link, index }) {
-  const { label, value, href, icon, colorClasses } = link;
+function ContactCard({ link, index, emailSubject }) {
+  const { label, value, href, hrefBase, icon, colorClasses } = link;
+
+  // ── Se for email, monta o href com o subject traduzido
+  // hrefBase existe só no link de email — os outros já têm href completo
+  const finalHref = hrefBase ? `${hrefBase}${encodeURIComponent(emailSubject)}` : href;
 
   return (
     <motion.a
-      href={href}
-      target={href.startsWith("mailto") ? "_self" : "_blank"}
+      href={finalHref}
+      target={finalHref.startsWith("mailto") ? "_self" : "_blank"}
       rel="noreferrer"
       initial={{ opacity: 0, y: 30, scale: 0.92 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: false, amount: 0.2 }}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.1,
-        ease: [0.34, 1.56, 0.64, 1],
-      }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.34, 1.56, 0.64, 1] }}
       whileHover={{
         y: -4,
         boxShadow: `0 20px 40px ${colorClasses.glow}, 0 4px 16px rgba(0,0,0,0.4)`,
@@ -104,6 +96,7 @@ function ContactCard({ link, index }) {
       </div>
 
       <div className="flex flex-col min-w-0">
+        {/* label = nome da rede — não traduz */}
         <span className={`font-mono text-[0.6rem] tracking-widest uppercase ${colorClasses.text} mb-0.5`}>
           {label}
         </span>
@@ -112,12 +105,10 @@ function ContactCard({ link, index }) {
         </span>
       </div>
 
-      <svg
-        className={`w-4 h-4 ml-auto flex-shrink-0 ${colorClasses.text}
-          opacity-0 group-hover:opacity-100 translate-x-0 group-hover:translate-x-1
-          transition-all duration-300`}
-        viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-      >
+      <svg className={`w-4 h-4 ml-auto flex-shrink-0 ${colorClasses.text}
+        opacity-0 group-hover:opacity-100 translate-x-0 group-hover:translate-x-1
+        transition-all duration-300`}
+        viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M7 17L17 7M17 7H7M17 7v10" />
       </svg>
     </motion.a>
@@ -125,12 +116,14 @@ function ContactCard({ link, index }) {
 }
 
 export default function Contact() {
+  // ── Hook de tradução
+  const { t } = useTranslation();
+
   return (
     <section
       id="contato"
       className="relative px-8 py-20 bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden"
     >
-      {/* BG decorativo */}
       <div className="pointer-events-none absolute -top-40 -left-40 w-[500px] h-[500px]
         bg-[radial-gradient(circle,rgba(56,189,248,0.05),transparent_70%)]" />
       <div className="pointer-events-none absolute -bottom-40 -right-40 w-[400px] h-[400px]
@@ -138,15 +131,24 @@ export default function Contact() {
 
       <div className="relative z-10 max-w-3xl">
 
-        {/* cabeçalho alinhado à esquerda */}
+        {/*
+          t("contact.tag")      → "/ Contato"      / "/ Contact"   / "/ Contacto"
+          t("contact.title")    → "Vamos"           / "Let's"       / "¿Hablamos?"
+          t("contact.highlight")→ " conversar?"     / " talk?"      / ""  (es já tem tudo no title)
+          t("contact.subtitle") → subtítulo traduzido
+        */}
         <SectionTitle
-          tag="/ Contato"
-          title="Vamos"
-          highlight=" conversar?"
-          subtitle="Estou disponível para projetos, freelas e oportunidades. Me chama em qualquer canal!"
+          tag={t("contact.tag")}
+          title={t("contact.title")}
+          highlight={t("contact.highlight")}
+          subtitle={t("contact.subtitle")}
         />
 
-        {/* badge disponível */}
+        {/*
+          t("contact.available") → "Disponível para projetos"
+                                 / "Available for projects"
+                                 / "Disponible para proyectos"
+        */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -157,18 +159,24 @@ export default function Contact() {
         >
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span className="font-mono text-[0.65rem] tracking-widest uppercase text-emerald-400">
-            Disponível para projetos
+            {t("contact.available")}
           </span>
         </motion.div>
 
-        {/* cards de contato */}
+        {/* Cards — passa emailSubject para o card de email */}
         <div className="flex flex-col gap-3">
           {LINKS.map((link, index) => (
-            <ContactCard key={link.label} link={link} index={index} />
+            <ContactCard
+              key={link.label}
+              link={link}
+              index={index}
+              // t("contact.email_subject") → "Olá Ismael" / "Hello Ismael" / "Hola Ismael"
+              emailSubject={t("contact.email_subject")}
+            />
           ))}
         </div>
 
-        {/* botão currículo alinhado à esquerda */}
+        {/* t("contact.cv") → "Baixar Currículo" / "Download Resume" / "Descargar Currículum" */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -191,7 +199,7 @@ export default function Contact() {
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />
             </svg>
-            Baixar Currículo
+            {t("contact.cv")}
           </motion.a>
         </motion.div>
 

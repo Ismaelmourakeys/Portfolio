@@ -1,0 +1,228 @@
+{
+  "nav": {
+    "about": "About",
+    "projects": "Projects",
+    "certs": "Certifications",
+    "hobbies": "Experience",
+    "contact": "Contact",
+    "nav_label": "/ navigation"
+  },
+  "hero": {
+    "tag": "/ personal portfolio",
+    "greeting": "Hello World!!",
+    "my_name": "My name is",
+    "and": "and",
+    "iam": "I am a",
+    "roles": [
+      "Developer",
+      "UI Designer",
+      "Student"
+    ],
+    "desc": "Passionate about turning ideas into <b>accessible</b>, <b>functional</b> and <b>modern</b> interfaces, focused on user experience.",
+    "cv": "Download Resume (PDF)",
+    "socials": "Social Media",
+    "available": "Available"
+  },
+  "about": {
+    "tag": "/ who I am",
+    "title": "About",
+    "highlight": "me",
+    "job": "Front-end Developer 💡",
+    "origin_tag": "/ origin",
+    "origin": "I have a dedicated, disciplined profile motivated by constant learning. My journey started outside tech — as a <b>musician</b>, music teacher and educator, playing at churches and weddings, and also in <b>customer service</b>, where I developed communication, organization and teamwork skills.",
+    "turn_tag": "/ turning point",
+    "turn": "Encouraged by a friend in the field, I became interested in technology and creating solutions that impact people. This led me to <b>technical education at ETEC</b>, with structured exposure to programming logic, web development and interface design.",
+    "now_tag": "/ now",
+    "now": "Focused on growing as a dev, practicing <b>HTML, CSS, JavaScript, React, React Native</b> and modern frameworks, with version control via <b>Git/GitHub</b>. Goal: start a degree in <b>Systems Analysis and Development</b> and enter the market contributing to projects that make a difference.",
+    "cta_contact": "Get in touch",
+    "cta_projects": "View projects",
+    "area_fe": "Front-end",
+    "area_fe_desc": "Modern and accessible interfaces",
+    "area_mob": "Mobile",
+    "area_mob_desc": "Apps with React Native",
+    "area_ui": "UI / UX",
+    "area_ui_desc": "User-focused experience"
+  },
+  "projects": {
+    "tag": "/ Work",
+    "title": "My",
+    "highlight": "Projects",
+    "subtitle": "Check out some of my course and personal projects.",
+    "details": "Details",
+    "tools": "Tools used",
+    "github": "Project on GitHub",
+    "close": "Close",
+    "items": {
+      "mygluco-site": {
+        "tag": "Site Page",
+        "title": "Website – MyGluco",
+        "description": "Landing page for the MyGluco system, focused on usability and user experience. Showcases features, benefits and diabetes awareness.",
+        "detailsDescription": "HTML structure, styles with Tailwind via CDN, behavior with JavaScript and backend/services with Firebase."
+      },
+      "mygluco-app": {
+        "tag": "App Mobile",
+        "title": "Mobile App – MyGluco",
+        "description": "Mobile app for diabetes management: track glucose, meals, activities and medications with charts, reports and personalized notifications.",
+        "detailsDescription": "React Native + Firebase for auth and data. Node.js/NPM for dependencies, Expo Go for testing and Figma for early designs."
+      },
+      "etec": {
+        "tag": "Academic",
+        "title": "Classroom Projects – ETEC",
+        "description": "Mix of projects focused on programming logic using HTML, CSS and JS. Developed at ETEC: exercise lists, login and registration systems.",
+        "detailsDescription": "HTML structure, CSS styles and JavaScript behavior. Focus on programming logic, page navigation, login and local storage."
+      },
+      "kivy-app": {
+        "tag": "Project",
+        "title": "Mobile App with Python (Kivy)",
+        "description": "System built in Python using the Kivy framework. Includes login and data query features. Introductory project on mobile app structure.",
+        "detailsDescription": "Python with Kivy framework for cross-platform mobile interfaces. Focus on logic, screen navigation and widgets."
+      }
+    }
+  },
+  "hobbies": {
+    "tag": "/ Get to know me",
+    "title": "My",
+    "highlight": "Experiences",
+    "subtitle": "Beyond code, some things that drive my day.",
+    "explore": "Click to explore",
+    "explored": "% explored",
+    "media_types": "Media types",
+    "photo_tip": "photo — click to enlarge",
+    "video_tip": "video — click to play",
+    "esc_tip": "ESC to close",
+    "mob_progress": "Exploration progress",
+    "video_label": "video",
+    "items": {
+      "tecnologia": {
+        "label": "learning",
+        "title": "What am I currently studying?",
+        "description": "I keep improving my web development skills with HTML, CSS (Tailwind), JavaScript and React, building projects to strengthen my programming logic.",
+        "tags": [
+          "HTML",
+          "CSS",
+          "JavaScript",
+          "React",
+          "Vitejs",
+          "Tailwind",
+          "Node.js"
+        ],
+        "captions": {
+          "0": "Portfolio with React",
+          "1": "Counter - Simple project to practice design and programming logic",
+          "2": "Dark Mode Project - simple project to review concepts"
+        }
+      },
+      "Farmácia": {
+        "label": "professional experience",
+        "title": "My Journey Before Code",
+        "description": "After working as a teacher and musician, I also had a professional experience in pharmacy before starting my programming journey.",
+        "tags": [
+          "Pharmacy",
+          "College",
+          "Laboratory",
+          "Work"
+        ],
+        "captions": {
+          "0": "Pharmacy",
+          "1": "Laboratory",
+          "2": "Compounding Pharmacy",
+          "3": "Compounding Pharmacy"
+        }
+      },
+      "musica": {
+        "label": "music",
+        "title": "Sharing my passion for music",
+        "description": "Some places where I have participated as a musician, music teacher and personal marketing on social media.",
+        "tags": [
+          "Musician",
+          "Keyboard",
+          "Events",
+          "Projects",
+          "Classes"
+        ],
+        "captions": {
+          "0": "Church event",
+          "1": "Festivities",
+          "2": "Opendoors music school",
+          "3": "Keyboard classes",
+          "4": "Recording music for portfolio",
+          "5": "Personal Marketing with videos"
+        }
+      },
+      "ETEC": {
+        "label": "Moments at ETEC",
+        "title": "My experiences at ETEC",
+        "description": "Some moments that marked my journey at ETEC, from academic projects to extracurricular activities.",
+        "tags": [
+          "Presentations",
+          "Projects",
+          "Technical visits",
+          "Events",
+          "Achievements"
+        ],
+        "captions": {
+          "0": "Visit to Amazon",
+          "1": "Presentation - DS week",
+          "2": "Visit to Fetesp",
+          "3": "TCC Presentation",
+          "4": "ETEC Class 3°I",
+          "5": "Design Teacher - Antonio (Lobinho)",
+          "6": "Professor Alexandre Valezzi (Dom)"
+        }
+      }
+    }
+  },
+  "footer": {
+    "rights": "All rights reserved."
+  },
+  "certs": {
+    "tag": "/ Achievements",
+    "title": "My",
+    "highlight": "Certificates",
+    "subtitle": "Check out some of my certificates and achievements.",
+    "close": "close",
+    "alt": "Certificate",
+    "titles": {
+      "cert-1": "Bootcamp Nexa + AWS - Generative AI Fundamentals with BedRock",
+      "cert-2": "English Course - Beginner 1-2",
+      "cert-3": "Building a Simple Website (HTML, CSS and JavaScript)",
+      "cert-4": "Front-end Immersion 2nd Edition",
+      "cert-5": "Python Course",
+      "cert-6": "HTML Course",
+      "cert-7": "Complementary English Course",
+      "cert-8": "Essential Computing",
+      "cert-9": "Pharmacy Attendant"
+    }
+  },
+  "contact": {
+    "tag": "/ Contact",
+    "title": "Let's",
+    "highlight": " talk?",
+    "subtitle": "I'm available for projects, freelance work and opportunities. Reach me on any channel!",
+    "available": "Available for projects",
+    "cv": "Download Resume",
+    "email_subject": "Hello Ismael"
+  },
+  "music": {
+    "subtitle": "personal composition"
+  },
+  "loader": {
+    "steps": [
+      "loading components...",
+      "compiling styles...",
+      "initializing modules...",
+      "rendering interface...",
+      "ready!"
+    ],
+    "enter": "Enter"
+  },
+  "welcome": {
+    "lines": [
+      "// SYSTEM INITIALIZED",
+      "> IDENTIFYING VISITOR...",
+      "ACCESS AUTHORIZED ✓",
+      "WELCOME TO MY PORTFOLIO",
+      "[ REDIRECTING ... ]"
+    ]
+  }
+}

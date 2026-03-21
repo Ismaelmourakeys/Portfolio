@@ -270,3 +270,13 @@
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.3; }
 }
+
+
+/*Permitindo tags nos textos por conta das traduções*/
+.i18n-text b,
+.i18n-text strong {
+  @apply text-slate-200 font-semibold;
+}
+.i18n-text span {
+  @apply text-slate-200/90 font-medium;
+}

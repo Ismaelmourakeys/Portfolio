@@ -1,10 +1,9 @@
 import { useEffect, useRef } from "react";
 import Typed from "typed.js";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { useTranslation } from "react-i18next"; // ← importa o hook de tradução
 
-
-
-// ── GalaxyBorder leve: 400 partículas, 30fps, pausa fora da tela
+// ── GalaxyBorder — sem textos, não precisa de tradução
 function GalaxyBorder({ size = 420 }) {
   const canvasRef = useRef(null);
   const TAU = Math.PI * 2;
@@ -62,7 +61,6 @@ function GalaxyBorder({ size = 420 }) {
       orbitalSpeed: 0.0002 + Math.random() * 0.0003,
     }));
 
-    // Aura pré-renderizada no offscreen
     const offscreen = document.createElement("canvas");
     offscreen.width = S; offscreen.height = S;
     const offCtx = offscreen.getContext("2d");
@@ -83,12 +81,7 @@ function GalaxyBorder({ size = 420 }) {
       raf = requestAnimationFrame(draw);
       if (paused) return;
       frameCount++;
-      // ── CONTROLE DE FPS ──────────────────────────────────────────
-      // % 1 = 60fps  → sem throttle, máximo de fluidez
-      // % 2 = 30fps  → pula 1 frame em cada 2, metade do custo
-      // % 3 = 20fps  → pula 2 frames em cada 3, bem mais leve
-      // Se travar, troque % 1 por % 2 ou % 3
-      if (frameCount % 1 !== 0) return; // ← altere aqui
+      if (frameCount % 1 !== 0) return;
 
       ctx.clearRect(0, 0, S, S);
       ctx.drawImage(offscreen, 0, 0);
@@ -139,18 +132,29 @@ export default function Hero() {
   const typedRef   = useRef(null);
   const sectionRef = useRef(null);
 
+  // ── Hook de tradução
+  // t()    → função que busca o texto traduzido pelo JSON pelo caminho da chave
+  // i18n   → instância do i18next (usada para detectar idioma atual)
+  const { t, i18n } = useTranslation();
+
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
   const videoY = useTransform(scrollYProgress, [0, 1], ["0px", "60px"]);
   const bgY    = useTransform(scrollYProgress, [0, 1], ["0px", "30px"]);
 
+  // ── Typed.js — recria quando o idioma muda para atualizar as strings
+  // O array t("hero.roles", { returnObjects: true }) retorna o array do JSON:
+  // pt: ["Desenvolvedor", "UI Designer", "Estudante"]
+  // en: ["Developer",     "UI Designer", "Student"  ]
+  // es: ["Desarrollador", "UI Designer", "Estudiante"]
   useEffect(() => {
+    const roles = t("hero.roles", { returnObjects: true });
     const typed = new Typed(typedRef.current, {
-      strings: ["Desenvolvedor", "UI Designer", "Estudante"],
+      strings: roles,
       typeSpeed: 55, backSpeed: 35, backDelay: 2200,
       loop: true, showCursor: false, startDelay: 1400,
     });
     return () => typed.destroy();
-  }, []);
+  }, [i18n.language]); // ← dependência no idioma: recria quando trocar
 
   const avatarVariants   = { hidden: { opacity: 0, x: -80, scale: 0.88, filter: "blur(12px)" }, visible: { opacity: 1, x: 0, scale: 1, filter: "blur(0px)", transition: { duration: 1.4, ease: [0.16,1,0.3,1], delay: 0.2 } } };
   const tagVariants      = { hidden: { opacity: 0, y: -20, filter: "blur(6px)" },  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.16,1,0.3,1], delay: 0.7  } } };
@@ -165,7 +169,6 @@ export default function Hero() {
     <section ref={sectionRef} className="relative w-full overflow-hidden px-6 py-24 sm:py-32">
 
       <motion.div className="pointer-events-none absolute inset-0 z-20 bg-white" variants={flashVariants} initial="hidden" animate="visible" />
-
 
       <motion.div className="pointer-events-none absolute inset-0" style={{ y: bgY }}>
         <div className="absolute -top-60 -left-60 w-[700px] h-[700px] rounded-full opacity-[0.07]"
@@ -191,7 +194,10 @@ export default function Hero() {
                 animate={{ boxShadow: ["0 0 4px rgba(52,211,153,0.4)", "0 0 12px rgba(52,211,153,0.9)", "0 0 4px rgba(52,211,153,0.4)"] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
               />
-              <span className="font-mono text-[0.65rem] text-slate-300 tracking-widest">Disponível</span>
+              {/* t("hero.available") → "Disponível" / "Available" / "Disponible" */}
+              <span className="font-mono text-[0.65rem] text-slate-300 tracking-widest">
+                {t("hero.available")}
+              </span>
             </motion.div>
 
             <div className="relative w-60 sm:w-[420px] aspect-square rounded-full overflow-hidden bg-slate-900 z-[2]"
@@ -205,32 +211,44 @@ export default function Hero() {
         </motion.div>
 
         <div className="flex flex-col items-center sm:items-start text-center sm:text-left max-w-lg">
+
+          {/* t("hero.tag") → "/ portfólio pessoal" / "/ personal portfolio" / "/ portafolio personal" */}
           <motion.p variants={tagVariants} initial="hidden" animate="visible"
             className="font-mono text-[0.7rem] tracking-[0.3em] uppercase text-sky-400/80 mb-5">
-            / portfólio pessoal
+            {t("hero.tag")}
           </motion.p>
 
+          {/* t("hero.greeting") → "Olá! Meu nome é" / "Hi! My name is" / "¡Hola! Mi nombre es" */}
           <motion.p variants={greetingVariants} initial="hidden" animate="visible"
             className="text-slate-400/90 text-sm sm:text-base mb-2 font-mono leading-relaxed">
-            Olá Mundo! <br/> Meu nome é{" "}
-            <em className="not-italic font-semibold text-yellow-300/90">Ismael Moura</em>{" "}e
+            {t("hero.greeting")}<br/> {t("hero.my_name")} {" "}
+            <em className="not-italic font-semibold text-yellow-300/90">Ismael Moura</em>{" "}
+            {t("hero.and")} {/* → "e" / "and" / "y" */}
           </motion.p>
 
+          {/* t("hero.iam") → "Eu sou" / "I am a" / "Soy" */}
           <motion.h2 variants={titleVariants} initial="hidden" animate="visible"
             className="text-2xl sm:text-4xl font-extrabold text-slate-100 leading-tight mb-6">
-            Eu sou&nbsp;<span ref={typedRef} className="text-secondary" />
+            {t("hero.iam")}&nbsp;<span ref={typedRef} className="text-secondary" />
             <motion.span className="text-secondary" animate={{ opacity: [1, 0, 1] }}
               transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut", delay: 1.4 }}>|</motion.span>
           </motion.h2>
 
-          <motion.p variants={descVariants} initial="hidden" animate="visible"
-            className="text-slate-400/80 text-sm sm:text-[0.95rem] leading-relaxed mb-8 max-w-md">
-            Apaixonado por transformar ideias em interfaces{" "}
-            <span className="text-slate-200/90 font-medium">acessíveis</span>,{" "}
-            <span className="text-slate-200/90 font-medium">funcionais</span> e{" "}
-            <span className="text-slate-200/90 font-medium">modernas</span>, com foco na experiência do usuário.
-          </motion.p>
+          {/*
+            dangerouslySetInnerHTML — necessário porque o JSON contém tags HTML como <b> e <span>
+            O React por padrão não renderiza HTML dentro de strings por segurança.
+            É seguro aqui pois o conteúdo vem dos nossos próprios arquivos JSON, não de input do usuário.
+            A estilização dos <b> e <span> vem do .i18n-text no index.css
+          */}
+          <motion.p
+            variants={descVariants}
+            initial="hidden"
+            animate="visible"
+            className="i18n-text text-slate-400/80 text-sm sm:text-[0.95rem] leading-relaxed mb-8 max-w-md"
+            dangerouslySetInnerHTML={{ __html: t("hero.desc") }}
+          />
 
+          {/* t("hero.cv") → "Download do Currículo (PDF)" / "Download Resume (PDF)" / "Descargar Currículum (PDF)" */}
           <motion.a variants={ctaVariants} initial="hidden" animate="visible"
             href="/assets/docs/Curriculo_IsmaelMoura.pdf" download
             className="group inline-flex items-center gap-2.5 bg-secondary/90 text-slate-900 font-bold px-7 py-3.5 rounded-xl mb-10 transition-all duration-500 hover:bg-secondary hover:shadow-[0_0_30px_rgba(56,189,248,0.25)] hover:scale-[1.03]">
@@ -238,18 +256,20 @@ export default function Hero() {
               animate={{ y: [0, 2, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}>
               <path d="M12 16l-4-4h3V4h2v8h3l-4 4z" /><path d="M4 20h16" />
             </motion.svg>
-            Download do Currículo (PDF)
+            {t("hero.cv")}
           </motion.a>
 
           <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }}
             transition={{ duration: 1, ease: "easeOut", delay: 1.8 }} style={{ transformOrigin: "left" }}
             className="w-full h-px bg-gradient-to-r from-transparent via-white/8 to-transparent mb-6" />
 
+          {/* t("hero.socials") → "Redes Sociais" / "Social Media" / "Redes Sociales" */}
           <motion.p variants={socialsVariants} initial="hidden" animate="visible"
             className="font-mono text-[0.65rem] tracking-[0.25em] uppercase text-yellow-300/70 mb-4">
-            Redes Sociais
+            {t("hero.socials")}
           </motion.p>
 
+          {/* Redes sociais — sem texto visível, não precisam de tradução */}
           <motion.div className="flex gap-3" initial="hidden" animate="visible"
             variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 2.0 } } }}>
             {[

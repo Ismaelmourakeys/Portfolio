@@ -1,73 +1,36 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { useTranslation } from "react-i18next"; // ← importa o hook de tradução
 import SectionTitle from "./SectionTitle";
 
+// ── Dados fixos dos certificados — título vem do JSON via t()
+// Para adicionar novo: coloque aqui + rode translate-certs.mjs
 const CERTIFICATES = [
-  {
-    id: "cert-1",
-    title: "Bootcamp Nexa + AWS - Fundamentos de IA Generativa com BedRock",
-    issuer: "DIO",
-    imageSrc: "assets/img/certificados/Bootcamp_AWS-Fundamentos.png",
-  },
-  {
-    id: "cert-2",
-    title: "Curso de Inglês - Beginner 1-2",
-    issuer: "FluencyPass",
-    imageSrc: "assets/img/certificados/Fluency_Academy_beginner-1-2.PNG",
-  },
-  {
-    id: "cert-3",
-    title: "Criando um site simples (HTML, CSS e JavaScript)",
-    issuer: "Fundação Bradesco",
-    imageSrc: "assets/img/certificados/Fundacao_Bradesco_Site_Simples.PNG",
-  },
-  {
-    id: "cert-4",
-    title: "Imersão Front-end 2° Edição",
-    issuer: "Alura",
-    imageSrc: "assets/img/certificados/Alura_Imersao_Front-end_2edicao.PNG",
-  },
-  {
-    id: "cert-5",
-    title: "Curso de Python",
-    issuer: "Santander Open Academy",
-    imageSrc: "assets/img/certificados/Python_Santander_OpenAcademy.PNG",
-  },
-  {
-    id: "cert-6",
-    title: "Curso de HTML",
-    issuer: "Ada Tech",
-    imageSrc: "assets/img/certificados/Ada_Tech_HTML.png",
-  },
-  {
-    id: "cert-7",
-    title: "Curso Complementar de Inglês",
-    issuer: "Wizard",
-    imageSrc: "assets/img/certificados/Wizard_certificado.jpeg",
-  },
-  {
-    id: "cert-8",
-    title: "Informática Essencial",
-    issuer: "Microlins",
-    imageSrc: "assets/img/certificados/Microlins_Informatica.jpeg",
-  },
-  {
-    id: "cert-9",
-    title: "Atendente de Farmácia",
-    issuer: "Microlins",
-    imageSrc: "assets/img/certificados/Microlins_Auxiliar.jpeg",
-  },
+  { id: "cert-1", issuer: "DIO",                   imageSrc: "assets/img/certificados/Bootcamp_AWS-Fundamentos.png"          },
+  { id: "cert-2", issuer: "FluencyPass",            imageSrc: "assets/img/certificados/Fluency_Academy_beginner-1-2.PNG"       },
+  { id: "cert-3", issuer: "Fundação Bradesco",      imageSrc: "assets/img/certificados/Fundacao_Bradesco_Site_Simples.PNG"     },
+  { id: "cert-4", issuer: "Alura",                  imageSrc: "assets/img/certificados/Alura_Imersao_Front-end_2edicao.PNG"    },
+  { id: "cert-5", issuer: "Santander Open Academy", imageSrc: "assets/img/certificados/Python_Santander_OpenAcademy.PNG"       },
+  { id: "cert-6", issuer: "Ada Tech",               imageSrc: "assets/img/certificados/Ada_Tech_HTML.png"                      },
+  { id: "cert-7", issuer: "Wizard",                 imageSrc: "assets/img/certificados/Wizard_certificado.jpeg"                },
+  { id: "cert-8", issuer: "Microlins",              imageSrc: "assets/img/certificados/Microlins_Informatica.jpeg"             },
+  { id: "cert-9", issuer: "Microlins",              imageSrc: "assets/img/certificados/Microlins_Auxiliar.jpeg"                },
+  // ── Adicione novos certificados aqui:
+  // { id: "cert-10", issuer: "Instituição", imageSrc: "assets/img/certificados/arquivo.png" },
 ];
 
-// ── Card individual com tilt 3D + brilho
+// ── Card individual com tilt 3D + brilho — sem textos traduzíveis
 function CertCard({ cert, index, onClick }) {
+  // ── Hook de tradução dentro do card para buscar o título traduzido
+  // t("certs.titles.cert-1") → título do certificado no idioma atual
+  const { t } = useTranslation();
   const cardRef = useRef(null);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  const mouseX  = useMotionValue(0);
+  const mouseY  = useMotionValue(0);
 
   const springConfig = { stiffness: 150, damping: 20, mass: 0.5 };
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [6, -6]), springConfig);
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [6, -6]),  springConfig);
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-6, 6]), springConfig);
 
   const glowX = useTransform(mouseX, [-0.5, 0.5], ["0%", "100%"]);
@@ -78,16 +41,14 @@ function CertCard({ cert, index, onClick }) {
   );
 
   const handleMouseMove = useCallback((e) => {
-    const card = cardRef.current;
-    if (!card) return;
+    const card = cardRef.current; if (!card) return;
     const rect = card.getBoundingClientRect();
-    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
-    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+    mouseX.set((e.clientX - rect.left) / rect.width  - 0.5);
+    mouseY.set((e.clientY - rect.top)  / rect.height - 0.5);
   }, [mouseX, mouseY]);
 
   const handleMouseLeave = useCallback(() => {
-    mouseX.set(0);
-    mouseY.set(0);
+    mouseX.set(0); mouseY.set(0);
   }, [mouseX, mouseY]);
 
   return (
@@ -102,11 +63,7 @@ function CertCard({ cert, index, onClick }) {
       initial={{ opacity: 0, scale: 0.85, y: 30 }}
       whileInView={{ opacity: 1, scale: 1, y: 0 }}
       viewport={{ once: false, amount: 0.15 }}
-      transition={{
-        duration: 0.6,
-        delay: index * 0.08,
-        ease: [0.34, 1.56, 0.64, 1],
-      }}
+      transition={{ duration: 0.6, delay: index * 0.08, ease: [0.34, 1.56, 0.64, 1] }}
       style={{ rotateX, rotateY, perspective: 1000 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -127,25 +84,24 @@ function CertCard({ cert, index, onClick }) {
       <div className="relative w-full h-56 overflow-hidden">
         <img
           src={cert.imageSrc}
-          alt={cert.title}
-          className="w-full h-full object-cover
-            transition-transform duration-500 group-hover/card:scale-105"
+          alt={t(`certs.titles.${cert.id}`)} // alt traduzido com a chave do certificado
+          className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105"
         />
         <div className="absolute inset-0 bg-black/0 group-hover/card:bg-black/40
           transition-colors duration-300 flex items-center justify-center">
-          <svg
-            className="w-8 h-8 text-white opacity-0 group-hover/card:opacity-100
-              transition-opacity duration-300"
-            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="M21 21l-4.35-4.35M11 8v6M8 11h6" />
+          <svg className="w-8 h-8 text-white opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35M11 8v6M8 11h6" />
           </svg>
         </div>
       </div>
 
       <div className="p-4 relative z-10">
-        <h4 className="text-base font-bold text-white mb-1">{cert.title}</h4>
+        {/* t(`certs.titles.${cert.id}`) → título do cert no idioma atual
+             ex: t("certs.titles.cert-2") → "Curso de Inglês" / "English Course" / "Curso de Inglés" */}
+        <h4 className="text-base font-bold text-white mb-1">
+          {t(`certs.titles.${cert.id}`)}
+        </h4>
         <p className="font-mono text-xs text-slate-500">{cert.issuer}</p>
       </div>
     </motion.div>
@@ -153,16 +109,17 @@ function CertCard({ cert, index, onClick }) {
 }
 
 export default function Certificates() {
+  // ── Hook de tradução — textos fixos da UI
+  const { t } = useTranslation();
+
   const [modalImg, setModalImg] = useState(null);
   const carouselRef = useRef(null);
-
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
 
-  // ── Refs para controle de touch manual
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
-  const isSwiping = useRef(false);
+  const isSwiping   = useRef(false);
 
   useEffect(() => {
     const update = () => setIsDesktop(window.innerWidth >= 768);
@@ -171,24 +128,16 @@ export default function Certificates() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  const cardsPerDot = isDesktop ? 3 : 1;
-  const totalDots = Math.ceil(CERTIFICATES.length / cardsPerDot);
+  const cardsPerDot  = isDesktop ? 3 : 1;
+  const totalDots    = Math.ceil(CERTIFICATES.length / cardsPerDot);
   const activeDotIndex = Math.floor(activeCardIndex / cardsPerDot);
 
-  // ── Navega para um card específico pelo índice absoluto
   const scrollToCard = useCallback((cardIndex) => {
-    const container = carouselRef.current;
-    if (!container) return;
-
+    const container = carouselRef.current; if (!container) return;
     const clamped = Math.max(0, Math.min(CERTIFICATES.length - 1, cardIndex));
-    const cards = container.querySelectorAll(".cert-card");
-    const target = cards[clamped];
-    if (!target) return;
-
-    container.scrollTo({
-      left: target.offsetLeft - container.offsetLeft,
-      behavior: "smooth",
-    });
+    const cards  = container.querySelectorAll(".cert-card");
+    const target = cards[clamped]; if (!target) return;
+    container.scrollTo({ left: target.offsetLeft - container.offsetLeft, behavior: "smooth" });
     setActiveCardIndex(clamped);
   }, []);
 
@@ -199,11 +148,8 @@ export default function Certificates() {
   const scrollPrev = () => scrollToDot(Math.max(0, activeDotIndex - 1));
   const scrollNext = () => scrollToDot(Math.min(totalDots - 1, activeDotIndex + 1));
 
-  // ── IntersectionObserver para atualizar dot ativo no desktop
   useEffect(() => {
-    const container = carouselRef.current;
-    if (!container) return;
-
+    const container = carouselRef.current; if (!container) return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -216,101 +162,81 @@ export default function Certificates() {
       },
       { root: container, threshold: 0.5 }
     );
-
     container.querySelectorAll(".cert-card").forEach((card) => observer.observe(card));
     return () => observer.disconnect();
   }, []);
 
-  // ── Touch handlers: swipe controlado, 1 card por vez no mobile
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
-    isSwiping.current = false;
+    isSwiping.current   = false;
   }, []);
 
   const handleTouchMove = useCallback((e) => {
     if (touchStartX.current === null) return;
-
     const dx = e.touches[0].clientX - touchStartX.current;
     const dy = e.touches[0].clientY - touchStartY.current;
-
-    // Se o movimento vertical for maior, é scroll de página — não interfere
     if (!isSwiping.current && Math.abs(dy) > Math.abs(dx)) return;
-
-    // Marca como swipe horizontal e previne o scroll nativo
     isSwiping.current = true;
     e.preventDefault();
   }, []);
 
   const handleTouchEnd = useCallback((e) => {
     if (touchStartX.current === null || !isSwiping.current) return;
-
     const dx = e.changedTouches[0].clientX - touchStartX.current;
-    const THRESHOLD = 40; // mínimo de pixels para considerar um swipe
-
+    const THRESHOLD = 40;
     if (Math.abs(dx) >= THRESHOLD) {
-      if (dx < 0) {
-        // swipe para esquerda → próximo card
-        scrollToCard(activeCardIndex + 1);
-      } else {
-        // swipe para direita → card anterior
-        scrollToCard(activeCardIndex - 1);
-      }
+      if (dx < 0) scrollToCard(activeCardIndex + 1);
+      else        scrollToCard(activeCardIndex - 1);
     }
-
     touchStartX.current = null;
     touchStartY.current = null;
-    isSwiping.current = false;
+    isSwiping.current   = false;
   }, [activeCardIndex, scrollToCard]);
 
-  // Anexa o touchmove com { passive: false } para poder usar preventDefault
   useEffect(() => {
-    const container = carouselRef.current;
-    if (!container) return;
-
+    const container = carouselRef.current; if (!container) return;
     container.addEventListener("touchmove", handleTouchMove, { passive: false });
     return () => container.removeEventListener("touchmove", handleTouchMove);
   }, [handleTouchMove]);
 
   return (
-    <section
-      id="certificados"
-      className="px-8 py-20 bg-gradient-to-b from-slate-800 to-slate-900"
-    >
+    <section id="certificados" className="px-8 py-20 bg-gradient-to-b from-slate-800 to-slate-900">
+
+      {/*
+        SectionTitle com textos traduzidos:
+        t("certs.tag")      → "/ Conquistas"   / "/ Achievements" / "/ Logros"
+        t("certs.title")    → "Meus"            / "My"             / "Mis"
+        t("certs.highlight")→ "Certificados"    / "Certificates"   / "Certificados"
+        t("certs.subtitle") → subtítulo traduzido
+      */}
       <SectionTitle
-        tag="/ Conquistas"
-        title="Meus"
-        highlight=" Certificados"
-        subtitle="Confira alguns dos meus certificados e conquistas."
+        tag={t("certs.tag")}
+        title={t("certs.title")}
+        highlight={` ${t("certs.highlight")}`}
+        subtitle={t("certs.subtitle")}
       />
 
-      {/* CARROSSEL */}
       <div className="relative group">
-        <button
-          onClick={scrollPrev}
-          disabled={activeDotIndex === 0}
+        <button onClick={scrollPrev} disabled={activeDotIndex === 0}
           className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-20
             w-11 h-11 items-center justify-center rounded-full
             bg-slate-800 border border-slate-600 cursor-pointer
             text-slate-300 hover:text-secondary hover:border-secondary/50
             disabled:opacity-30 disabled:cursor-default disabled:hover:text-slate-300
-            opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl"
-        >
+            opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl">
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
 
-        <button
-          onClick={scrollNext}
-          disabled={activeDotIndex === totalDots - 1}
+        <button onClick={scrollNext} disabled={activeDotIndex === totalDots - 1}
           className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-20
             w-11 h-11 items-center justify-center rounded-full
             bg-slate-800 border border-slate-600 cursor-pointer
             text-slate-300 hover:text-secondary hover:border-secondary/50
             disabled:opacity-30 disabled:cursor-default disabled:hover:text-slate-300
-            opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl"
-        >
+            opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl">
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9 18l6-6-6-6" />
           </svg>
@@ -323,8 +249,7 @@ export default function Certificates() {
           className="grid grid-flow-col auto-cols-[88%] sm:auto-cols-[65%] md:auto-cols-[420px]
             gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4
             [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
-            px-1 items-stretch
-            touch-pan-y" /* permite scroll vertical, horizontal é controlado pelo nosso handler */
+            px-1 items-stretch touch-pan-y"
         >
           {CERTIFICATES.map((cert, index) => (
             <CertCard
@@ -347,8 +272,7 @@ export default function Certificates() {
             className={`transition-all duration-300 rounded-full
               ${index === activeDotIndex
                 ? "w-8 h-2 bg-secondary cursor-default shadow-lg"
-                : "w-2 h-2 bg-slate-600 hover:bg-slate-500 cursor-pointer"
-              }`}
+                : "w-2 h-2 bg-slate-600 hover:bg-slate-500 cursor-pointer"}`}
           />
         ))}
       </div>
@@ -358,21 +282,12 @@ export default function Certificates() {
         <div
           onClick={() => setModalImg(null)}
           style={{
-            position: "fixed",
-            top: 0, left: 0, right: 0, bottom: 0,
-            zIndex: 9999,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "1rem",
-            backgroundColor: "rgba(0,0,0,0.8)",
-            backdropFilter: "blur(6px)",
+            position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+            zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "1rem", backgroundColor: "rgba(0,0,0,0.8)", backdropFilter: "blur(6px)",
           }}
         >
-          <div
-            className="relative max-w-4xl w-full"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="relative max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setModalImg(null)}
               className="absolute -top-12 right-0 flex items-center gap-1.5
@@ -380,14 +295,15 @@ export default function Certificates() {
                 transition-colors duration-200 z-10"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
-              fechar
+              {/* t("certs.close") → "fechar" / "close" / "cerrar" */}
+              {t("certs.close")}
             </button>
+            {/* t("certs.alt") → "Certificado" / "Certificate" / "Certificado" */}
             <img
               src={modalImg}
-              alt="Certificado"
+              alt={t("certs.alt")}
               className="w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-white/10"
             />
           </div>
