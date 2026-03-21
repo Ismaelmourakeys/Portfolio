@@ -9,7 +9,7 @@
   --color-primary: #fff;
   --color-secondary: #61dafb;
 
-  --font-syne: "Syne", sans-serif;
+  /* --font-syne: "Syne", sans-serif; */
   --font-arial: "Arial", sans-serif;
 
   --animate-slideDown: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;

@@ -7,6 +7,7 @@ import MusicPlayer from "./components/MusicPlayer";
 import { useLenis } from "./hooks/useLenis";
 
 import Header from './components/Header';
+import SpaceWrapper from './components/SpaceWrapper';
 import Hero from './components/Hero';
 import AboutMe from './components/AboutMe';
 import Projects from './components/Projects';
@@ -16,7 +17,6 @@ import Contact from './components/contact';
 import Footer from './components/Footer';
 
 export default function App() {
-  // "loader" → "welcome" → "app"
   const [phase, setPhase] = useState("loader");
   const [audioUnlocked, setAudioUnlocked] = useState(false);
 
@@ -27,30 +27,23 @@ export default function App() {
   return (
     <>
       <Analytics />
+
       {/* 1. Loader */}
       {phase === "loader" && (
         <Loader
           onDone={() => setPhase("welcome")}
-          // ── Aqui o usuário clicou em "Entrar" — áudio liberado pelo browser
           onUserInteracted={() => setAudioUnlocked(true)}
         />
       )}
 
       {/* 2. Tela de boas-vindas */}
       {phase === "welcome" && (
-        <WelcomeScreen
-          onDone={() => setPhase("app")}
-        />
+        <WelcomeScreen onDone={() => setPhase("app")} />
       )}
 
       {/* 3. Site completo */}
       {isApp && (
         <>
-          {/*
-            autoUnlocked={audioUnlocked} → true quando o usuário clicou em "Entrar"
-            O MusicPlayer usa esse sinal para chamar .play() sem ser bloqueado pelo browser,
-            já que o clique no Loader já desbloqueou o contexto de áudio.
-          */}
           <MusicPlayer visible autoUnlocked={audioUnlocked} />
 
           <AnimatePresence>
@@ -63,8 +56,12 @@ export default function App() {
               >
                 <Header />
                 <main>
-                  <Hero />
-                  <AboutMe />
+                  {/* ── Hero + AboutMe compartilham o mesmo canvas espacial */}
+                  <SpaceWrapper>
+                    <Hero />
+                    <AboutMe />
+                  </SpaceWrapper>
+
                   <Projects />
                   <Certificados />
                   <Hobbies />

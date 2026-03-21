@@ -2,176 +2,7 @@ import { useEffect, useRef } from "react";
 import Typed from "typed.js";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-// ── SpaceCanvas leve: 100 estrelas, 4 cometas, throttle 30fps, pausa fora da tela
-function SpaceCanvas() {
-  const canvasRef = useRef(null);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-
-    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
-    resize();
-    window.addEventListener("resize", resize);
-
-    // AQUI ALTERO A QUANTIDADE DE ESTRELAS
-    const stars = Array.from({ length: 100 }, () => {
-      //                               ^^^
-      //                     altere esse número para mais ou menos estrelas  
-      const depth = Math.random();
-      return {
-        x: Math.random(), y: Math.random(),
-        r: depth * 1.1 + 0.15,
-        speed: 0.001 + depth * 0.002,
-        phase: Math.random() * Math.PI * 2,
-        color: Math.random() > 0.9 ? "rgba(56,189,248," : Math.random() > 0.8 ? "rgba(210,220,240," : "rgba(240,242,248,",
-        minAlpha: 0.06 + Math.random() * 0.1,
-        maxAlpha: 0.35 + depth * 0.3,
-      };
-    });
-
-    // ── Cometas com 3 tamanhos variados e glow realista
-    class Comet {
-      constructor(initial = false) { this.reset(initial); }
-      reset(initial = false) {
-        // Tipo: 0 = micro (50%), 1 = médio (32%), 2 = grande (18%)
-        const roll = Math.random();
-        this.type = roll < 0.5 ? 0 : roll < 0.82 ? 1 : 2;
-        const rng = (a, b) => a + Math.random() * (b - a);
-        const sizes = [
-          { len: [25, 55], speed: [1.2, 2.5], width: [0.3, 0.55], op: [0.12, 0.25] },
-          { len: [80, 150], speed: [2.5, 4.0], width: [0.6, 1.1], op: [0.28, 0.45] },
-          { len: [170, 280], speed: [3.5, 5.5], width: [1.1, 2.0], op: [0.45, 0.72] },
-        ];
-        const s = sizes[this.type];
-        this.x = Math.random() * canvas.width * 1.5 - canvas.width * 0.25;
-        this.y = initial ? Math.random() * canvas.height * -1 : -60;
-        this.len = rng(...s.len);
-        this.speed = rng(...s.speed);
-        this.angle = Math.PI / 4 + (Math.random() - 0.5) * 0.45;
-        this.width = rng(...s.width);
-        this.opacity = rng(...s.op);
-        const hues = ["220,235,255", "230,240,255", "210,228,248", "238,235,215"];
-        this.hue = hues[Math.floor(Math.random() * hues.length)];
-        this.active = !initial; this.timer = 0;
-        this.delay = initial
-          ? Math.floor(Math.random() * 400)
-          : 200 + Math.floor(Math.random() * (this.type === 2 ? 1400 : 800));
-      }
-      update() {
-        if (!this.active) { this.timer++; if (this.timer >= this.delay) this.active = true; return; }
-        this.x += Math.cos(this.angle) * this.speed;
-        this.y += Math.sin(this.angle) * this.speed;
-        if (this.x > canvas.width + 130 || this.y > canvas.height + 130) this.reset(false);
-      }
-      draw() {
-        if (!this.active) return;
-        const tailX = this.x - Math.cos(this.angle) * this.len;
-        const tailY = this.y - Math.sin(this.angle) * this.len;
-        // Cauda com 3 paradas — aparece mais gradualmente
-        const grad = ctx.createLinearGradient(tailX, tailY, this.x, this.y);
-        grad.addColorStop(0, `rgba(${this.hue},0)`);
-        grad.addColorStop(0.55, `rgba(${this.hue},${(this.opacity * 0.3).toFixed(3)})`);
-        grad.addColorStop(1, `rgba(${this.hue},${this.opacity.toFixed(3)})`);
-        ctx.beginPath(); ctx.moveTo(tailX, tailY); ctx.lineTo(this.x, this.y);
-        ctx.strokeStyle = grad; ctx.lineWidth = this.width; ctx.lineCap = "round"; ctx.stroke();
-        // Glow na cabeça — médios e grandes
-        if (this.type > 0) {
-          const glowR = this.width * (this.type === 2 ? 5.5 : 3.5);
-          const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, glowR);
-          glow.addColorStop(0, `rgba(${this.hue},${(this.opacity * 0.9).toFixed(3)})`);
-          glow.addColorStop(1, `rgba(${this.hue},0)`);
-          ctx.beginPath(); ctx.arc(this.x, this.y, glowR, 0, Math.PI * 2);
-          ctx.fillStyle = glow; ctx.fill();
-        }
-        // Núcleo brilhante — só grandes
-        if (this.type === 2) {
-          ctx.beginPath(); ctx.arc(this.x, this.y, this.width * 0.9, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${(this.opacity * 0.85).toFixed(3)})`;
-          ctx.fill();
-        }
-      }
-    }
-
-    // AQUI ALTERO A QUANTIDADE DE COMETAS 
-    const comets = Array.from({ length: 4 }, () => new Comet(true));
-    //                                 ^^^
-    //                         altere esse número para mais ou menos cometas
-    let raf; let frameCount = 0; let paused = false;
-
-    const observer = new IntersectionObserver(([entry]) => { paused = !entry.isIntersecting; }, { threshold: 0 });
-    observer.observe(canvas);
-
-    const draw = (t) => {
-      raf = requestAnimationFrame(draw);
-      if (paused) return;
-      frameCount++;
-      // ── CONTROLE DE FPS ──────────────────────────────────────────
-      // % 1 = 60fps  → sem throttle, máximo de fluidez
-      // % 2 = 30fps  → pula 1 frame em cada 2, metade do custo
-      // % 3 = 20fps  → pula 2 frames em cada 3, bem mais leve
-      // Se travar, troque % 1 por % 2 ou % 3
-      if (frameCount % 1 !== 0) return; // ← altere aqui
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      stars.forEach((s) => {
-        const pulse = 0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase);
-        const alpha = s.minAlpha + (s.maxAlpha - s.minAlpha) * pulse;
-        const sx = s.x * canvas.width;
-        const sy = s.y * canvas.height;
-
-        // ── Camada 1: glow difuso externo (halo atmosférico)
-        if (s.r > 0.5) {
-          const haloR = s.r * (s.r > 1.5 ? 7 : 4.5);
-          const halo = ctx.createRadialGradient(sx, sy, 0, sx, sy, haloR);
-          halo.addColorStop(0, `${s.color}${(alpha * 0.35).toFixed(3)})`);
-          halo.addColorStop(0.4, `${s.color}${(alpha * 0.12).toFixed(3)})`);
-          halo.addColorStop(1, `${s.color}0)`);
-          ctx.beginPath(); ctx.arc(sx, sy, haloR, 0, Math.PI * 2);
-          ctx.fillStyle = halo; ctx.fill();
-        }
-
-        // ── Camada 2: núcleo da estrela
-        ctx.beginPath(); ctx.arc(sx, sy, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `${s.color}${alpha.toFixed(3)})`; ctx.fill();
-
-        // ── Camada 3: ponto central branco brilhante (nas médias e grandes)
-        if (s.r > 0.9) {
-          ctx.beginPath(); ctx.arc(sx, sy, s.r * 0.45, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${(alpha * 0.8).toFixed(3)})`;
-          ctx.fill();
-        }
-
-        // ── Camada 4: diffraction spikes — raios de luz em cruz (só nas grandes)
-        if (s.r > 1.8) {
-          const spikeLen = s.r * 5.5 * pulse;
-          const spikeAlpha = alpha * 0.45;
-          // Raio horizontal e vertical
-          [[1, 0], [0, 1]].forEach(([dx, dy]) => {
-            // lado positivo
-            const g1 = ctx.createLinearGradient(sx, sy, sx + dx * spikeLen, sy + dy * spikeLen);
-            g1.addColorStop(0, `${s.color}${spikeAlpha.toFixed(3)})`);
-            g1.addColorStop(1, `${s.color}0)`);
-            ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + dx * spikeLen, sy + dy * spikeLen);
-            ctx.strokeStyle = g1; ctx.lineWidth = s.r * 0.22; ctx.lineCap = "round"; ctx.stroke();
-            // lado negativo
-            const g2 = ctx.createLinearGradient(sx, sy, sx - dx * spikeLen, sy - dy * spikeLen);
-            g2.addColorStop(0, `${s.color}${spikeAlpha.toFixed(3)})`);
-            g2.addColorStop(1, `${s.color}0)`);
-            ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - dx * spikeLen, sy - dy * spikeLen);
-            ctx.strokeStyle = g2; ctx.lineWidth = s.r * 0.22; ctx.lineCap = "round"; ctx.stroke();
-          });
-        }
-      });
-      comets.forEach((c) => { c.update(); c.draw(); });
-    };
-
-    raf = requestAnimationFrame(draw);
-    return () => { cancelAnimationFrame(raf); observer.disconnect(); window.removeEventListener("resize", resize); };
-  }, []);
-
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
-}
 
 // ── GalaxyBorder leve: 400 partículas, 30fps, pausa fora da tela
 function GalaxyBorder({ size = 420 }) {
@@ -195,12 +26,12 @@ function GalaxyBorder({ size = 420 }) {
       const orbitR = R + gauss * 10;
       const roll = Math.random();
       let color;
-      if (roll < 0.40) color = { r: 220, g: 232, b: 255 };
+      if      (roll < 0.40) color = { r: 220, g: 232, b: 255 };
       else if (roll < 0.62) color = { r: 180, g: 205, b: 255 };
       else if (roll < 0.78) color = { r: 155, g: 135, b: 255 };
-      else if (roll < 0.88) color = { r: 56, g: 189, b: 248 };
+      else if (roll < 0.88) color = { r:  56, g: 189, b: 248 };
       else if (roll < 0.95) color = { r: 196, g: 168, b: 255 };
-      else color = { r: 255, g: 255, b: 255 };
+      else                  color = { r: 255, g: 255, b: 255 };
       const isStar = Math.random() < 0.035;
       const speedMult = Math.random() > 0.5 ? 1 : -1;
       return {
@@ -215,12 +46,12 @@ function GalaxyBorder({ size = 420 }) {
     });
 
     const NEBULA_COLORS = [
-      { r: 56, g: 130, b: 248, a: 0.03 },
-      { r: 120, g: 80, b: 246, a: 0.034 },
-      { r: 52, g: 211, b: 153, a: 0.02 },
+      { r:  56, g: 130, b: 248, a: 0.03  },
+      { r: 120, g:  80, b: 246, a: 0.034 },
+      { r:  52, g: 211, b: 153, a: 0.02  },
       { r: 167, g: 139, b: 250, a: 0.028 },
-      { r: 56, g: 189, b: 248, a: 0.025 },
-      { r: 220, g: 90, b: 180, a: 0.018 },
+      { r:  56, g: 189, b: 248, a: 0.025 },
+      { r: 220, g:  90, b: 180, a: 0.018 },
     ];
 
     const nebulae = Array.from({ length: 6 }, (_, i) => ({
@@ -236,10 +67,10 @@ function GalaxyBorder({ size = 420 }) {
     offscreen.width = S; offscreen.height = S;
     const offCtx = offscreen.getContext("2d");
     const aura = offCtx.createRadialGradient(cx, cy, R - 18, cx, cy, R + PAD);
-    aura.addColorStop(0, "rgba(40,80,200,0)");
-    aura.addColorStop(0.3, "rgba(56,110,240,0.025)");
+    aura.addColorStop(0,    "rgba(40,80,200,0)");
+    aura.addColorStop(0.3,  "rgba(56,110,240,0.025)");
     aura.addColorStop(0.65, "rgba(110,70,240,0.018)");
-    aura.addColorStop(1, "rgba(0,0,0,0)");
+    aura.addColorStop(1,    "rgba(0,0,0,0)");
     offCtx.beginPath(); offCtx.arc(cx, cy, R + PAD, 0, TAU);
     offCtx.fillStyle = aura; offCtx.fill();
 
@@ -305,12 +136,12 @@ function GalaxyBorder({ size = 420 }) {
 }
 
 export default function Hero() {
-  const typedRef = useRef(null);
+  const typedRef   = useRef(null);
   const sectionRef = useRef(null);
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
   const videoY = useTransform(scrollYProgress, [0, 1], ["0px", "60px"]);
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0px", "30px"]);
+  const bgY    = useTransform(scrollYProgress, [0, 1], ["0px", "30px"]);
 
   useEffect(() => {
     const typed = new Typed(typedRef.current, {
@@ -321,20 +152,20 @@ export default function Hero() {
     return () => typed.destroy();
   }, []);
 
-  const avatarVariants = { hidden: { opacity: 0, x: -80, scale: 0.88, filter: "blur(12px)" }, visible: { opacity: 1, x: 0, scale: 1, filter: "blur(0px)", transition: { duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 } } };
-  const tagVariants = { hidden: { opacity: 0, y: -20, filter: "blur(6px)" }, visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.7 } } };
-  const greetingVariants = { hidden: { opacity: 0, x: 40, filter: "blur(6px)" }, visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.95 } } };
-  const titleVariants = { hidden: { opacity: 0, y: 30, scale: 0.96, filter: "blur(8px)" }, visible: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transition: { duration: 1.1, ease: [0.34, 1.56, 0.64, 1], delay: 1.15 } } };
-  const descVariants = { hidden: { opacity: 0, y: 20, filter: "blur(4px)" }, visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 1.4 } } };
-  const ctaVariants = { hidden: { opacity: 0, y: 16, scale: 0.95 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.34, 1.56, 0.64, 1], delay: 1.65 } } };
-  const socialsVariants = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 1.9 } } };
-  const flashVariants = { hidden: { opacity: 1 }, visible: { opacity: 0, transition: { duration: 1.2, ease: "easeOut" } } };
+  const avatarVariants   = { hidden: { opacity: 0, x: -80, scale: 0.88, filter: "blur(12px)" }, visible: { opacity: 1, x: 0, scale: 1, filter: "blur(0px)", transition: { duration: 1.4, ease: [0.16,1,0.3,1], delay: 0.2 } } };
+  const tagVariants      = { hidden: { opacity: 0, y: -20, filter: "blur(6px)" },  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.16,1,0.3,1], delay: 0.7  } } };
+  const greetingVariants = { hidden: { opacity: 0, x:  40, filter: "blur(6px)" },  visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.16,1,0.3,1], delay: 0.95 } } };
+  const titleVariants    = { hidden: { opacity: 0, y: 30, scale: 0.96, filter: "blur(8px)" }, visible: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transition: { duration: 1.1, ease: [0.34,1.56,0.64,1], delay: 1.15 } } };
+  const descVariants     = { hidden: { opacity: 0, y: 20, filter: "blur(4px)" },   visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.16,1,0.3,1], delay: 1.4  } } };
+  const ctaVariants      = { hidden: { opacity: 0, y: 16, scale: 0.95 },           visible: { opacity: 1, y: 0, scale: 1,            transition: { duration: 0.8, ease: [0.34,1.56,0.64,1], delay: 1.65 } } };
+  const socialsVariants  = { hidden: { opacity: 0, y: 12 },                         visible: { opacity: 1, y: 0,                      transition: { duration: 0.7, ease: [0.16,1,0.3,1], delay: 1.9  } } };
+  const flashVariants    = { hidden: { opacity: 1 }, visible: { opacity: 0, transition: { duration: 1.2, ease: "easeOut" } } };
 
   return (
-    <section ref={sectionRef} className="relative w-full overflow-hidden px-6 py-24 sm:py-32 bg-slate-950">
+    <section ref={sectionRef} className="relative w-full overflow-hidden px-6 py-24 sm:py-32">
+
       <motion.div className="pointer-events-none absolute inset-0 z-20 bg-white" variants={flashVariants} initial="hidden" animate="visible" />
 
-      <SpaceCanvas />
 
       <motion.div className="pointer-events-none absolute inset-0" style={{ y: bgY }}>
         <div className="absolute -top-60 -left-60 w-[700px] h-[700px] rounded-full opacity-[0.07]"
@@ -381,7 +212,7 @@ export default function Hero() {
 
           <motion.p variants={greetingVariants} initial="hidden" animate="visible"
             className="text-slate-400/90 text-sm sm:text-base mb-2 font-mono leading-relaxed">
-            Olá! Meu nome é{" "}
+            Olá Mundo! <br/> Meu nome é{" "}
             <em className="not-italic font-semibold text-yellow-300/90">Ismael Moura</em>{" "}e
           </motion.p>
 
@@ -422,18 +253,12 @@ export default function Hero() {
           <motion.div className="flex gap-3" initial="hidden" animate="visible"
             variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 2.0 } } }}>
             {[
-              {
-                href: "https://github.com/Ismaelmourakeys", label: "GitHub",
-                icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.74.5 12.02c0 5.1 3.29 9.43 7.86 10.96.58.11.79-.25.79-.56v-2.04c-3.2.7-3.87-1.54-3.87-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.73.08-.72.08-.72 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.76.41-1.27.74-1.56-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.19-3.1-.12-.3-.52-1.52.11-3.17 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.5 3.17-1.18 3.17-1.18.64 1.65.24 2.87.12 3.17.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.25 5.69.42.36.79 1.08.79 2.18v3.23c0 .31.21.67.8.56A11.53 11.53 0 0 0 23.5 12C23.5 5.74 18.27.5 12 .5z" /></svg>
-              },
-              {
-                href: "https://www.instagram.com/ismaelmourakeys/", label: "Instagram",
-                icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm10 2c1.65 0 3 1.35 3 3v10c0 1.65-1.35 3-3 3H7c-1.65 0-3-1.35-3-3V7c0-1.65 1.35-3 3-3h10zm-5 3.5A5.5 5.5 0 1 0 17.5 13 5.51 5.51 0 0 0 12 7.5zm0 9A3.5 3.5 0 1 1 15.5 13 3.5 3.5 0 0 1 12 16.5zM18 6.5a1 1 0 1 0-1-1 1 1 0 0 0 1 1z" /></svg>
-              },
-              {
-                href: "https://www.linkedin.com/in/Ismaelmourakeys", label: "LinkedIn",
-                icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4v16h-4V8zm7.5 0h3.8v2.2h.05c.53-1 1.83-2.2 3.75-2.2 4 0 4.7 2.6 4.7 6v10h-4v-8.8c0-2.1 0-4.8-2.9-4.8s-3.3 2.3-3.3 4.6V24h-4V8z" /></svg>
-              },
+              { href: "https://github.com/Ismaelmourakeys", label: "GitHub",
+                icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.74.5 12.02c0 5.1 3.29 9.43 7.86 10.96.58.11.79-.25.79-.56v-2.04c-3.2.7-3.87-1.54-3.87-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.73.08-.72.08-.72 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.76.41-1.27.74-1.56-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.19-3.1-.12-.3-.52-1.52.11-3.17 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.5 3.17-1.18 3.17-1.18.64 1.65.24 2.87.12 3.17.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.25 5.69.42.36.79 1.08.79 2.18v3.23c0 .31.21.67.8.56A11.53 11.53 0 0 0 23.5 12C23.5 5.74 18.27.5 12 .5z"/></svg> },
+              { href: "https://www.instagram.com/ismaelmourakeys/", label: "Instagram",
+                icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm10 2c1.65 0 3 1.35 3 3v10c0 1.65-1.35 3-3 3H7c-1.65 0-3-1.35-3-3V7c0-1.65 1.35-3 3-3h10zm-5 3.5A5.5 5.5 0 1 0 17.5 13 5.51 5.51 0 0 0 12 7.5zm0 9A3.5 3.5 0 1 1 15.5 13 3.5 3.5 0 0 1 12 16.5zM18 6.5a1 1 0 1 0-1-1 1 1 0 0 0 1 1z"/></svg> },
+              { href: "https://www.linkedin.com/in/Ismaelmourakeys", label: "LinkedIn",
+                icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4v16h-4V8zm7.5 0h3.8v2.2h.05c.53-1 1.83-2.2 3.75-2.2 4 0 4.7 2.6 4.7 6v10h-4v-8.8c0-2.1 0-4.8-2.9-4.8s-3.3 2.3-3.3 4.6V24h-4V8z"/></svg> },
             ].map((social) => (
               <motion.a key={social.href} href={social.href} target="_blank" rel="noreferrer" aria-label={social.label}
                 variants={{ hidden: { opacity: 0, y: 10, scale: 0.8 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.34, 1.56, 0.64, 1] } } }}
