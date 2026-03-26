@@ -1,20 +1,28 @@
 import { useState, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Analytics } from "@vercel/analytics/react";
-import Loader from "./components/Loader";
-import WelcomeScreen from "./components/WelcomeScreen";
-import MusicPlayer from "./components/MusicPlayer";
-import { useLenis } from "./hooks/useLenis";
+//Pages
+import Loader from "./components/screens/Loader";
+import WelcomeScreen from "./components/screens/WelcomeScreen";
 
-import Header from './components/Header';
-import SpaceWrapper from './components/SpaceWrapper';
-import Hero from './components/Hero';
-import AboutMe from './components/AboutMe';
-import Projects from './components/Projects';
-import Certificados from './components/Certificados';
-import Hobbies from './components/Hobbies';
-import Contact from './components/contact';
-import Footer from './components/Footer';
+//UI
+import MusicPlayer from "./components/MusicPlayer";
+
+//UX
+import { useLenis } from "./components/hooks/useLenis";
+
+//Layouts
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
+import SpaceWrapper from './components/layout/SpaceWrapper';
+
+//Sections
+import Hero from './components/sections/Hero';
+import AboutMe from './components/sections/AboutMe';
+import Projects from './components/sections/Projects';
+import Certificados from './components/sections/Certificados';
+import Hobbies from './components/sections/Hobbies';
+import Contact from './components/sections/contact';
 
 export default function App() {
   const [phase, setPhase] = useState("loader");
