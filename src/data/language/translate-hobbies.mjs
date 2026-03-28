@@ -29,8 +29,9 @@ const HOBBIES_SOURCE = [
     tags: ["HTML", "CSS", "JavaScript", "React", "Vitejs", "Tailwind", "Node.js"],
     captions: [
       "Portfólio com React",
-      "Contador - Projeto simples para praticar designer e lógica de programação",
-      "Projeto de Dark Mode - projeto simples para revisar conceitos",
+      "Estudos por fora dos códigos",
+      "Contador - Projeto simples para praticar designer e lógica de programação com Javascript",
+      "Projeto de Dark Mode - projeto simples para revisar conceitos básicos",
     ],
   },
   {

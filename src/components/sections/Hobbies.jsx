@@ -45,8 +45,9 @@ function getHobbies(t) {
     ),
     media: [
       { type: "image", src: "/assets/Hobbies/Estudo_React.png",                              caption: c("tecnologia", 0) },
-      { type: "image", src: "/assets/Hobbies/Imagens_ProjetosSimples/Contador.png",          caption: c("tecnologia", 1) },
-      { type: "video", src: "/assets/Hobbies/Imagens_ProjetosSimples/Dark_mode.mp4",         caption: c("tecnologia", 2) },
+      { type: "image", src: "/assets/Hobbies/Livros_Estudos.jpg",                              caption: c("tecnologia", 1) },
+      { type: "image", src: "/assets/Hobbies/Imagens_ProjetosSimples/Contador.png",          caption: c("tecnologia", 2) },
+      { type: "video", src: "/assets/Hobbies/Imagens_ProjetosSimples/Dark_mode.mp4",         caption: c("tecnologia", 3) },
     ],
   },
   {
