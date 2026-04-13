@@ -7,13 +7,13 @@ import { useTranslation } from "react-i18next";
 // ─────────────────────────────────────────────────────────────
 const PLAYLIST = [
   {
-    src:    "/assets/audio/Lo-Fi_Space.wav",
-    title:  "Lo-Fi Space",
+    src:    "/assets/audio/Study_with_me.wav",
+    title:  "Study With Me",
     artist: "Ismael Moura",
   },
   {
-    src:    "/assets/audio/Study_with_me.wav",
-    title:  "Study With Me",
+    src:    "/assets/audio/Lo-Fi_Space.wav",
+    title:  "Lo-Fi Space",
     artist: "Ismael Moura",
   },
   // ── Adicione novas músicas aqui:

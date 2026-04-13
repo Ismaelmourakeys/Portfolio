@@ -36,9 +36,9 @@ function SharedSpaceCanvas() {
       bg.addColorStop(0.50, "rgb(8,20,55)");          // azul médio
       bg.addColorStop(0.68, "rgb(10, 32, 66)");         // azul escuro médio
       bg.addColorStop(0.80, "rgb(7, 37, 68)");         // azul mais claro
-      bg.addColorStop(0.90, "rgb(7, 39, 51)");         // transição ciano
+      // bg.addColorStop(0.90, "rgb(7, 39, 51)");         // transição ciano
       bg.addColorStop(0.96, "rgb(8, 17, 49)");          // ciano escuro → verde
-      bg.addColorStop(1.00, "rgb(5, 14, 39)");          // verde terra escuro
+      // bg.addColorStop(1.00, "rgb(5, 14, 39)");          // verde terra escuro
       offCtx.fillStyle = bg;
       offCtx.fillRect(0, 0, off.width, off.height);
 
@@ -266,16 +266,84 @@ export default function SpaceWrapper({ children }) {
         {children}
       </div>
 
-      {/* ── Divisória — fade atmosférico suave */}
-      <div className="pointer-events-none relative z-20" style={{ height: "80px" }}>
-        <div className="absolute inset-0" style={{
-          background: "linear-gradient(to bottom, transparent 0%, rgba(8,20,45,0.6) 50%, rgb(15,23,42) 100%)",
-        }} />
-        {/* Glow ciano tênue — toque de atmosfera */}
-        <div className="absolute inset-x-0 top-0" style={{
-          height: "60%",
-          background: "radial-gradient(ellipse 60% 100% at 50% 0%, rgba(56,189,248,0.07) 0%, transparent 100%)",
-        }} />
+            {/* ── Divisória — curvatura da Terra com atmosfera animada */}
+      <div className="pointer-events-none relative z-20" style={{ marginBottom: "-2px" }}>
+        <svg
+          width="100%"
+          viewBox="0 0 1440 180"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ display: "block" }}
+        >
+          <defs>
+            <radialGradient id="atm1" cx="50%" cy="100%" r="60%">
+              <stop offset="0%"   stopColor="#0ea5e9" stopOpacity="0.18"/>
+              <stop offset="40%"  stopColor="#1d4ed8" stopOpacity="0.10"/>
+              <stop offset="100%" stopColor="#020617" stopOpacity="0"/>
+            </radialGradient>
+            <radialGradient id="atm2" cx="50%" cy="100%" r="40%">
+              <stop offset="0%"   stopColor="#38bdf8" stopOpacity="0.22"/>
+              <stop offset="60%"  stopColor="#0ea5e9" stopOpacity="0.08"/>
+              <stop offset="100%" stopColor="#020617" stopOpacity="0"/>
+            </radialGradient>
+            <radialGradient id="atm3" cx="50%" cy="100%" r="22%">
+              <stop offset="0%"   stopColor="#7dd3fc" stopOpacity="0.28"/>
+              <stop offset="100%" stopColor="#38bdf8"  stopOpacity="0"/>
+            </radialGradient>
+          </defs>
+
+          {/* Camadas de glow atmosférico */}
+          <ellipse cx="720" cy="340" rx="1300" ry="380" fill="url(#atm1)"/>
+          <ellipse cx="720" cy="310" rx="1000" ry="280" fill="url(#atm2)"/>
+          <ellipse cx="720" cy="290" rx="700"  ry="200" fill="url(#atm3)"/>
+
+          {/* Preenchimento da Terra abaixo da curva */}
+          <path d="M-20,180 Q720,30 1460,180 L1460,180 L-20,180 Z" fill="rgb(15,23,42)"/>
+
+          {/* Borda — 4 camadas sobrepostas para realismo */}
+          <path d="M-20,180 Q720,30 1460,180" fill="none" stroke="#1a3275a8" strokeWidth="8" strokeOpacity="1.55"/>
+          <path d="M-20,180 Q720,30 1460,180" fill="none" stroke="#0b348d" strokeWidth="1.5" strokeOpacity="1.65"/>
+          <path d="M-20,180 Q720,30 1460,180" fill="none" stroke="#45768b" strokeWidth="0.8" strokeOpacity="1.90"/>
+          <path d="M-20,180 Q720,30 1460,180" fill="none" stroke="#e0f2fe7c" strokeWidth="0.2" strokeOpacity="1.55"/>
+
+          {/* Pulso 1 — onda de luz percorrendo a curva */}
+          <path d="M-20,180 Q720,30 1460,180" fill="none" stroke="#7dd4fc63" strokeWidth="50" strokeOpacity="0" strokeDasharray="180 9999">
+            <animate attributeName="strokeDashoffset" from="0" to="-1800" dur="5s" repeatCount="indefinite"/>
+            <animate attributeName="strokeOpacity" values="0;0.65;0.85;0.65;0" dur="5s" repeatCount="indefinite"/>
+          </path>
+
+          {/* Pulso 2 — defasado */}
+          <path d="M-20,180 Q720,30 1460,180" fill="none" stroke="#bae5fd75" strokeWidth="20" strokeOpacity="0" strokeDasharray="120 9999">
+            <animate attributeName="strokeDashoffset" from="0" to="-1800" dur="5s" begin="2.5s" repeatCount="indefinite"/>
+            <animate attributeName="strokeOpacity" values="0;0.45;0.70;0.45;0" dur="5s" begin="2.5s" repeatCount="indefinite"/>
+          </path>
+
+          {/* Partículas estáticas na borda */}
+          <circle cx="160"  cy="155" r="1.2" fill="#38bdf8" opacity="0.50"/>
+          <circle cx="320"  cy="120" r="0.9" fill="#7dd3fc" opacity="0.40"/>
+          <circle cx="500"  cy="90"  r="1.4" fill="#38bdf8" opacity="0.45"/>
+          <circle cx="720"  cy="68"  r="1.6" fill="#bae6fd" opacity="0.60"/>
+          <circle cx="940"  cy="85"  r="1.3" fill="#38bdf8" opacity="0.42"/>
+          <circle cx="1120" cy="112" r="1.0" fill="#7dd3fc" opacity="0.45"/>
+          <circle cx="1280" cy="148" r="1.2" fill="#38bdf8" opacity="0.50"/>
+
+          {/* Partículas pulsantes */}
+          <circle cx="400" cy="108" r="0.9" fill="#93c5fd">
+            <animate attributeName="opacity" values="0.2;0.75;0.2" dur="3.2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="720" cy="64" r="1.2" fill="#7dd3fc">
+            <animate attributeName="opacity" values="0.3;1.0;0.3" dur="2.5s" begin="0.8s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="1040" cy="100" r="0.9" fill="#93c5fd">
+            <animate attributeName="opacity" values="0.2;0.70;0.2" dur="3.8s" begin="1.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="560" cy="78" r="0.7" fill="#bae6fd">
+            <animate attributeName="opacity" values="0.1;0.60;0.1" dur="4.1s" begin="2.2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="880" cy="76" r="0.8" fill="#bae6fd">
+            <animate attributeName="opacity" values="0.1;0.55;0.1" dur="3.5s" begin="3.0s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
       </div>
     </div>
   );
