@@ -7,15 +7,17 @@ import SectionTitle from "../layout/SectionTitle";
 // ── Dados fixos dos certificados — título vem do JSON via t()
 // Para adicionar novo: coloque aqui + rode translate-certs.mjs
 const CERTIFICATES = [
-  { id: "cert-1", issuer: "DIO",                   imageSrc: "assets/img/certificados/Bootcamp_AWS-Fundamentos.png"          },
-  { id: "cert-2", issuer: "FluencyPass",            imageSrc: "assets/img/certificados/Fluency_Academy_beginner-1-2.PNG"       },
-  { id: "cert-3", issuer: "Fundação Bradesco",      imageSrc: "assets/img/certificados/Fundacao_Bradesco_Site_Simples.PNG"     },
-  { id: "cert-4", issuer: "Alura",                  imageSrc: "assets/img/certificados/Alura_Imersao_Front-end_2edicao.PNG"    },
-  { id: "cert-5", issuer: "Santander Open Academy", imageSrc: "assets/img/certificados/Python_Santander_OpenAcademy.PNG"       },
-  { id: "cert-6", issuer: "Ada Tech",               imageSrc: "assets/img/certificados/Ada_Tech_HTML.png"                      },
-  { id: "cert-7", issuer: "Wizard",                 imageSrc: "assets/img/certificados/Wizard_certificado.jpeg"                },
-  { id: "cert-8", issuer: "Microlins",              imageSrc: "assets/img/certificados/Microlins_Informatica.jpeg"             },
-  { id: "cert-9", issuer: "Microlins",              imageSrc: "assets/img/certificados/Microlins_Auxiliar.jpeg"                },
+  { id: "cert-1", issuer: "Escola Técnica Estadual (ETEC)",                   imageSrc: "assets/img/certificados/Certificado_ETEC.jpg" },
+  { id: "cert-2", issuer: "DIO",                    imageSrc: "assets/img/certificados/Bootcamp_AWS-Fundamentos.png"          },
+  { id: "cert-3", issuer: "FluencyPass",            imageSrc: "assets/img/certificados/Fluency_Academy_beginner-1-2.PNG"       },
+  { id: "cert-4", issuer: "Fundação Bradesco",      imageSrc: "assets/img/certificados/Fundacao_Bradesco_Site_Simples.PNG"     },
+  { id: "cert-5", issuer: "Alura",                  imageSrc: "assets/img/certificados/Certificado-HTML-CSS.png"     },
+  // { id: "cert-6", issuer: "Alura",                  imageSrc: "assets/img/certificados/Alura_Imersao_Front-end_2edicao.PNG"    },
+  { id: "cert-6", issuer: "Santander Open Academy", imageSrc: "assets/img/certificados/Python_Santander_OpenAcademy.PNG"       },
+  { id: "cert-7", issuer: "Ada Tech",               imageSrc: "assets/img/certificados/Ada_Tech_HTML.png"                      },
+  { id: "cert-8", issuer: "Wizard",                 imageSrc: "assets/img/certificados/Wizard_certificado.jpeg"                },
+  { id: "cert-9", issuer: "Microlins",              imageSrc: "assets/img/certificados/Microlins_Informatica.jpeg"             },
+  { id: "cert-10", issuer: "Microlins",             imageSrc: "assets/img/certificados/Microlins_Auxiliar.jpeg"                },
   // ── Adicione novos certificados aqui:
   // { id: "cert-10", issuer: "Instituição", imageSrc: "assets/img/certificados/arquivo.png" },
 ];
