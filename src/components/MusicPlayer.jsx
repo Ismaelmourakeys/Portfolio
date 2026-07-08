@@ -7,13 +7,18 @@ import { useTranslation } from "react-i18next";
 // ─────────────────────────────────────────────────────────────
 const PLAYLIST = [
   {
-    src:    "/assets/audio/Study_with_me.wav",
-    title:  "Study With Me",
+    src: "/assets/audio/Study_with_me.wav",
+    title: "Study With Me",
     artist: "Ismael Moura",
   },
   {
-    src:    "/assets/audio/Lo-Fi_Space.wav",
-    title:  "Lo-Fi Space",
+    src: "/assets/audio/Lo-Fi_Space.wav",
+    title: "Lo-Fi Space",
+    artist: "Ismael Moura",
+  },
+  {
+    src: "/assets/audio/Midnight_Syntax.wav",
+    title: "Midnight Syntax",
     artist: "Ismael Moura",
   },
   // ── Adicione novas músicas aqui:
@@ -21,30 +26,37 @@ const PLAYLIST = [
 ];
 
 // ─────────────────────────────────────────────────────────────
-// Modos de reprodução
-// loop     → repete a música atual
-// shuffle  → ordem aleatória
-// playlist → sequencial, para ao terminar
+// Modos de reprodução (o usuário escolhe qualquer um)
+// sequential → toca 1 por 1, na ordem; ao fim da lista, recomeça
+// repeat     → repete a mesma música
+// shuffle    → ordem aleatória
 // ─────────────────────────────────────────────────────────────
-const MODES = ["loop", "shuffle", "playlist"];
+const MODES = ["sequential", "repeat", "shuffle"];
+
+const MODE_LABELS = {
+  sequential: "1 por 1",
+  repeat: "Repetir",
+  shuffle: "Aleatório",
+};
+
 const MODE_ICONS = {
-  loop: (
-    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-      <path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-      <circle cx="12" cy="12" r="1" fill="currentColor"/>
+  sequential: (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 6h11" /><path d="M4 12h11" /><path d="M4 18h7" />
+      <path d="M18 8v9" /><path d="M15 14l3 3 3-3" />
+    </svg>
+  ),
+  repeat: (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 2l4 4-4 4" /><path d="M3 11V9a4 4 0 0 1 4-4h14" />
+      <path d="M7 22l-4-4 4-4" /><path d="M21 13v2a4 4 0 0 1-4 4H3" />
+      <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" />
     </svg>
   ),
   shuffle: (
-    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/>
-      <path d="M15 15l5.1 5.1"/><path d="M4 4l5 5"/>
-    </svg>
-  ),
-  playlist: (
-    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-      <path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 3h5v5" /><path d="M4 20L21 3" /><path d="M21 16v5h-5" />
+      <path d="M15 15l5.1 5.1" /><path d="M4 4l5 5" />
     </svg>
   ),
 };
@@ -52,14 +64,14 @@ const MODE_ICONS = {
 // ── Visualizador de barras
 function AudioVisualizer({ analyser, playing }) {
   const canvasRef = useRef(null);
-  const rafRef    = useRef(null);
+  const rafRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !analyser) return;
-    const ctx          = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
     const bufferLength = analyser.frequencyBinCount;
-    const dataArray    = new Uint8Array(bufferLength);
+    const dataArray = new Uint8Array(bufferLength);
     const W = canvas.width; const H = canvas.height;
     const BAR_COUNT = 28; const BAR_W = 2.5;
     const GAP = (W - BAR_COUNT * BAR_W) / (BAR_COUNT + 1);
@@ -71,15 +83,15 @@ function AudioVisualizer({ analyser, playing }) {
       for (let i = 0; i < BAR_COUNT; i++) {
         const dataIndex = Math.floor((i / BAR_COUNT) * bufferLength * 0.7);
         const value = playing ? dataArray[dataIndex] : 0;
-        const minH  = playing ? 2 : 1 + Math.sin(Date.now() * 0.003 + i * 0.5) * 1;
-        const barH  = Math.max(minH, (value / 255) * H * 0.85);
+        const minH = playing ? 2 : 1 + Math.sin(Date.now() * 0.003 + i * 0.5) * 1;
+        const barH = Math.max(minH, (value / 255) * H * 0.85);
         const x = GAP + i * (BAR_W + GAP); const y = (H - barH) / 2;
-        const hue   = 200 + (i / BAR_COUNT) * 120;
+        const hue = 200 + (i / BAR_COUNT) * 120;
         const alpha = 0.5 + (value / 255) * 0.5;
-        const grad  = ctx.createLinearGradient(x, y + barH, x, y);
-        grad.addColorStop(0,   `hsla(${hue},90%,60%,${alpha.toFixed(2)})`);
-        grad.addColorStop(0.5, `hsla(${hue+30},95%,75%,${Math.min(1,alpha+0.2).toFixed(2)})`);
-        grad.addColorStop(1,   `hsla(${hue+60},80%,55%,${alpha.toFixed(2)})`);
+        const grad = ctx.createLinearGradient(x, y + barH, x, y);
+        grad.addColorStop(0, `hsla(${hue},90%,60%,${alpha.toFixed(2)})`);
+        grad.addColorStop(0.5, `hsla(${hue + 30},95%,75%,${Math.min(1, alpha + 0.2).toFixed(2)})`);
+        grad.addColorStop(1, `hsla(${hue + 60},80%,55%,${alpha.toFixed(2)})`);
         ctx.beginPath(); ctx.roundRect(x, y, BAR_W, barH, 1.5);
         ctx.fillStyle = grad; ctx.fill();
       }
@@ -94,30 +106,30 @@ function AudioVisualizer({ analyser, playing }) {
 export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
   const { t } = useTranslation();
 
-  const audioRef     = useRef(null);
-  const audioCtxRef  = useRef(null);
-  const analyserRef  = useRef(null);
-  const sourceRef    = useRef(null);
+  const audioRef = useRef(null);
+  const audioCtxRef = useRef(null);
+  const analyserRef = useRef(null);
+  const sourceRef = useRef(null);
   const dragConstraintsRef = useRef(null);
 
   const [trackIndex, setTrackIndex] = useState(0);
-  const [playing,    setPlaying]    = useState(false);
-  const [volume,     setVolume]     = useState(0.5);
-  const [progress,   setProgress]   = useState(0);
-  const [duration,   setDuration]   = useState(0);
-  const [minimized,  setMinimized]  = useState(true);
-  const [ready,      setReady]      = useState(false);
-  const [modeIndex,  setModeIndex]  = useState(0); // 0=loop, 1=shuffle, 2=playlist
+  const [playing, setPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.5);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [minimized, setMinimized] = useState(true);
+  const [ready, setReady] = useState(false);
+  const [modeIndex, setModeIndex] = useState(0); // 0 = sequential (padrão), 1 = repeat, 2 = shuffle
   const [showPlaylist, setShowPlaylist] = useState(false);
 
-  const mode  = MODES[modeIndex];
+  const mode = MODES[modeIndex];
   const track = PLAYLIST[trackIndex];
 
   // ── Monta o Web Audio context
   const setupAudio = useCallback(() => {
     if (audioCtxRef.current) return;
     const audio = audioRef.current; if (!audio) return;
-    const ctx      = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const analyser = ctx.createAnalyser();
     analyser.fftSize = 128; analyser.smoothingTimeConstant = 0.75;
     const source = ctx.createMediaElementSource(audio);
@@ -179,19 +191,22 @@ export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
   }, [trackIndex, goToTrack]);
 
   // ── Ao terminar a música
+  // ── Ao terminar a música
   const handleEnded = useCallback(() => {
-    if (mode === "loop") {
-      // loop já é tratado pelo atributo loop do <audio> — removemos e gerenciamos aqui
-      const audio = audioRef.current; if (!audio) return;
-      audio.currentTime = 0; audio.play().catch(() => {});
+    const audio = audioRef.current;
+    if (mode === "repeat") {
+      // repete a mesma música
+      if (!audio) return;
+      audio.currentTime = 0;
+      audio.play().catch(() => { });
     } else if (mode === "shuffle") {
+      // pula para uma aleatória
       nextTrack();
     } else {
-      // playlist — para na última música
-      if (trackIndex < PLAYLIST.length - 1) nextTrack();
-      else setPlaying(false);
+      // sequential: vai para a próxima; ao fim da lista, volta ao início (música contínua)
+      nextTrack();
     }
-  }, [mode, trackIndex, nextTrack]);
+  }, [mode, nextTrack]);
 
   const togglePlay = async () => {
     const audio = audioRef.current; if (!audio) return;
@@ -211,7 +226,7 @@ export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
 
   const handleSeek = (e) => {
     const audio = audioRef.current; if (!audio) return;
-    const rect  = e.currentTarget.getBoundingClientRect();
+    const rect = e.currentTarget.getBoundingClientRect();
     const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
     audio.currentTime = ratio * audio.duration; setProgress(ratio);
   };
@@ -270,8 +285,8 @@ export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
             animate={{
               boxShadow: playing
                 ? ["0 0 20px rgba(56,189,248,0.08), 0 8px 32px rgba(0,0,0,0.5)",
-                   "0 0 40px rgba(99,102,241,0.15), 0 8px 32px rgba(0,0,0,0.5)",
-                   "0 0 20px rgba(56,189,248,0.08), 0 8px 32px rgba(0,0,0,0.5)"]
+                  "0 0 40px rgba(99,102,241,0.15), 0 8px 32px rgba(0,0,0,0.5)",
+                  "0 0 20px rgba(56,189,248,0.08), 0 8px 32px rgba(0,0,0,0.5)"]
                 : "0 0 20px rgba(56,189,248,0.06), 0 8px 32px rgba(0,0,0,0.5)",
             }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
@@ -303,8 +318,8 @@ export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
                       bg-secondary/20 border border-secondary/30 text-secondary
                       hover:bg-secondary/30 transition-colors duration-200 cursor-pointer">
                     {playing
-                      ? <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
-                      : <svg className="w-3 h-3 ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>}
+                      ? <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
+                      : <svg className="w-3 h-3 ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>}
                   </button>
                   <div className="flex flex-col min-w-0">
                     <span className="font-mono text-[0.6rem] text-slate-300 truncate max-w-[80px]">{track.title}</span>
@@ -320,7 +335,7 @@ export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
                   <button onClick={() => setMinimized(false)}
                     className="text-slate-500 hover:text-slate-300 transition-colors cursor-pointer">
                     <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
                     </svg>
                   </button>
                 </motion.div>
@@ -336,12 +351,12 @@ export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
                       <motion.div
                         className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/20
                           flex items-center justify-center flex-shrink-0"
-                        animate={playing ? { boxShadow: ["0 0 0px rgba(56,189,248,0)","0 0 12px rgba(56,189,248,0.3)","0 0 0px rgba(56,189,248,0)"] } : {}}
+                        animate={playing ? { boxShadow: ["0 0 0px rgba(56,189,248,0)", "0 0 12px rgba(56,189,248,0.3)", "0 0 0px rgba(56,189,248,0)"] } : {}}
                         transition={{ duration: 2, repeat: Infinity }}>
                         <svg className="w-4 h-4 text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                          <path d="M9 18V5l12-2v13"/>
-                          <circle cx="6" cy="18" r="3"/>
-                          <circle cx="18" cy="16" r="3"/>
+                          <path d="M9 18V5l12-2v13" />
+                          <circle cx="6" cy="18" r="3" />
+                          <circle cx="18" cy="16" r="3" />
                         </svg>
                       </motion.div>
                       <div className="min-w-0 flex-1">
@@ -362,15 +377,15 @@ export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
                         title="Playlist"
                       >
                         <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-                          <line x1="3" y1="10" x2="9" y2="10"/>
+                          <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
+                          <line x1="3" y1="10" x2="9" y2="10" />
                         </svg>
                       </button>
                       {/* Minimizar */}
                       <button onClick={() => setMinimized(true)}
                         className="w-5 h-5 rounded flex items-center justify-center text-slate-600 hover:text-slate-400 transition-colors cursor-pointer">
                         <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M5 12h14"/>
+                          <path d="M5 12h14" />
                         </svg>
                       </button>
                     </div>
@@ -384,7 +399,7 @@ export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: [0.16,1,0.3,1] }}
+                        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                       >
                         {PLAYLIST.map((t, i) => (
                           <button key={i} onClick={() => goToTrack(i, true)}
@@ -394,13 +409,13 @@ export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
                                 : "text-slate-400 hover:bg-white/5 hover:text-slate-200"}`}>
                             {i === trackIndex && playing
                               ? <motion.div className="flex items-center gap-0.5 w-4 flex-shrink-0">
-                                  {[...Array(3)].map((_,j)=>(
-                                    <motion.div key={j} className="w-0.5 rounded-full bg-secondary"
-                                      animate={{height:["3px",`${5+j*2}px`,"3px"]}}
-                                      transition={{duration:0.5+j*0.1,repeat:Infinity,delay:j*0.1}}
-                                    />
-                                  ))}
-                                </motion.div>
+                                {[...Array(3)].map((_, j) => (
+                                  <motion.div key={j} className="w-0.5 rounded-full bg-secondary"
+                                    animate={{ height: ["3px", `${5 + j * 2}px`, "3px"] }}
+                                    transition={{ duration: 0.5 + j * 0.1, repeat: Infinity, delay: j * 0.1 }}
+                                  />
+                                ))}
+                              </motion.div>
                               : <span className="font-mono text-[0.55rem] text-slate-600 w-4 flex-shrink-0">{i + 1}</span>
                             }
                             <div className="min-w-0 flex-1">
@@ -449,7 +464,7 @@ export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
                       <button onClick={prevTrack}
                         className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-200 transition-colors cursor-pointer">
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                          <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
                         </svg>
                       </button>
 
@@ -459,18 +474,18 @@ export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
                           bg-secondary/15 border border-secondary/25 text-secondary
                           hover:bg-secondary/25 transition-colors duration-200 cursor-pointer"
                         whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}
-                        animate={playing ? { boxShadow: ["0 0 0px rgba(56,189,248,0)","0 0 16px rgba(56,189,248,0.25)","0 0 0px rgba(56,189,248,0)"] } : {}}
+                        animate={playing ? { boxShadow: ["0 0 0px rgba(56,189,248,0)", "0 0 16px rgba(56,189,248,0.25)", "0 0 0px rgba(56,189,248,0)"] } : {}}
                         transition={{ duration: 2, repeat: Infinity }}>
                         {playing
-                          ? <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
-                          : <svg className="w-4 h-4 ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>}
+                          ? <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
+                          : <svg className="w-4 h-4 ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>}
                       </motion.button>
 
                       {/* Próximo */}
                       <button onClick={nextTrack}
                         className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-200 transition-colors cursor-pointer">
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
                         </svg>
                       </button>
                     </div>
@@ -482,15 +497,15 @@ export default function MusicPlayer({ visible = true, autoUnlocked = false }) {
                   {/* Controles — linha 2: volume em largura total */}
                   <div className="flex items-center gap-2 w-full">
                     <svg className="w-3 h-3 text-slate-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                      {volume > 0.5 && <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>}
-                      {volume > 0 && volume <= 0.5 && <path d="M18.07 5.93a10 10 0 0 1 0 12.14"/>}
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                      {volume > 0.5 && <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />}
+                      {volume > 0 && volume <= 0.5 && <path d="M18.07 5.93a10 10 0 0 1 0 12.14" />}
                     </svg>
                     <input type="range" min="0" max="1" step="0.01" value={volume}
                       onChange={handleVolumeChange}
                       className="w-full h-1 rounded-full appearance-none cursor-pointer"
                       style={{
-                        background: `linear-gradient(to right, rgba(56,189,248,0.7) ${volume*100}%, rgba(51,65,85,0.5) ${volume*100}%)`,
+                        background: `linear-gradient(to right, rgba(56,189,248,0.7) ${volume * 100}%, rgba(51,65,85,0.5) ${volume * 100}%)`,
                         outline: "none",
                       }}
                     />

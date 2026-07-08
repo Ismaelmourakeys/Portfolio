@@ -21,9 +21,9 @@ const LOCALES_DIR = path.join(__dirname, "../src/data/language");
 // issuer (emissor) não é traduzido — é nome de instituição
 // ─────────────────────────────────────────────────────────────
 const CERTS_SOURCE = [
-  { id: "cert-1",  title: "Bootcamp Nexa + AWS - Fundamentos de IA Generativa com BedRock" },
-  { id: "cert-2",  title: "Curso de Inglês - Beginner 1-2"                                 },
-  { id: "cert-3",  title: "Criando um site simples (HTML, CSS e JavaScript)"                },
+  { id: "cert-1",  title: "Curso técnico em Desenvolvimento de Sistemas" },
+  { id: "cert-2",  title: "Bootcamp Nexa + AWS - Fundamentos de IA Generativa com BedRock", },
+  { id: "cert-3",  title: "Curso de Inglês - Beginner 1-2"                },
   { id: "cert-4",  title: "Imersão Front-end 2° Edição"                                    },
   { id: "cert-5",  title: "Curso de Python"                                                 },
   { id: "cert-6",  title: "Curso de HTML"                                                   },

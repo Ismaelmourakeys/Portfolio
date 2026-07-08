@@ -184,15 +184,16 @@
     "close": "close",
     "alt": "Certificate",
     "titles": {
-      "cert-1": "Bootcamp Nexa + AWS - Generative AI Fundamentals with BedRock",
-      "cert-2": "English Course - Beginner 1-2",
-      "cert-3": "Building a Simple Website (HTML, CSS and JavaScript)",
-      "cert-4": "Front-end Immersion 2nd Edition",
-      "cert-5": "Python Course",
-      "cert-6": "HTML Course",
-      "cert-7": "Complementary English Course",
-      "cert-8": "Essential Computing",
-      "cert-9": "Pharmacy Attendant"
+      "cert-1": "Systems Development Technician",
+      "cert-2": "Bootcamp Nexa + AWS - Generative AI Fundamentals with BedRock",
+      "cert-3": "English Course - Beginner 1-2",
+      "cert-4": "Building a Simple Website (HTML, CSS and JavaScript)",
+      "cert-5": "Front-end Immersion 2nd Edition",
+      "cert-6": "Python Course",
+      "cert-7": "HTML Course",
+      "cert-8": "Complementary English Course",
+      "cert-9": "Essential Computing",
+      "cert-10": "Pharmacy Attendant"
     }
   },
   "contact": {

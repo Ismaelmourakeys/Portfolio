@@ -7,7 +7,7 @@ import SectionTitle from "../layout/SectionTitle";
 // ── Dados fixos dos certificados — título vem do JSON via t()
 // Para adicionar novo: coloque aqui + rode translate-certs.mjs
 const CERTIFICATES = [
-  { id: "cert-1", issuer: "Escola Técnica Estadual (ETEC)",                   imageSrc: "assets/img/certificados/Certificado_ETEC.jpg" },
+  { id: "cert-1", issuer: "Escola Técnica Estadual (ETEC)",    imageSrc: "assets/img/certificados/Certificado_ETEC.jpg" },
   { id: "cert-2", issuer: "DIO",                    imageSrc: "assets/img/certificados/Bootcamp_AWS-Fundamentos.png"          },
   { id: "cert-3", issuer: "FluencyPass",            imageSrc: "assets/img/certificados/Fluency_Academy_beginner-1-2.PNG"       },
   { id: "cert-4", issuer: "Fundação Bradesco",      imageSrc: "assets/img/certificados/Fundacao_Bradesco_Site_Simples.PNG"     },
