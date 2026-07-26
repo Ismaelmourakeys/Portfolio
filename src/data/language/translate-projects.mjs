@@ -50,6 +50,13 @@ const PROJECTS_SOURCE = [
     description: "Sistema criado em Python com framework Kivy. Inclui funcionalidades de login e consulta de dados. Projeto introdutório sobre estrutura de apps mobile.",
     detailsDescription: "Python com framework Kivy para criação de interfaces móveis multiplataforma. Foco em lógica, navegação entre telas e widgets.",
   },
+  {
+    id: "ChurchVisit",
+    tag: "Projeto",
+    title: "Gestão de Visitantes para Igrejas",
+    description: "O Visitor Manager nasceu da necessidade real das igrejas de organizar e acompanhar seus visitantes de forma simples, rápida e eficiente para saudá-los com boas-vindas durante os cultos e eventos. ",
+    detailsDescription: "Sistema web desenvolvido com React+vite, Node.js e Firebase. Usando bibliotecas da Luster para campos os entradas de dados, e trabalhado com responsividade para trazer dinamismo durante o uso do sistema em diferentes dispositivos.",
+  },
   // ── Adicione novos projetos aqui seguindo o mesmo padrão:
   // {
   //   id: "novo-projeto",

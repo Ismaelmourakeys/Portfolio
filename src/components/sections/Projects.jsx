@@ -19,10 +19,10 @@ const PROJECTS_SHARED = [
     githubUrl: "https://github.com/Ismaelmourakeys/SiteMygluco",
     techs: ["devicon-html5-plain", "devicon-tailwindcss-plain", "devicon-javascript-plain", "devicon-firebase-plain"],
     techDetails: [
-      { icon: "devicon-html5-plain",      label: "HTML"       },
-      { icon: "devicon-tailwindcss-plain", label: "Tailwind"   },
-      { icon: "devicon-javascript-plain",  label: "JavaScript" },
-      { icon: "devicon-firebase-plain",    label: "Firebase"   },
+      { icon: "devicon-html5-plain", label: "HTML" },
+      { icon: "devicon-tailwindcss-plain", label: "Tailwind" },
+      { icon: "devicon-javascript-plain", label: "JavaScript" },
+      { icon: "devicon-firebase-plain", label: "Firebase" },
     ],
   },
   {
@@ -35,11 +35,11 @@ const PROJECTS_SHARED = [
     techs: ["devicon-react-original", "devicon-nodejs-plain", "devicon-firebase-plain", "devicon-figma-plain"],
     techDetails: [
       { icon: "devicon-reactnative-original", label: "React Native" },
-      { icon: "devicon-nodejs-plain",          label: "Node.js"      },
-      { icon: "devicon-npm-plain",             label: "NPM"          },
-      { icon: "devicon-firebase-plain",        label: "Firebase"     },
-      { icon: "devicon-expo-original",         label: "Expo Go"      },
-      { icon: "devicon-figma-plain",           label: "Figma"        },
+      { icon: "devicon-nodejs-plain", label: "Node.js" },
+      { icon: "devicon-npm-plain", label: "NPM" },
+      { icon: "devicon-firebase-plain", label: "Firebase" },
+      { icon: "devicon-expo-original", label: "Expo Go" },
+      { icon: "devicon-figma-plain", label: "Figma" },
     ],
   },
   {
@@ -51,8 +51,8 @@ const PROJECTS_SHARED = [
     githubUrl: "https://github.com/Ismaelmourakeys/Projetos_DoisBerto",
     techs: ["devicon-html5-plain", "devicon-css3-plain", "devicon-javascript-plain"],
     techDetails: [
-      { icon: "devicon-html5-plain",     label: "HTML"       },
-      { icon: "devicon-css3-plain",       label: "CSS"        },
+      { icon: "devicon-html5-plain", label: "HTML" },
+      { icon: "devicon-css3-plain", label: "CSS" },
       { icon: "devicon-javascript-plain", label: "JavaScript" },
     ],
   },
@@ -66,9 +66,27 @@ const PROJECTS_SHARED = [
     techs: ["python", "kivy"],
     techDetails: [
       { icon: "python", label: "Python" },
-      { icon: "kivy",   label: "Kivy"   },
+      { icon: "kivy", label: "Kivy" },
     ],
   },
+  {
+    id: "ChurchVisit",
+    tagColor: "text-blue-400 bg-blue-400/10 border-blue-400/25",
+    liveUrl: "https://churchvisit.vercel.app",
+    imageSrc: "/assets/img/ChurchVisit.png",
+    // videoSrc: "/assets/video/Aplicacao_kivy_py/Aplicacao_py_video.mp4",
+    githubUrl: "https://github.com/Ismaelmourakeys/Visitor_manager",
+    techs: ["devicon-react-original", "devicon-typescript-original", "devicon-nodejs-plain", "devicon-firebase-plain"],
+    techDetails: [
+      { icon: "devicon-reactnative-original", label: "React+vite" },
+      { icon: "devicon-typescript-original", label: "Typescript" },
+      { icon: "devicon-nodejs-plain", label: "Node.js" },
+      { icon: "devicon-npm-plain", label: "NPM" },
+      { icon: "devicon-firebase-plain", label: "Firebase" },
+    ],
+  },
+
+
   // ── Adicione novos projetos aqui (só campos técnicos)
   // Textos vão no translate-projects.mjs
 ];
@@ -84,9 +102,9 @@ export default function Projects() {
   // Fallback automático pelo i18next se a chave não existir
   const PROJECTS = PROJECTS_SHARED.map((shared) => ({
     ...shared,
-    tag:                t(`projects.items.${shared.id}.tag`),
-    title:              t(`projects.items.${shared.id}.title`),
-    description:        t(`projects.items.${shared.id}.description`),
+    tag: t(`projects.items.${shared.id}.tag`),
+    title: t(`projects.items.${shared.id}.title`),
+    description: t(`projects.items.${shared.id}.description`),
     detailsDescription: t(`projects.items.${shared.id}.detailsDescription`),
   }));
 

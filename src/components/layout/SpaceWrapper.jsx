@@ -3,6 +3,7 @@
 // Gradiente vertical: espaço escuro → azul ciano → verde Terra
 
 import { useEffect, useRef } from "react";
+// import ScrollRocket from "./ScrollRocket"; // ← foguete que acompanha o scroll
 
 // ─────────────────────────────────────────────────────────────
 // Canvas compartilhado: fundo + estrelas + cometas
@@ -256,10 +257,16 @@ function SharedSpaceCanvas() {
 // Wrapper: envolve Hero + AboutMe com canvas compartilhado
 // ─────────────────────────────────────────────────────────────
 export default function SpaceWrapper({ children }) {
+  // ── Ref do container: o ScrollRocket usa isso para medir o scroll
+  const wrapperRef = useRef(null);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       {/* Canvas cobre tudo — Hero + AboutMe juntos */}
       <SharedSpaceCanvas />
+
+      {/* Foguete que acompanha o scroll e pousa na curva da Terra
+      <ScrollRocket targetRef={wrapperRef} /> */}
 
       {/* Conteúdo por cima */}
       <div className="relative z-10">

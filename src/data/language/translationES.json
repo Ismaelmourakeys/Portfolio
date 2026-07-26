@@ -76,6 +76,12 @@
         "title": "App Mobile con Python (Kivy)",
         "description": "Sistema creado en Python con el framework Kivy. Incluye funcionalidades de login y consulta de datos. Proyecto introductorio sobre estructura de apps móviles.",
         "detailsDescription": "Python con framework Kivy para interfaces móviles multiplataforma. Enfoque en lógica, navegación entre pantallas y widgets."
+      },
+      "ChurchVisit": {
+        "tag": "Proyecto",
+        "title": "Gestión de Visitantes para Igrejas",
+        "description": "El Visitor Manager nació de la necesidad real de las igrejas de organizar y hacer seguimiento a sus visitantes de manera simple, rápida y eficiente para darles la bienvenida durante los servicios y eventos.",
+        "detailsDescription": "Sistema web desarrollado con React+vite, Node.js y Firebase. Usando bibliotecas de Luster para los campos de entrada de datos, y trabajando con responsividad para traer dinamismo durante el uso del sistema en diferentes dispositivos."
       }
     }
   },
