@@ -21,6 +21,11 @@ const PLAYLIST = [
     title: "Midnight Syntax",
     artist: "Ismael Moura",
   },
+  {
+    src: "/assets/audio/Digital_Dreams.wav",
+    title: "Digital Dreams",
+    artist: "Ismael Moura",
+  },
   // ── Adicione novas músicas aqui:
   // { src: "/assets/audio/nome.wav", title: "Título", artist: "Artista" },
 ];
